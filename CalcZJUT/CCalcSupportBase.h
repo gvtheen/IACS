@@ -3,8 +3,10 @@
 #include <vector>
 #include <boost/range/iterator_range.hpp>
 //#
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 //#include "CCartesianCoordinates.h"
+using util::Bitset;
+
 namespace CATAZJUT{
          class CConfigurationBase;
          class CAtom;

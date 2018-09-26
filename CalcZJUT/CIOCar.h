@@ -3,13 +3,15 @@
 
 #include <string>
 #include "Cios.h"
-#include "Bitset.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
+
 namespace CATAZJUT{
    class CPeriodicFramework;
    class CAtom;
 }
 namespace CALCZJUT{
-
 
 class CIOCar:public Cios
 {

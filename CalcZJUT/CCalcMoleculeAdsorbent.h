@@ -6,15 +6,18 @@ Noting:
 */
 #include <vector>
 #include <boost/range/iterator_range.hpp>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "CConfigurationBase.h"
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 
 namespace CATAZJUT{
  class CConfigurationBase;
  class CAtom;
 }
+
 using CATAZJUT::Point3;
+using util::Bitset;
+
 namespace CALCZJUT{
 
 class CCalcMoleculeAdsorbent
