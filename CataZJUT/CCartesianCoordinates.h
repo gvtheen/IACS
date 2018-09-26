@@ -3,9 +3,12 @@
 #include <Eigen/Dense>
 #include <boost/array.hpp>
 #include <vector>
-#include "Point-Vector.h"
-
+#include "../Util/Point-Vector.h"
 #include "CAtom.h"
+using util::Matrix;
+using util::Point3;
+using util::Vector3;
+
 namespace CATAZJUT{
 
 class CConfigurationBase;

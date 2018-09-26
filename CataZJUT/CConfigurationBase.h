@@ -20,6 +20,7 @@ In this class, main functions have 3 aspects:
 
 using util::Bitset;
 using util::Point3;
+using util::Point3i;
 
 namespace CALCZJUT{
       class CParameter;

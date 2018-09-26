@@ -2,7 +2,8 @@
 #define CCONFIGURATIONBASE_SUB_H
 #include <boost/foreach.hpp>
 #include "CConfigurationBase.h"
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
+#include "../Util/log.hpp"
 #include "CElement.h"
 
 namespace CATAZJUT{
@@ -41,7 +42,7 @@ inline void CConfigurationBase::checkElement(CElement& currentElement)
 {
    if(!currentElement.isValid())
    {
-       GAZJUT::ERROR_OUTPUT("Atomic label is error!","currentElement->isValid()","CConfigurationBase","checkElement");
+       util::Log::OutputToFile<<"ERROR: Atomic label is error! CConfigurationBase_checkElement"<<std::endl;
        boost::throw_exception(std::runtime_error("Atomic label is error!Check the file: Error_information.txt."));
    }
 }

@@ -120,18 +120,18 @@ Point3 CCoordinateSet::position(size_t index) const
     }else
         return Point3();
 }
-CCoordinateSet& CCoordinateSet::operator=(const CCoordinateSet &other)
+CCoordinateSet& CCoordinateSet::operator=(CCoordinateSet &other)
 {
     if(this!= &other)
     {
         if(other.type()==CCoordinateSet::None)
            clear();
         else if(other.type()==Cartesian)
-           setCoordinates(new CCartesianCoordinates(*other.cartesianCoordinates()));
+            setCoordinates(new CCartesianCoordinates( *other.cartesianCoordinates()));
         else if(other.type()==Internal)
-            setCoordinates(new CInternalCoordinates(*other.internalCoordinates()));
+            setCoordinates(new CInternalCoordinates( *other.internalCoordinates()));
         else if(other.type()==Fraction)
-            setCoordinates(new CFractionCoordinates(*other.fractionCoordinates()));
+            setCoordinates(new CFractionCoordinates( *other.fractionCoordinates()));
     }
     return *this;
 }

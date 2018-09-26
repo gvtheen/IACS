@@ -1,6 +1,9 @@
 #ifndef CCOORDINATESET_H
 #define CCOORDINATESET_H
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
+
 namespace CATAZJUT{
 
 class CCartesianCoordinates;
@@ -40,7 +43,7 @@ public:
 
     Point3 position(size_t index) const;
 
-    CCoordinateSet& operator=(const CCoordinateSet &other);
+    CCoordinateSet& operator=( CCoordinateSet &other );
 
 private:
     Type m_type;
