@@ -1,6 +1,12 @@
 #ifndef CIOCIF_H
 #define CIOCIF_H
 
+#include <string>
+#include "Cios.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
+
 namespace CATAZJUT{
    class CPeriodicFramework;;
 }

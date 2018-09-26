@@ -1,16 +1,18 @@
 #ifndef CIOGJF_H
 #define CIOGJF_H
+
 #include<vector>
 #include<string>
 #include "Cios.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
 
 namespace CATAZJUT{
    class CPeriodicFramework;
 }
 
 namespace CALCZJUT{
-
-
 
 class CIOGjf:public Cios
 {
