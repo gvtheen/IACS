@@ -7,9 +7,9 @@ This class is used to GA evolution of pure cluster rather than molecular adsorbe
 #include "CConfigurationBase.h"
 #include "CCalcModeStruct.h"
 #include "GaDeclaration.h"
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 
-using CATAZJUT::Point3i;
+using util::Point3i;
 using GAZJUT::GENEVAR;
 namespace CATAZJUT{
   class CPeriodicFramework;
