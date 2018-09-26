@@ -1,9 +1,11 @@
 #ifndef CCALCMODESTRUCT_H
 #define CCALCMODESTRUCT_H
 #include <vector>
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 #include "GaDeclaration.h"
 //
+using util::Bitset;
+
 namespace CATAZJUT{
   class CPeriodicFramework;
 }

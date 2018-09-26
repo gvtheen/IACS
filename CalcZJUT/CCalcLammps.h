@@ -12,7 +12,7 @@ class CCalcLammps:public CCalcFitnessInterface
     protected:
 
     private:
-        GAZJUT::CEvaluator   *m_pEvaluator;
+
 };
 
 

@@ -1,12 +1,13 @@
 #ifndef CCALCCLUSTERSUPPORT_H
 #define CCALCCLUSTERSUPPORT_H
 #include <Eigen/Dense>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "CCalcModeStruct.h"
 #include "GaDeclaration.h"
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 
 using GAZJUT::GENEVAR;
+using util::Bitset;
 namespace CATAZJUT{
    class CCrystalPlanes;
 }

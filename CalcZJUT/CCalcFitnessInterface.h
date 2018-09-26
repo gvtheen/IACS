@@ -3,11 +3,13 @@
 #include<vector>
 #include<iostream>
 #include<string>
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 
 namespace CATAZJUT{
   class CPeriodicFramework;
 }
+
+using util::Bitset;
 namespace CALCZJUT{
 
 class CCalcModeStruct;

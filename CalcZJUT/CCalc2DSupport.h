@@ -5,10 +5,10 @@
 #include "Bitset.h"
 #include "GaDeclaration.h"
 #include "CCalcModeStruct.h"
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 using GAZJUT::GENEVAR;
-using CATAZJUT::Point3;
-using CATAZJUT::Vector3;
+using util::Point3;
+using util::Vector3;
 namespace CATAZJUT{
   class CPeriodicFramework;
   class CPlane;
