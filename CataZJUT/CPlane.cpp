@@ -36,7 +36,7 @@ void CPlane::CreatePlane(Eigen::MatrixXd* CurrentPointMat)
     assert(CurrentPointMat);
     assert(CurrentPointMat->cols()==3);
 
-    int rowNum_org =CurrentPointMat->rows();
+    //int rowNum_org =CurrentPointMat->rows();
      m_pPointsToPlane = new (Eigen::MatrixXd)(*CurrentPointMat);
 
 

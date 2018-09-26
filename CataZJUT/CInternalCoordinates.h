@@ -1,6 +1,8 @@
 #ifndef CINTERNALCOORDINATES_H
 #define CINTERNALCOORDINATES_H
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+using util::Point3;
+using util::Point3i;
 
 namespace CATAZJUT{
 

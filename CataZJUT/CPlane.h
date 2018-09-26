@@ -1,7 +1,12 @@
 #ifndef CPLANE_H
 #define CPLANE_H
 #include <Eigen/Dense>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
+using util::Circle3D;
+using util::Vector3;
+
 namespace CATAZJUT{
 
 class CPlane
