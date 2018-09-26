@@ -8,8 +8,8 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "Point-Vector.h"
-#include "Bitset.h"
+#include "../Util/Point-Vector.h"
+#include "../Util/Bitset.h"
 #include "CCoordinateSet.h"
 #include "CParameter.h"
 #include "CatalystUniverseDefine.h"
@@ -17,6 +17,10 @@
 In this class, main functions have 3 aspects:
 1)
 */
+
+using util::Bitset;
+using util::Point3;
+
 namespace CALCZJUT{
       class CParameter;
       class CIOPoscar;
@@ -131,7 +135,6 @@ class CConfigurationBase
         void setCenter(const Point3 &position);
         void setCenter(double x, double y, double z);
         Point3 center();
-
         //
         void setCoordinateType(const CATAZJUT::DEFINED::CoordinateType);
         CATAZJUT::DEFINED::CoordinateType coordinateType()const;

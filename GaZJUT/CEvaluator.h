@@ -2,21 +2,23 @@
 #define CEVALUATOR_H
 #include "CGpopulation.h"
 #include "CGaoperatorBase.h"
-#include "CCalcFitnessInterface.h"
-#include "CCalcModeStruct.h"
+
 /*
 The main function of class is that FitnessValuator conducts calculation to
  get originalValue and RawScore.
 
 */
-
+namespace CALCZJUT{
+  class CCalcFitnessInterface;
+  class CCalcModeStruct;
+}
 namespace GAZJUT{
 
 class CEvaluator:public CGaoperatorBase
 {
 	public:
 		CEvaluator();
-		CEvaluator(CCalcFitnessInterface*);
+		CEvaluator(CALCZJUT::CCalcFitnessInterface*);
 		~CEvaluator();
 
 		void clone();

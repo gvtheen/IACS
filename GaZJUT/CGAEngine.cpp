@@ -11,10 +11,10 @@
 #include "CParameter.h"
 #include "CGpopulation.h"
 //
-#include "CCalcVASP.h"
-#include "CCalcGaussian.h"
-#include "CCalcDMol.h"
-#include "CCalcLammps.h"
+#include "../CalcZJUT/CCalcVASP.h"
+#include "../CalcZJUT/CCalcGaussian.h"
+#include "../CalcZJUT/CCalcDMol.h"
+#include "../CalcZJUT/CCalcLammps.h"
 
 //
 namespace GAZJUT{
@@ -41,13 +41,13 @@ CGAEngine::~CGAEngine()
 void CGAEngine::init()
 {
    if((*m_pGaparameter)["Evaluator"]=="VASP")
-       m_pFitnessCalculator = new CCalcVASP(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CCalcVASP(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="DMOL")
-       m_pFitnessCalculator = new CCalcDMol(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CCalcDMol(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="GAUSSIAN")
-       m_pFitnessCalculator = new CCalcGaussian(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CCalcGaussian(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="LAMMPS")
-       m_pFitnessCalculator = new CCalcLammps(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CCalcLammps(this->m_pParameter);
 
    m_pFitnessCalculator->init();
    // until now, all parameters in object of Gaparameter were set.
@@ -64,7 +64,9 @@ void CGAEngine::init()
 }
 void CGAEngine::evolve()
 {
+   // read the setting generation number
    int total_pop_num=m_pGaparameter->GenerationNum();
+
    while(true){
       for(size_t i=0;i<m_GeneticOperator.size();i++)
           m_GeneticOperator[i]->run(m_pCurrentPopulation);

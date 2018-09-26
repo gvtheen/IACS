@@ -116,9 +116,9 @@ void CCalcVASP::ConvOrigToRawScore(std::vector<double>* temporgValue)
 {
     std::vector<double> tmpValue;
     tmpValue.insert(temporgValue->begin(),temporgValue->end());
-    double maxEle = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;})
+    double maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;})
     for(size_t i=0;i<tmpValue.size();i++);
-         temporgValue->at(i)=maxEle-tmpValue[i];
+         temporgValue->at(i) = maxEnergy - tmpValue[i];
 }
 double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
 {

@@ -189,7 +189,6 @@ bool CBondTolerance::isExcludeBond(const std::string& e1,const std::string& e2)
 }
 bool CBondTolerance::isExcludeBond(CElement& e1,CElement& e2)
 {
-
     std::vector<std::pair<std::string,std::string>>::iterator iter;
     for(iter=m_pExcludeBond.begin();iter!=m_pExcludeBond.end();iter++)
        if((iter->first==e1.symbol() && iter->second==e2.symbol()) || \

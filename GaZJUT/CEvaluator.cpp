@@ -1,5 +1,6 @@
 #include "CEvaluator.h"
-
+#include "../CalcZJUT/CCalcFitnessInterface.h"
+#include "../CalcZJUT/CCalcModeStruct.h"
 namespace GAZJUT{
 
 CEvaluator::CEvaluator()

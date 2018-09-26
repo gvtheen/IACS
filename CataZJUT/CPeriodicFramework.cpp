@@ -21,7 +21,6 @@ CPeriodicFramework::CPeriodicFramework(CPeriodicFramework& other)
         this->m_pUnitCell = new CUnitCell(*temp);
     }else
         this->m_pUnitCell = nullptr;
-
 }
 CPeriodicFramework::CPeriodicFramework(CConfigurationBase& other)
 :CConfigurationBase(other)
