@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "CGaparameter.h"
+#include "../GaZJUT/CGaparameter.h"
 namespace CALCZJUT{
 
     namespace GAZJUT{

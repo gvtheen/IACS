@@ -11,7 +11,7 @@
 #include "../Util/Point-Vector.h"
 #include "../Util/Bitset.h"
 #include "CCoordinateSet.h"
-#include "CParameter.h"
+#include "../CalcZJUT/CParameter.h"
 #include "CatalystUniverseDefine.h"
 /*
 In this class, main functions have 3 aspects:

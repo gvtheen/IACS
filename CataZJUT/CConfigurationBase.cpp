@@ -2,7 +2,6 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <sstream>
-#include "Bitset.h"      //#include <boost/dynamic_bitset.hpp>
 #include "CConfigurationBase.h"
 #include "CConfigurationBase_sub.h"
 #include "foreach.h"
@@ -319,7 +318,7 @@ void CConfigurationBase::addAtom(std::string& elementName, int atom1, double dis
 {
      Point3 tempCoord;
      tempCoord<<dist,angle,twist;
-     Point3i tempConnection;
+     util::Point3i tempConnection;
      tempConnection<<atom1,atom2,atom3;
      addAtom(elementName,tempConnection,tempCoord);
 }
