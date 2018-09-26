@@ -217,6 +217,8 @@ CUnitCell::CRYSTALSYSTEM CUnitCell::crystalSystem(double a,double b,double c,dou
              return CUnitCell::Monoclinic;
      else
              return CUnitCell::Triclinic;
+
+     return CUnitCell::ERROR;
 }
 CUnitCell::CRYSTALSYSTEM CUnitCell::crystalSystem()
 {
@@ -245,7 +247,7 @@ void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, doubl
                  cosB = std::cos(beta1*CATAZJUT::constants::DegreesToRadians);
                  sinB = std::sin(beta1*CATAZJUT::constants::DegreesToRadians);
                  cosC = std::cos(gama1*CATAZJUT::constants::DegreesToRadians);
-                 sinC = std::sin(gama1*CATAZJUT::constants::DegreesToRadians);
+                 //sinC = std::sin(gama1*CATAZJUT::constants::DegreesToRadians);
                  double tempB=b1*(cosC-cosA*cosB)/sinB;
                  double tempB2=std::sqrt(sinA*sinA-(cosC-cosA*cosB)*(cosC-cosA*cosB)/(sinB*sinB));
 

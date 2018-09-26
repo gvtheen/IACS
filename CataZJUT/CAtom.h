@@ -9,7 +9,9 @@
 #include <boost/iterator/transform_iterator.hpp>
 
 #include "CElement.h"
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
 
 namespace CATAZJUT{
 

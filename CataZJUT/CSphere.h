@@ -1,7 +1,9 @@
 #ifndef CSPHERE_H
 #define CSPHERE_H
 #include <Eigen/Dense>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+using util::Point3;
+
 namespace CATAZJUT{
 
 class CConfigurationBase;

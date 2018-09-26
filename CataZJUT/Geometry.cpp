@@ -1,7 +1,9 @@
 #include <Eigen/Dense>
 #include "Geometry.h"
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "Constant.h"
+
+
 namespace CATAZJUT{
 namespace Geometry{
 

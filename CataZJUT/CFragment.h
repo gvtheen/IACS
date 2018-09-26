@@ -4,7 +4,9 @@
 //#include "gacata.h"
 #include <vector>
 
-#include "Bitset.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
 
 namespace CATAZJUT{
 

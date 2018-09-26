@@ -7,7 +7,7 @@
 
 namespace CATAZJUT{
 
-CPeriodicFramework::CPeriodicFramework(CALCZJUT::CParameter* mPa)
+CPeriodicFramework::CPeriodicFramework(CALCZJUT::CParameter* mpa)
 :CConfigurationBase(mpa)
 {
     this->m_pUnitCell = new CUnitCell();

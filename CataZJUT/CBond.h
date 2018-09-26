@@ -1,7 +1,9 @@
 #ifndef CBOND_H
 #define CBOND_H
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "CElement.h"
+
+using util::Point3;
 
 namespace CATAZJUT{
 

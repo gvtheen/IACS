@@ -1,7 +1,10 @@
 #ifndef CFRACTIONCOORDINATES_H
 #define CFRACTIONCOORDINATES_H
 #include<vector>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
+using util::Vector3;
 
 namespace CATAZJUT{
 

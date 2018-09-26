@@ -4,7 +4,12 @@
 #include <Eigen/Geometry>
 #include <boost/array.hpp>
 #include "Constant.h"
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
+using util::Vector3;
+using util::Vector3d;
+
 namespace CATAZJUT{
 
 namespace Geometry{

@@ -524,7 +524,7 @@ CFractionCoordinates* CCartesianCoordinates::toFractionCoordinates(CPeriodicFram
      //(3,N)---> (N,3)
      cartMat->transpose();
      CFractionCoordinates  *mFraction = new CFractionCoordinates(mPeriodicFramework);
-     for(size_t i=0;i<cartMat->rows();i++)
+     for(int i=0;i<cartMat->rows();i++)
         mFraction->append(cartMat->row(i));
      // adjust the coordinate into the cell;
      mFraction->adjustCoordinateIntoCell();
@@ -534,7 +534,7 @@ CFractionCoordinates* CCartesianCoordinates::toFractionCoordinates(CPeriodicFram
 }
 void CCartesianCoordinates::clear()
 {
-    m_coordinates->clear();
+    m_coordinates.clear();
 }
 
 

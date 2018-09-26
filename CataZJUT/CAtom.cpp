@@ -6,7 +6,7 @@
 #include "CBond.h"
 #include "Geometry.h"
 #include "CElement.h"
-#include "foreach.h"
+#include "../Util/foreach.h"
 #include "CFragment.h"
 
 namespace CATAZJUT{

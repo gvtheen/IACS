@@ -10,7 +10,7 @@
 #include "CElement.h"
 #include "CCoordinateSet.h"
 #include "CBondPrivate.h"
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 namespace CATAZJUT{
 /*
 
@@ -199,7 +199,7 @@ bool CBondTolerance::isExcludeBond(CElement& e1,CElement& e2)
 void CBondTolerance::setTolerancefactor(std::pair<double,double> &mht)
 {
     if( mht.first != 0 && mht.second != 0 )
-       updateTolerancefactor(mht.first,mht.second);
+       setTolerancefactor(mht.first,mht.second);
 }
 void CBondTolerance::setTolerancefactor(const double minV,const double maxV)
 {

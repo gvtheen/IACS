@@ -2,8 +2,6 @@
 #define CPERIODICFRAMEWORK_H
 #include "CConfigurationBase.h"
 
-
-
 namespace CALCZJUT{
   class CCalc2DSupport;
   class CIOCar;

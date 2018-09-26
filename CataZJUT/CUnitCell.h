@@ -1,7 +1,11 @@
 #ifndef CUNITCELL_H
 #define CUNITCELL_H
 #include <vector>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+
+using util::Point3;
+using util::Vector3;
+
 namespace CATAZJUT{
 
 class CUnitCell
@@ -18,7 +22,8 @@ class CUnitCell
            Tetragonal=0x40A4,
            Orthorhombic=0x40A5,
            Monoclinic=0x40A6,
-           Triclinic=0x40A17
+           Triclinic=0x40A17,
+           ERROR=0x40A38
         }CRYSTALSYSTEM;
         CUnitCell();
         CUnitCell(Vector3 &, Vector3 &, Vector3 &,double );
