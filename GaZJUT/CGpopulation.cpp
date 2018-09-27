@@ -203,7 +203,6 @@ void CGpopulation::setGeneVarArray(std::vector <GENEVAR>* my_geneVar)
 void CGpopulation::modifyPopulation(std::vector <CGenome*> *newGenome)
 {
     assert(newGenome);
-
 }
 
 

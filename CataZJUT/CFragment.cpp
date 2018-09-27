@@ -39,4 +39,7 @@ Bitset CFragment::bitSet()const
 {
     return this->m_bitset;
 }
+
+
+
 }

@@ -28,16 +28,19 @@ inline CAtom* CConfigurationBase::atom(size_t index) const
 {
     return m_Atom[index];
 }
+//
 template<typename Range>
 inline void CConfigurationBase::removeAtoms(Range range)
 {
    this->removeAtoms(std::vector<CAtom*>(range.begin(),range.end()));
 }
+//
 template<typename Range>
 inline void CConfigurationBase::removeBonds(Range range)
 {
    this->removeBonds(std::vector<CBond *>(range.begin(), range.end()));
 }
+//
 inline void CConfigurationBase::checkElement(CElement& currentElement)
 {
    if(!currentElement.isValid())

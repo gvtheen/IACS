@@ -31,6 +31,10 @@ class CFragment
        inline size_t atomCount() const;
        inline bool contains(const CAtom *atom) const;
        inline bool containMetal()const;
+
+       inline std::vector<std::pair<std::string,size_t>>* composition();
+       inline std::string formula();
+
        Bitset bitSet()const;
        std::vector<CBond *> bonds() const;
        size_t bondCount() const;
