@@ -4,7 +4,8 @@
 #include<string>
 #include "unistd.h"
 #include "stdlib.h"
-#include "foreach.h"
+#include "../Util/foreach.h"
+#include "../Util/log.hpp"
 #include "GaUtilityFunction.h"
 #include "CAtom.h"
 #include "GaUtilityFunction.h"
@@ -13,6 +14,8 @@
 #include "CUnitCell.h"
 #include "CFractionCoordinates.h"
 #include "Point-Vector.h"
+
+using util::Log;
 
 namespace CALCZJUT{
 
@@ -25,8 +28,8 @@ void CIOCellFile::output(std::string& filename)
 {
    if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
-        GAZJUT::ERROR_OUTPUT("Dimensional Type is error!","CIOCellFile::output");
-        boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: Error_information.txt."));
+        Log::OutputToFile<<"ERROR: " <<"Dimensional Type is error! CIOCellFile_output"<< std::endl;
+        boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: output file."));
     }
     filename = filename + ".cell";
     std::ofstream out(filename,std::ios::app);
@@ -105,8 +108,8 @@ void CIOCellFile::input(std::string filename)
 {
      if(access(filename.c_str(),F_OK) != 0 )
       {
-           GAZJUT::ERROR_OUTPUT(filename + " file is no exist!","input","CIOPoscar");
-           boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file: Error_information.txt."));
+           Log.OutputToFile<<filename <<" file is no exist! input_CIOPoscar"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file!"));
       }
       std::ifstream *in;
       std::string str;
@@ -137,8 +140,8 @@ void CIOCellFile::input(std::string filename)
              m_pPeriodicFramework->addAtom(vecStr[0],std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]));
           }
       }catch(const std::ifstream::failure& e){
-          GAZJUT::ERROR_OUTPUT(e.what(),"input","CIOCellFile");
-          exit(-1);
+          Log::OutputToFile<<"ERROR: "<< e.what() <<"input_CIOCellFile"<<std::endl;
+          boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file: Error_information.txt."));
       }
       in->close();
 }

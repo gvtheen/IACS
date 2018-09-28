@@ -1,4 +1,3 @@
-
 #ifndef UTIL_LOG_HPP
 #define UTIL_LOG_HPP
 
@@ -73,7 +72,7 @@ class Log
   //! [INFO ].
   static  util::PrefixedOutStream Info;
 
-  static  util::PrefixedOutStream OutputToFile;
+  static  util::PrefixedOutStream Output;
 
   //! Prints warning messages prefixed with [WARN ].
   static  util::PrefixedOutStream Warn;
@@ -81,6 +80,7 @@ class Log
   //! Prints fatal messages prefixed with [FATAL], then terminates the program.
   static  util::PrefixedOutStream Fatal;
 
+  static  util::PrefixedOutStream Error;
   //! Reference to cout, if necessary.
   static  std::ostream& cout;
   static  std::ofstream fcout;

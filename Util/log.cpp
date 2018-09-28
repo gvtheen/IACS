@@ -17,19 +17,23 @@ using namespace util;
 
 std::ofstream Log::fcout("GACatalysis.log",std::ios::out);
 
-PrefixedOutStream Log::Warn(std::cout,"[Warn]: ");
+PrefixedOutStream Log::Warn(Log::fcout,"[Warn]: ");
+//PrefixedOutStream Log::Warn(std::cout,"[Warn]: ");
 
-PrefixedOutStream Log::Info(std::cout,"[Info]: ");
+PrefixedOutStream Log::Info(Log::fcout,"[Info]: ");
+//PrefixedOutStream Log::Info(std::cout,"[Info]: ");
 
 #ifdef DEBUG
-  PrefixedOutStream Debug(std::cout,"[Debug]: ");;
+  PrefixedOutStream Log::Debug(Log::fcout,"[Debug]: ");
 #else
-  NullOutStream Debug;
-#endif NullOutStream Log::Debug;
+  NullOutStream Log::Debug;
+#endif
 
-PrefixedOutStream Log::Fatal(std::cout,"[Fatal]: ");
+PrefixedOutStream Log::Fatal(Log::fcout,"[Fatal]: ");
 
-PrefixedOutStream Log::OutputToFile(Log::fcout,"");
+PrefixedOutStream Log::Error(Log::fcout,"[Error]: ");
+
+PrefixedOutStream Log::Output(Log::fcout,"");
 // Only do anything for Assert() if in debugging mode.
 
 

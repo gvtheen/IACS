@@ -1,5 +1,8 @@
 #include "CGenome.h"
 #include "GaUtilityFunction.h"
+#include "../GACatalyst.h"
+#include "../Util/log.hpp"
+
 namespace GAZJUT{
 
 CGenome::CGenome()
@@ -175,7 +178,7 @@ CGenebase* CGenome::extractGene(int i)
 {
 	if(i<1)
 	{
-	    ERROR_OUTPUT("Error: i<1","CGenome","extractGene");
+	    util::Log::OutputToFile<<"Error: i<1. CGenome_extractGene"<<std::endl;
 	    std::exit(-1);
 	}
 	return this->m_pGenome->at(i-1);

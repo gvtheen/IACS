@@ -1,5 +1,5 @@
 #include <Eigen/Dense>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "Geometry.h"
 #include "foreach.h"
 #include "Constant.h"
@@ -471,12 +471,12 @@ CInternalCoordinates* CCartesianCoordinates::toInternalCoordinates()
             for(size_t j=0;j<3;j++)
                 vect.push_back(i-j);
 
-           dis = CATAZJUT::Geometry::distance(m_coordinates[i],m_coordinates[vect[0]]);
-         angle = CATAZJUT::Geometry::angle(m_coordinates[i],m_coordinates[vect[0]],m_coordinates[vect[1]]);
-       torsion = CATAZJUT::Geometry::torsionAngle(m_coordinates[i],m_coordinates[vect[0]],\
+            dis = CATAZJUT::Geometry::distance(m_coordinates[i],m_coordinates[vect[0]]);
+          angle = CATAZJUT::Geometry::angle(m_coordinates[i],m_coordinates[vect[0]],m_coordinates[vect[1]]);
+        torsion = CATAZJUT::Geometry::torsionAngle(m_coordinates[i],m_coordinates[vect[0]],\
                                         m_coordinates[vect[1]],m_coordinates[vect[2]]);
-       res->setCoordinates(i,dis,angle,torsion);
-       res->setConnections(i,vect[0],vect[1],vect[2]);
+        res->setCoordinates(i,dis,angle,torsion);
+        res->setConnections(i,vect[0],vect[1],vect[2]);
     }
     return res;
 }

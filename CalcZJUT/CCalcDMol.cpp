@@ -12,10 +12,13 @@
 #include "CCalc2DSupport.h"
 #include "CCalcCluster.h"
 #include "CCalcClusterSupport.h"
-#include "CFragment.h"
-#include "CPeriodicFramework.h"
-#include "Point-Vector.h"
+#include "../CataZJUT/CFragment.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
 #include "CGaparameter.h"
+
+using util::Log;
 
 namespace CALCZJUT{
 
@@ -39,6 +42,10 @@ CCalcDMol::~CCalcDMol()
 }
 void CCalcDMol::init()
 {
+     #ifdef DEBUG
+       Log::Debug<<" Initialize CCalcDMol object!" <<std::endl;
+     #endif // DEBUG
+
      if(m_Parameter->simulationMode !=CParameter::CLUSTER)
      {
         if(m_Parameter->simulationMode ==CParameter::MOL_2DMATERIAL){
@@ -68,7 +75,7 @@ void CCalcDMol::init()
            m1 = m_pCalcModeStruct->periodicFramework()->fragment(0);
            m2 = m_pCalcModeStruct->periodicFramework()->fragment(1);
            if(m1== nullptr || m2 ==nullptr){
-               ERROR_OUTPUT("Support and adsorbent setting of input file are error!","input", "CCalcVASP");
+               Log::Error<<"Support and adsorbent setting of input file are error! input_CCalcVASP"<<std::endl;
                boost::throw_exception(std::runtime_error("Support and adsorbent setting are error! Check the file: Error_information.txt."));
            }
            if(m1->atomCount() > m2->atomCount())
@@ -110,26 +117,31 @@ double CCalcDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
 {
      pid_t pid;
      double res;
-     //
+     size_t currGeneration =m_Parameter->m_pGAParameter->Curr_Generation;
+
+     Log::Info<<" Run DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
+
      //construct new object of CPeriodicFramework class
      if( pop_index < m_Parameter->m_pGAParameter->PopNum() )
      {
         m_pCalcModeStruct->createStructureAtGene();
      }
-     //transfer gene value to POSCAR file
+     //transfer gene value to structure file
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
+     //
      m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
-     m_pIO->output(m_pInputFile[0]+".car"); //.mol file
+     //write structure in the car file
+     m_pIO->output(m_pInputFile[0]+".car"); //.car file
      //
      //Check whether input files is OK?
      CheckInputFile();
 
      pid=fork();
      if (pid<0){
-         ERROR_OUTPUT("Building new process is error!","CalcuRawFit", "CCalcDMol");
+         Log::Error<<"Building new process is error! CalcuRawFit_CCalcDMol"<<std::endl;
          boost::throw_exception(std::runtime_error("Building new process is error! Check the file: Error_information.txt."));//ERROR TREATMENT;
      }else if(pid==0){
-         //run VASP program
+         //run DMOL program
      }else
          wait(NULL);
      //
@@ -140,13 +152,15 @@ double CCalcDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
      if(IsNormalComplete()==true){
         isNormalExist=true;
         res=readFinalEnergy();
-        out_filename = out_filename + std::to_string(m_Parameter->m_pGAParameter->Curr_Generation) + \
+        out_filename = out_filename + std::to_string(currGeneration) + \
                    "_" + std::to_string(pop_index);
+        Log::Info<<" Normally Finish DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }else{
         isNormalExist=false;
         res=9999999;
-        out_filename = out_filename + std::to_string(m_Parameter->m_pGAParameter->Curr_Generation) + \
+        out_filename = out_filename + std::to_string(currGeneration) + \
                    "_" + std::to_string(pop_index) + "_ERROR";
+        Log::Info<<"InNormally Finish DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
      Cios* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
@@ -178,13 +192,13 @@ void CCalcDMol::CheckInputFile()
         if(access((m_pInputFile->at(i)).c_str(),F_OK) != 0)
         {
            std::string error_info = m_pInputFile->at(i) + std::string(" file is not exist!");
-           ERROR_OUTPUT(error_info,"CheckInputFile","CCalcDMol");
+           Log::Error<<error_info<<" CheckInputFile_CCalcDMol\n";
            res=false;
         }
     if(res==false)
     {
-         ERROR_OUTPUT("Input files in DMOL is error!","CheckInputFile", "CCalcDMol");
-         boost::throw_exception(std::runtime_error("Input files in DMOL is error! Check the file: Error_information.txt."));
+         Log::Error<<"Input files in DMOL is error! CheckInputFile_CCalcDMol"<<std::endl;
+         boost::throw_exception(std::runtime_error("Input files in DMOL is error! Check the file."));
     }
 }
 bool CCalcDMol::IsNormalComplete()
@@ -195,7 +209,7 @@ bool CCalcDMol::IsNormalComplete()
       bool res=false;
       if(access(filename->c_str(),F_OK) != 0 )
       {
-           ERROR_OUTPUT((*filename) + " file is no exist!","IsNormalComplete","CCalcDMol");
+           Log::Error<<(*filename) <<" file is no exist! IsNormalComplete_CCalcDMol"<<std::endl;
            return res;
       }
       std::ifstream *in;
@@ -214,7 +228,7 @@ bool CCalcDMol::IsNormalComplete()
              }
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"IsNormalComplete","CCalcDMol");
+          Log::Error<<e.what()<<" IsNormalComplete_CCalcDMol!"<<std::endl;
           exit(-1);
       }
       in->close();
@@ -246,7 +260,7 @@ double CCalcDMol::readFinalEnergy()
                   break;
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"readFinalEnergy","CCalcDMol");
+          Log::Error<<e.what()<<" readFinalEnergy_CCalcDMol"<<std::endl;
           exit(-1);
       }
       in->close();

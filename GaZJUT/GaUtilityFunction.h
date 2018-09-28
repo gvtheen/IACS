@@ -2,8 +2,6 @@
 #define GAUTILITYFUNCTION_H_INCLUDED
 #include<string>
 #include<vector>
-#include <stdexcept>
-#include <boost/throw_exception.hpp>
 #include "GaDeclaration.h"
 
 namespace GAZJUT{
