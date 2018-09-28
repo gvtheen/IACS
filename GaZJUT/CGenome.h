@@ -78,6 +78,7 @@ class CGenome
 		                double      m_fitness;        // m_fitness= the value after scalling treatment of m_rawscore
 		                                         // statistic treatment of fitness, and it is used for selector, crosser, mutator
 		                double      m_relativefitness;
+
                         double      m_cumufitness;
 		                  bool      FinishState;
 

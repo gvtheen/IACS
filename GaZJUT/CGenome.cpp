@@ -54,9 +54,9 @@ void CGenome::updateDecValueGene(std::vector <double>* myDecValue)
                 for(unsigned int j=0;j<tempbitGene->size();j++)
                     m_ptotalgeneofGenome->at(index++) = tempbitGene->at(j);
         }else{
-               if(m_ptotalRealofGenome->empty()==true)
+             if(m_ptotalRealofGenome->empty()==true)
                   m_ptotalRealofGenome->push_back(m_pGenome->at(i)->realGene());
-               else
+             else
                   m_ptotalRealofGenome->at(i) = m_pGenome->at(i)->realGene();
         }
 
@@ -219,6 +219,7 @@ void CGenome::init(std::vector <GENEVAR>* vec_genVal)
         m_ptotalgeneofGenome = new (std::vector <unsigned int>);
     }else
         m_ptotalRealofGenome = new (std::vector <double>);
+
     for(int i=0;i<this->m_varNumofGenome;i++)
 	{
 	    if (General_GA_Parameter.CodeMode==BINARY)
