@@ -36,7 +36,7 @@ class CCalcCluster:public CCalcModeStruct
 
         void Initialization(std::string&);         // initialize from chemical formula
         void Initialization(char*);                // initialize from chemical formula
-        void Initialization(CConfigurationBase&);  // initialize from exit structure
+        void Initialization(CATAZJUT::CConfigurationBase&);  // initialize from exit structure
 
     protected:
 

@@ -43,7 +43,7 @@ void CCalc2DSupport::createSupport(Bitset& mht)
     m_BitbackupSupport = mht;
     m_pSupport= new CCalcSupportBase(this->m_pPeriodicFramework,mht);
 }
-void CCalc2DSupport::createMoleAdsorb(Bitset& mht)
+void CCalc2DSupport::createMoleAdsorb( const Bitset& mht)
 {
     assert(m_pPeriodicFramework);
     m_BitbackupAdsorbMolecule = mht;

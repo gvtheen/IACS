@@ -8,7 +8,7 @@ namespace CALCZJUT{
 class CCalcDMol:public CCalcFitnessInterface
 {
 	public:
-		CCalcDMol();
+		CCalcDMol(CParameter*);
 		~CCalcDMol();
 
          void init();

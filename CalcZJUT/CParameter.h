@@ -8,11 +8,10 @@
 #include <vector>
 #include <map>
 #include "../GaZJUT/CGaparameter.h"
-namespace CALCZJUT{
-
-    namespace GAZJUT{
+namespace GAZJUT{
        class CGaparameter;
-    }
+}
+namespace CALCZJUT{
 
 class CParameter
 {

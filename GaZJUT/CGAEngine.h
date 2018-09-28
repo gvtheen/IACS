@@ -23,7 +23,7 @@ class CGAEngine
 		~CGAEngine();
 
 		void SetFitCalculator(const CalcFitnessInterface*);
-        CALCZJUT::CalcFitnessInterface* FitCalculator()const;
+        CALCZJUT::CalcFitnessInterface* FitnessCalculator()const;
 
 
 

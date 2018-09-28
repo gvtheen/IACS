@@ -16,13 +16,13 @@ CCalcClusterSupport::~CCalcClusterSupport()
     //dtor
 }
 
-void CCalcClusterSupport::createSupport(Bitset& mht)
+void CCalcClusterSupport::createSupport(const Bitset& mht)
 {
    assert(m_pPeriodicFramework);
    m_BitbackupSupport = mht;
    m_pSupport= new CCalcSupportBase(this->m_pPeriodicFramework,mht);
 }
-void CCalcClusterSupport::createMoleAdsorb(Bitset& mht)
+void CCalcClusterSupport::createMoleAdsorb(const Bitset& mht)
 {
    assert(m_pPeriodicFramework);
    m_BitbackupAdsorbMolecule = mht;

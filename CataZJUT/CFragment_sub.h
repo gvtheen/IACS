@@ -54,11 +54,11 @@ inline bool CFragment::containMetal()const
 }
 inline std::vector<std::pair<std::string,size_t>>* CFragment::composition()
 {
-
+       return nullptr;
 }
 inline std::string CFragment::formula()
 {
-
+     return nullptr;
 }
 
 

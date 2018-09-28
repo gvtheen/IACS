@@ -1,6 +1,6 @@
 #ifndef CIOPOSCAR_H
 #define CIOPOSCAR_H
-#include "CatalystUniverseDefine.h"
+//#include "CatalystUniverseDefine.h"
 #include "Cios.h"
 #include "Bitset.h"
 
@@ -17,7 +17,7 @@ class CIOPoscar:public Cios
         CIOPoscar(CATAZJUT::CPeriodicFramework*);
         virtual ~CIOPoscar();
 
-        void output(std::string& file);
+        void output(const std::string& file);
         void  input(std::string file="");
         Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE);
 

@@ -16,7 +16,7 @@
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
-#include "CGaparameter.h"
+#include "../GaZJUT/CGaparameter.h"
 
 using util::Log;
 

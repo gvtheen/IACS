@@ -4,24 +4,29 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CCalcVASP.h"
 #include "CCalc2DSupport.h"
 #include "CIOPoscar.h"
 #include "CCalcCluster.h"
 #include "CCalcClusterSupport.h"
-#include "CFragment.h"
-#include "CPeriodicFramework.h"
-#include "Point-Vector.h"
-#include "CGaparameter.h"
+#include "../CataZJUT/CFragment.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../Util/Point-Vector.h"
+#include "../GaZJUT/CGaparameter.h"
+#include "../Util/log.hpp"
+#include "../CataZJUT/CBondTolerance.h"
+
+using util::Log;
 
 namespace CATAZJUT{
   class CFragment;
   class CPeriodicFramework;
 }
-using GAZJUT::ERROR_OUTPUT;
-using CATAZJUT::Point3;
+
+using util::Point3;
 
 namespace CALCZJUT{
 
@@ -68,7 +73,7 @@ void CCalcVASP::init()
            m1 = m_pCalcModeStruct->periodicFramework()->fragment(0);
            m2 = m_pCalcModeStruct->periodicFramework()->fragment(1);
            if(m1== nullptr || m2 ==nullptr){
-               ERROR_OUTPUT("Support and adsorbent setting of input file are error!","input", "CCalcVASP");
+               Log::Error<<"Support and adsorbent setting of input file are error! input_CCalcVASP.\n";
                boost::throw_exception(std::runtime_error("Support and adsorbent setting are error! Check the file: Error_information.txt."));
            }
            if(m1->atomCount() > m2->atomCount())
@@ -107,7 +112,7 @@ void CCalcVASP::init()
 
     m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setExcludeBond(m_Parameter->excludeBond);
 
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->updateTolerancefactor(m_Parameter->bondToleranceFactor);
+    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setTolerancefactor(m_Parameter->bondToleranceFactor);
 
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="poscar";   //default value;
@@ -115,10 +120,10 @@ void CCalcVASP::init()
 void CCalcVASP::ConvOrigToRawScore(std::vector<double>* temporgValue)
 {
     std::vector<double> tmpValue;
-    tmpValue.insert(temporgValue->begin(),temporgValue->end());
-    double maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;})
-    for(size_t i=0;i<tmpValue.size();i++);
-         temporgValue->at(i) = maxEnergy - tmpValue[i];
+    tmpValue.assign(temporgValue->begin(),temporgValue->end());
+    std::vector<double> ::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a < b;});
+    for(size_t i=0;i<tmpValue.size();i++)
+         temporgValue->at(i) = *maxEnergy - tmpValue[i];
 }
 double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
 {
@@ -126,21 +131,21 @@ double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
      double res;
      //
      //construct new object of CPeriodicFramework class
-     if( pop_index < m_Parameter->m_pGAParameter->PopNum() )
+     if( pop_index < m_Parameter->GaParameter()->PopNum() )
      {
         m_pCalcModeStruct->createStructureAtGene();
      }
      //transfer gene value to POSCAR file
-     m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
+     m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
      m_pIO->output("POSCAR");
      //
      //Check whether input files is OK?
      CheckInputFile();
 
-     pid=fork();
+    // pid=fork();
      if (pid<0){
-         ERROR_OUTPUT("Building new process is error!","CalcuRawFit", "CCalcVASP");
+         Log::Error<<"Building new process is error! CalcuRawFit_CCalcVASP"<<std::endl;
          boost::throw_exception(std::runtime_error("Building new process is error! Check the file: Error_information.txt."));//ERROR TREATMENT;
      }else if(pid==0){
          //run VASP program
@@ -185,12 +190,12 @@ void CCalcVASP::CheckInputFile()
         if(access((m_pInputFile->at(i)).c_str(),F_OK) != 0)
         {
            std::string error_info = m_pInputFile->at(i) + std::string(" file is not exist!");
-           ERROR_OUTPUT(error_info,"CheckInputFile","CCalcVASP");
+           Log::Error<<error_info <<" CheckInputFile_CCalcVASP\n";
            res=false;
         }
     if(res==false)
     {
-         ERROR_OUTPUT("Input files in VASP is error!","CheckInputFile", "CCalcVASP");
+         Log::Error<<"Input files in VASP is error!CheckInputFile_CCalcVASP"<<std::endl;
          boost::throw_exception(std::runtime_error("Input files in VASP is error! Check the file: Error_information.txt."));
     }
 }
@@ -201,7 +206,7 @@ bool CCalcVASP::IsNormalComplete()
       bool res=false;
       if(access("OUTCAR",F_OK) != 0 )
       {
-           ERROR_OUTPUT("OUTCAR file is no exist!","IsNormalComplete","CCalcVASP");
+           Log::Error<<"OUTCAR file is no exist! IsNormalComplete_CCalcVASP\n";
            return res;
       }
       std::ifstream *in;
@@ -220,7 +225,7 @@ bool CCalcVASP::IsNormalComplete()
              }
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"IsNormalComplete","CCalcVASP");
+          Log::Error<<e.what()<<" IsNormalComplete_CCalcVASP\n";
           exit(-1);
       }
       in->close();
@@ -251,7 +256,7 @@ double CCalcVASP::readFinalEnergy()
                   break;
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"readFinalEnergy","CCalcVASP");
+          Log::Error<<e.what()<<"readFinalEnergy_CCalcVASP\n";
           exit(-1);
       }
       in->close();
