@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include "../Util/Point-Vector.h"
 #include "CCalcModeStruct.h"
-#include "GaDeclaration.h"
+#include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Bitset.h"
 
 using GAZJUT::GENEVAR;

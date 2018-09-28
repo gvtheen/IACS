@@ -4,13 +4,14 @@
 /*
 This class is used to GA evolution of pure cluster rather than molecular adsorbent.
 */
-#include "CConfigurationBase.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CCalcModeStruct.h"
-#include "GaDeclaration.h"
+#include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Point-Vector.h"
 
 using util::Point3i;
 using GAZJUT::GENEVAR;
+
 namespace CATAZJUT{
   class CPeriodicFramework;
   class CConfigurationBase;
@@ -33,16 +34,15 @@ class CCalcCluster:public CCalcModeStruct
         std::vector<double>*  getGeneValuefromStruct()const;
         std::vector<GENEVAR>* GeneVarRange();
 
-        void Initialization(std::string&);        // initialize from chemical formula
-        void Initialization(char*);               // initialize from chemical formula
-        void Initialization(CConfigurationBase&); // initialize from exit structure
+        void Initialization(std::string&);         // initialize from chemical formula
+        void Initialization(char*);                // initialize from chemical formula
+        void Initialization(CConfigurationBase&);  // initialize from exit structure
 
     protected:
 
     private:
         std::vector<Point3i> currentConnection;
         CCalcFitnessInterface *m_pCalcFitness;
-
 
 };
 

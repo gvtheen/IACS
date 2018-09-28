@@ -2,13 +2,15 @@
 #define CCALC2DSUPPORT_H
 
 #include <vector>
-#include "Bitset.h"
-#include "GaDeclaration.h"
+#include "../Util/Bitset.h"
+#include "../GaZJUT/GaDeclaration.h"
 #include "CCalcModeStruct.h"
 #include "../Util/Point-Vector.h"
+
 using GAZJUT::GENEVAR;
 using util::Point3;
 using util::Vector3;
+
 namespace CATAZJUT{
   class CPeriodicFramework;
   class CPlane;

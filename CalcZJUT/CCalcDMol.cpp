@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CCalcDMol.h"
 #include "CParameter.h"
 #include "CIOCar.h"

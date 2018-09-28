@@ -2,7 +2,7 @@
 #define CCALCMODESTRUCT_H
 #include <vector>
 #include "../Util/Bitset.h"
-#include "GaDeclaration.h"
+#include "../GaZJUT/GaDeclaration.h"
 //
 using util::Bitset;
 
