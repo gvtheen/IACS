@@ -9,7 +9,7 @@ namespace CALCZJUT{
 class CCalcGaussian:public CCalcFitnessInterface
 {
 	public:
-		CCalcGaussian();
+		CCalcGaussian(CParameter* mpara);
 		~CCalcGaussian();
 
 		 void init();
@@ -22,6 +22,7 @@ class CCalcGaussian:public CCalcFitnessInterface
          double readFinalEnergy();
          void   getRelaxedGeometryCoord();
 	protected:
+	    std::string *m_pInputFile;
 
 };
 

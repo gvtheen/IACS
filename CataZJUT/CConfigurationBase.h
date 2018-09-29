@@ -31,6 +31,9 @@ namespace CALCZJUT{
       class CCalcSupportBase;
       class CCalcClusterSupport;
       class CCalcVASP;
+      class CCalcDMol;
+      class CCalcGaussian;
+      class CCalcLammps;
       class CCalc2DSupport;
 }
 namespace CATAZJUT{
@@ -162,8 +165,12 @@ class CConfigurationBase
         friend class CALCZJUT::CIOMol;
         friend class CALCZJUT::CIOCellFile;
         friend class CALCZJUT::CCalcSupportBase;
-        friend class CALCZJUT::CCalcVASP;
         friend class CALCZJUT::CCalc2DSupport;
+
+        friend class CALCZJUT::CCalcVASP;
+        friend class CALCZJUT::CCalcDMol;
+        friend class CALCZJUT::CCalcGaussian;
+        friend class CALCZJUT::CCalcLammps;
 
         mutable CCartesianCoordinates     *m_pCartesian;
         std::vector<CElement>      m_Element;         // contain the chemical property of all atoms

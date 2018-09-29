@@ -14,7 +14,7 @@ class CIOCellFile:public Cios
         CIOCellFile(CATAZJUT::CPeriodicFramework*);
         virtual ~CIOCellFile();
 
-        void output(std::string& file);
+        void output(const std::string& file);
         void  input(std::string file="");
         Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE);
 

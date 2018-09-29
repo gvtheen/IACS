@@ -37,7 +37,7 @@ class CCalcModeStruct
                 std::vector<GENEVAR>*          m_pGeneVar;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-    std::vector<CATAZJUT::CPeriodicFramework*> m_PopuPeriodicFramework;
+std::vector<CATAZJUT::CPeriodicFramework*>     m_PopuPeriodicFramework;
         CATAZJUT::CPeriodicFramework*          m_backupPeriodicFramework;
 
 };

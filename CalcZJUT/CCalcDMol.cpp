@@ -17,6 +17,7 @@
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 #include "../GaZJUT/CGaparameter.h"
+#include "../CataZJUT/CBondTolerance.h"
 
 using util::Log;
 
@@ -89,7 +90,7 @@ void CCalcDMol::init()
          }else{ // treat cluster-support
            m_pIO->input(m_Parameter->supportStructFile);
 
-           Bitset Bit_adsorbent = m_pIO->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER)
+           Bitset Bit_adsorbent = m_pIO->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
            // get opposite bit for support
            m_pCalcModeStruct->createSupport(~Bit_adsorbent);
            //set molecular adsorbent bits
@@ -108,42 +109,43 @@ void CCalcDMol::init()
 
     m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setExcludeBond(m_Parameter->excludeBond);
 
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->updateTolerancefactor(m_Parameter->bondToleranceFactor);
+    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setTolerancefactor(m_Parameter->bondToleranceFactor);
 
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="mol";   //default value;
 }
-double CCalcDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
+double CCalcDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
      pid_t pid;
      double res;
-     size_t currGeneration =m_Parameter->m_pGAParameter->Curr_Generation;
+     size_t currGeneration =m_Parameter->GaParameter()->Curr_Generation;
 
      Log::Info<<" Run DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
 
      //construct new object of CPeriodicFramework class
-     if( pop_index < m_Parameter->m_pGAParameter->PopNum() )
+     if( pop_index < m_Parameter->GaParameter()->PopNum() )
      {
         m_pCalcModeStruct->createStructureAtGene();
      }
      //transfer gene value to structure file
-     m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
+     m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
      //
      m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
      //write structure in the car file
-     m_pIO->output(m_pInputFile[0]+".car"); //.car file
+     m_pIO->output(*(m_pInputFile[0])+".car"); //.car file
      //
      //Check whether input files is OK?
      CheckInputFile();
 
-     pid=fork();
+     //pid=fork();
+
      if (pid<0){
          Log::Error<<"Building new process is error! CalcuRawFit_CCalcDMol"<<std::endl;
          boost::throw_exception(std::runtime_error("Building new process is error! Check the file: Error_information.txt."));//ERROR TREATMENT;
      }else if(pid==0){
          //run DMOL program
      }else
-         wait(NULL);
+         ;//wait(NULL);
      //
      //read CONTCAR file;
      getRelaxedGeometryCoord();
@@ -180,18 +182,18 @@ double CCalcDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
 void CCalcDMol::ConvOrigToRawScore(std::vector<double>* OrigRawScore)
 {
     std::vector<double> tmpValue;
-    tmpValue.insert(temporgValue->begin(),temporgValue->end());
-    double maxEle = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;})
-    for(size_t i=0;i<tmpValue.size();i++);
-         temporgValue->at(i)=maxEle-tmpValue[i];
+    tmpValue.assign(OrigRawScore->begin(),OrigRawScore->end());
+    std::vector<double>::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;});
+    for(size_t i=0;i<tmpValue.size();i++)
+         OrigRawScore->at(i)=*maxEnergy - tmpValue[i];
 }
 void CCalcDMol::CheckInputFile()
 {
     bool res=true;
-    for(unsigned int i=0;i<this->m_pInputFile->size();i++)
-        if(access((m_pInputFile->at(i)).c_str(),F_OK) != 0)
+    for(unsigned int i=0;i<this->m_pInputFile.size();i++)
+        if(access(m_pInputFile[i]->c_str(),F_OK) != 0)
         {
-           std::string error_info = m_pInputFile->at(i) + std::string(" file is not exist!");
+           std::string error_info = *(m_pInputFile[i]) + std::string(" file is not exist!");
            Log::Error<<error_info<<" CheckInputFile_CCalcDMol\n";
            res=false;
         }

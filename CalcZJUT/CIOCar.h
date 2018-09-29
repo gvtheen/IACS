@@ -19,7 +19,7 @@ class CIOCar:public Cios
         CIOCar(CATAZJUT::CPeriodicFramework*);
         virtual ~CIOCar();
 
-        void output(std::string& file);
+        void output(const std::string& file);
          void input(std::string file="");
          Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE);
 

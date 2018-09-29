@@ -125,11 +125,14 @@ void CCalcVASP::ConvOrigToRawScore(std::vector<double>* temporgValue)
     for(size_t i=0;i<tmpValue.size();i++)
          temporgValue->at(i) = *maxEnergy - tmpValue[i];
 }
-double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
+double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
      pid_t pid;
      double res;
-     //
+
+     size_t currGeneration = m_Parameter->GaParameter()->Curr_Generation;
+
+     Log::Info<<" Run VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      //construct new object of CPeriodicFramework class
      if( pop_index < m_Parameter->GaParameter()->PopNum() )
      {
@@ -150,7 +153,7 @@ double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
      }else if(pid==0){
          //run VASP program
      }else
-         wait(NULL);
+         ;//wait(NULL);
      //
      //read CONTCAR file;
      getRelaxedGeometryCoord();
@@ -159,13 +162,15 @@ double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
      if(IsNormalComplete()==true){
         isNormalExist=true;
         res=readFinalEnergy();
-        out_filename = out_filename + std::to_string(m_Parameter->m_pGAParameter->Curr_Generation) + \
+        out_filename = out_filename + std::to_string(currGeneration) + \
                    "_" + std::to_string(pop_index);
+        Log::Info<<" Normally finish VASP of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }else{
         isNormalExist=false;
         res=9999999;
-        out_filename = out_filename + std::to_string(m_Parameter->m_pGAParameter->Curr_Generation) + \
-                   "_" + std::to_string(pop_index) + "_ERROR";
+        out_filename = out_filename + std::to_string(currGeneration) + \
+                   "_" + std::to_string(pop_index);
+        Log::Info<<" InNormally finish VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
      // Use the output file format to output structure;
@@ -186,10 +191,10 @@ double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
 void CCalcVASP::CheckInputFile()
 {
     bool res=true;
-    for(unsigned int i=0;i<this->m_pInputFile->size();i++)
-        if(access((m_pInputFile->at(i)).c_str(),F_OK) != 0)
+    for(unsigned int i=0;i<this->m_pInputFile.size();i++)
+        if(access(m_pInputFile[i]->c_str(),F_OK) != 0)
         {
-           std::string error_info = m_pInputFile->at(i) + std::string(" file is not exist!");
+           std::string error_info = *(m_pInputFile[i]) + std::string(" file is not exist!");
            Log::Error<<error_info <<" CheckInputFile_CCalcVASP\n";
            res=false;
         }

@@ -18,7 +18,7 @@ class CIOCif:public Cios
         CIOCif(CATAZJUT::CPeriodicFramework*);
         virtual ~CIOCif();
 
-        void output(std::string& file);
+        void output(const std::string& file);
         void  input(std::string& file="");
         Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode);
     protected:
