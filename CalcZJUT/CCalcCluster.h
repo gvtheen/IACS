@@ -17,6 +17,7 @@ namespace CATAZJUT{
   class CPeriodicFramework;
   class CConfigurationBase;
   class CAtom;
+  class CElement;
 }
 namespace CALCZJUT{
 
@@ -35,15 +36,16 @@ class CCalcCluster:public CCalcModeStruct
         std::vector<double>*  getGeneValuefromStruct()const;
         std::vector<GENEVAR>* GeneVarRange();
 
-        void Initialization(std::string&);         // initialize from chemical formula
+        void Initialization(const std::string&);         // initialize from chemical formula
         void Initialization(char*);                // initialize from chemical formula
-        void Initialization(CATAZJUT::CConfigurationBase&);  // initialize from exit structure
+        void Initialization(const CATAZJUT::CConfigurationBase&);  // initialize from exit structure
 
     protected:
-
+        void RandomBuildFromChemicalFormula(std::vector<std::pair<std::string,size_t>> mth);
+        size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
     private:
         std::vector<Point3i>                         currentConnection;
-        std::vector<std::vector<CClusterGeneVar*>>
+        std::vector<std::vector<CClusterGeneVar*>>   GeneStorage;
         //CCalcFitnessInterface  *m_pCalcFitness;
 
 };

@@ -50,7 +50,6 @@ void CClusterGeneVar::setIndex(int i,int j,int k,int h)
         this->m_index.push_back(h);
    }
 
-
 }
 void CClusterGeneVar::setIndex(size_t i,Point3i m)
 {

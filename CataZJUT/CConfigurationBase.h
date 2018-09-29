@@ -107,7 +107,7 @@ class CConfigurationBase
 
         CCartesianCoordinates* coordinates();
          CInternalCoordinates* Internalcoordinates();
-         virtual CFractionCoordinates* Fractioncoordinates()=0;
+         virtual CFractionCoordinates* Fractioncoordinates();
 
         void addCoordinateSet(const boost::shared_ptr<CCoordinateSet> &coordinates);
         void addCoordinateSet(CCartesianCoordinates *coordinates);

@@ -692,7 +692,10 @@ void CConfigurationBase::setConstraintBit(const Bitset& othrBit)
 {
     this->constraintBits = othrBit;
 }
-
+CFractionCoordinates* CConfigurationBase::Fractioncoordinates()
+{
+   //nothing
+}
 
 
 }
