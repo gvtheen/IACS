@@ -8,6 +8,7 @@ This class is used to GA evolution of pure cluster rather than molecular adsorbe
 #include "CCalcModeStruct.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Point-Vector.h"
+#include "CClusterGeneVar.h"
 
 using util::Point3i;
 using GAZJUT::GENEVAR;
@@ -41,8 +42,9 @@ class CCalcCluster:public CCalcModeStruct
     protected:
 
     private:
-        std::vector<Point3i> currentConnection;
-        CCalcFitnessInterface *m_pCalcFitness;
+        std::vector<Point3i>                         currentConnection;
+        std::vector<std::vector<CClusterGeneVar*>>
+        //CCalcFitnessInterface  *m_pCalcFitness;
 
 };
 
