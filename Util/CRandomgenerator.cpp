@@ -37,6 +37,11 @@ int CRandomgenerator::uniformRandomRandge(int start, int stop,int seedNum)
      boost::uniform_int<> ui(start,stop);
      return ui(rng);
 }
-
+Vector3 CRandomgenerator::randomVector01(int seedNum)
+{
+     Vector3 res;
+     res<<uniformRandom01(seedNum*5+1),uniformRandom01(seedNum*8+2),uniformRandom01(seedNum*16+3);
+     return res;
+}
 
 }

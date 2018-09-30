@@ -1,6 +1,8 @@
 #ifndef CRANDOMGENERATOR_H
 #define CRANDOMGENERATOR_H
-#define MNNN 100
+#define MNNN 10
+
+#include "Point-Vector.h"
 namespace util{
 
 class CRandomgenerator
@@ -10,6 +12,7 @@ class CRandomgenerator
         CRandomgenerator();
         double uniformRandom01(int seedNum);
         int uniformRandomRandge(int start, int stop,int seedNum);
+        Vector3 randomVector01(int seedNum);
 //        int    uniformRandomInt(int,int);
 //        double uniformRandomReal(double,double);
         virtual ~CRandomgenerator();

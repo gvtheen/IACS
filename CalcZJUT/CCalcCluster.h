@@ -36,16 +36,24 @@ class CCalcCluster:public CCalcModeStruct
         std::vector<double>*  getGeneValuefromStruct()const;
         std::vector<GENEVAR>* GeneVarRange();
 
-        void Initialization(const std::string&);         // initialize from chemical formula
-        void Initialization(char*);                // initialize from chemical formula
-        void Initialization(const CATAZJUT::CConfigurationBase&);  // initialize from exit structure
+        void Initialization(const std::string& chemicalformulaStr);         // initialize from chemical formula
+        void Initialization(const char* chemicalformulaStr);                // initialize from chemical formula
+        void Initialization(const std::vector<std::string>& inputfiles);  // initialize from exit structure
 
     protected:
         void RandomBuildFromChemicalFormula(std::vector<std::pair<std::string,size_t>> mth);
+        void eliminateCloseContacts(double distanceCutOff=1.0);
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
+
+        //predicting methods: sphere,
+        void spherePredict(CATAZJUT::CPeriodicFramework*);
+        void planePredict(CATAZJUT::CPeriodicFramework*);
+
     private:
         std::vector<Point3i>                         currentConnection;
         std::vector<std::vector<CClusterGeneVar*>>   GeneStorage;
+
+        std::vector<std::pair<std::string,size_t>>   chemicalFormula;
         //CCalcFitnessInterface  *m_pCalcFitness;
 
 };

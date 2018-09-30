@@ -3,12 +3,14 @@
 #include <math.h>
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CCalcCluster.h"
+#include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CElement.h"
 #include "../Util/log.hpp"
 #include "../Util/Bitset.h"
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
+#include "../Util/CRandomgenerator.h"
 
 using util::Log;
 
@@ -18,6 +20,9 @@ CCalcCluster::CCalcCluster(CParameter* mPara)
 :CCalcModeStruct(mPara)
 {
     CATAZJUT::CConfigurationBase* temp = new CATAZJUT::CConfigurationBase(mPara);
+
+    for(size_t i=0;i<mPara->;i++)
+        this->m_PopuPeriodicFramework.push_back(new CATAZJUT::CPeriodicFramework(*temp));
 
     this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(*temp);
      // In this situation, this->m_pPeriodicFramework->m_pUnitCell is empty pointer NULL;
@@ -48,7 +53,6 @@ void CCalcCluster::Initialization(const std::string& mth)
 /*
     e.g.:   mth = C10 N S10        // delimiter = blank " "
 */
-    std::vector<std::pair<std::string,size_t>> chemicalFormula;
     //dealwith chemical formula by blank
     std::string str=mth;
     std::vector<std::string> vecStr;
@@ -68,7 +72,7 @@ void CCalcCluster::Initialization(const std::string& mth)
             ChemicalStr.second = 1;
         else
             ChemicalStr.second = std::stoi(str);
-        chemicalFormula.push_back(ChemicalStr);
+        this->chemicalFormula.push_back(ChemicalStr);
     }
 
 
@@ -78,7 +82,7 @@ void CCalcCluster::Initialization(char* mth)
      std::string tmp(mth);
      this->Initialization(tmp);
 }
-void CCalcCluster::Initialization(const CATAZJUT::CConfigurationBase& mth)  // initialize from exit
+void CCalcCluster::Initialization(const std::vector<std::string>& inputfiles)  // initialize from exit
 {
 
 }
@@ -90,9 +94,7 @@ void CCalcCluster::RandomBuildFromChemicalFormula(std::vector<std::pair<std::str
         res.push_back(new CATAZJUT::CElement(mht[i].first));
         atom_Sum = atom_Sum + mht[i].second;
      }
-     util::Vector3 polar_coord, basic_coord;
-     util::Point3 coordinate;
-     double cosTheta,sinTheta,cosPhi,sinPhi;
+
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
          basic_coord<< std::pow(atom_Sum,1.0/3),180.0,360.0;
@@ -100,7 +102,7 @@ void CCalcCluster::RandomBuildFromChemicalFormula(std::vector<std::pair<std::str
          for(size_t i=0;i<mht.size();i++)
             for(size_t j=0;j<mht[i].second;j++){
                     // using polar coordinate to predict it
-                polar_coord = util::Vector3::Random().normalized() * basic_coord.transpose();
+                polar_coord =basic_coord.cwiseProduct(util::Vector3::Random().normalized());
                    // transfer polar coordinate to cartesian coordinate.
                 cosTheta= std::cos(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
                 sinTheta= std::sin(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
@@ -109,6 +111,8 @@ void CCalcCluster::RandomBuildFromChemicalFormula(std::vector<std::pair<std::str
                 coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
                 new_Struct->addAtom(mht[i].first,coordinate);
             }
+        new_Struct->perceiveBonds();
+        this->m_PopuPeriodicFramework.push_back(new_Struct);
      }else if(cluster_type==2){  //pure nonmetal
 
      }else if(cluster_type==3){   //pure mixed nonmetal
@@ -134,6 +138,59 @@ size_t CCalcCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
         return 3;
     return 0;
 }
+void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
+{
+    util::Vector3 polar_coord, basic_coord;
+    util::Point3 coordinate;
+    double cosTheta,sinTheta,cosPhi,sinPhi;
 
+    double covalent_Radius=0.0;
+
+    size_t atom_Sum=0;
+    for(size_t i=0;i<this->chemicalFormula.size();i++){
+        covalent_Radius = covalent_Radius + (new CATAZJUT::CElement(this->chemicalFormula[i].first))->covalentRadius();
+        atom_Sum = atom_Sum + this->chemicalFormula[i].second;
+    }
+    // clear all atoms and all bonds;
+    predict_struct->clear();
+    covalent_Radius = covalent_Radius/atom_Sum;
+    double bondrange = 2*covalent_Radius*(m_pParameter->bondToleranceFactor.first + \
+                                          m_pParameter->bondToleranceFactor.second)*0.5;
+    // determine:  radius, theta, Phi
+    basic_coord<< bondrange*std::pow(atom_Sum,1.0/3),180.0,360.0;
+    for(size_t i=0;i<mht.size();i++)
+        for(size_t j=0;j<mht[i].second;j++){
+                    // using polar coordinate to predict it
+            polar_coord =basic_coord.cwiseProduct(new util::CRandomgenerator()->randomVector01(i*j));
+                   // transfer polar coordinate to cartesian coordinate.
+            cosTheta= std::cos(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
+            sinTheta= std::sin(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
+            cosPhi = std::cos(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
+            sinPhi = std::sin(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
+            coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
+            predict_struct->addAtom(this->chemicalFormula[i].first,coordinate);
+        }
+    predict_struct->perceiveBonds();
+}
+void CCalcCluster::eliminateCloseContacts(double distanceCutOff=1.0)
+{
+    util::Vector3 vect;
+    double eps=0.01;
+    bool modifiedbol=true;
+    while(modifiedbol)
+    {
+       modifiedbol=false;
+       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms()){
+          foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
+            if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
+                vect = atom_m->position() - atom_s->position();
+                vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
+                this->m_pAdsorbMolecule->moveBy(vect);
+                modifiedbol=true;
+            }
+          }
+       }
+    }
+}
 
 }
