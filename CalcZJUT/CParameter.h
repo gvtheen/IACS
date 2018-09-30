@@ -34,35 +34,50 @@ class CParameter
         std::string sysName;
         std::vector<std::string>   runCmd;
 
-        std::vector<std::pair<std::string,std::string>> excludeBond;
+        std::vector<std::pair<std::string*,std::string*>> excludeBond;
         std::pair<double,double> bondToleranceFactor;
         SIMULATION_MODE simulationMode;
         EVALUATOR_CRIT  evaluatorCriterion;
-
+        // for supported catalyst
         std::string supportStructFile;
         std::string adsorbentStructFile;
         std::string adso_supp_Struct;
+        // for pure cluster
+        std::string cluster_Formula;
+        std::vector<std::string*> cluster_Input_File;
 
         std::string output_struct_format;
     protected:
+        // system command
         void setSysName(std::string);
+        void setRunCmd(std::string);
+        void setSimulationMode(std::string);
+        void setEvaluator_Code(std::string);
+        void setEvaluator_Criterion(std::string);
+        // structure command
+        void setBond_Tolerance_Factor(std::string);
+        void setExclude_Bond(std::string);
+        // GA parameters
         void setPopSize(std::string);
         void setPm(std::string);
         void setPc(std::string);
         void setGenNum(std::string);
-        void setRunCmd(std::string);
-        void setBond_Tolerance_Factor(std::string);
-        void setExclude_Bond(std::string);
-        void setEvaluator_Code(std::string);
-        void setEvaluator_Criterion(std::string);
-        void setSimulationMode(std::string);
         void setScaling_Mode(std::string);
         void setMutation_Mode(std::string);
         void setGene_Code(std::string);
         void setCross_Mode(std::string);
         void setSelect_Mode(std::string);
         void setGene_Formation_Mode(std::string);
+        //
+        void setSupport_Structure(std::string);
+        void setAdsorbent_Structure(std::string);
+        void setAdsorbent_Support_Structure(std::string);
+        void setCluster_Formula(std::string);
+        void setCluster_Input_File(std::string);
+
         void setOutput_struct_format(std::string);
+
+    protected:
 
         bool checkIsValidParameters();
 

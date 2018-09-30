@@ -172,24 +172,36 @@ void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
         }
     predict_struct->perceiveBonds();
 }
-void CCalcCluster::eliminateCloseContacts(double distanceCutOff=1.0)
+void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
+{
+
+}
+void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff=1.0)
 {
     util::Vector3 vect;
-    double eps=0.01;
+    util::Point3  center_P;
+    double eps=0.1;
     bool modifiedbol=true;
     while(modifiedbol)
     {
        modifiedbol=false;
-       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms()){
-          foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
-            if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
-                vect = atom_m->position() - atom_s->position();
-                vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
-                this->m_pAdsorbMolecule->moveBy(vect);
+       // get center pointer of structure
+       center_P = curr_struct->center();
+
+       foreach(CATAZJUT::CAtom* atom_s, curr_struct->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms())
+            if( curr_struct->distance(atom_m,atom_s) < distanceCutOff ){
+                if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm ){
+                    vect = atom_m->position() - atom_s->position();
+                    vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
+                    curr_struct->moveAtom(atom_m,vect);
+                }else{
+                    vect = atom_s->position() - atom_m->position();
+                    vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
+                    curr_struct->moveAtom(atom_s,vect);
+                }
                 modifiedbol=true;
             }
-          }
-       }
     }
 }
 

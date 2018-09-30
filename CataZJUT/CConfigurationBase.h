@@ -136,9 +136,10 @@ class CConfigurationBase
         double bondAngle(const CAtom *a, const CAtom *b, const CAtom *c);
         double torsionAngle(const CAtom *a, const CAtom *b, const CAtom *c, const CAtom *d);
         double wilsonAngle(const CAtom *a, const CAtom *b, const CAtom *c, const CAtom *d);
-        void setCenter(const Point3 &position);
-        void setCenter(double x, double y, double z);
+        void   setCenter(const Point3 &position);
+        void   setCenter(double x, double y, double z);
         Point3 center();
+        void   moveAtom(CAtom*a, Point3);
         //
         void setCoordinateType(const CATAZJUT::DEFINED::CoordinateType);
         CATAZJUT::DEFINED::CoordinateType coordinateType()const;
@@ -172,10 +173,10 @@ class CConfigurationBase
         friend class CALCZJUT::CCalcGaussian;
         friend class CALCZJUT::CCalcLammps;
 
-        mutable CCartesianCoordinates     *m_pCartesian;
-        std::vector<CElement>      m_Element;         // contain the chemical property of all atoms
-        std::vector<CAtom*>        m_Atom;            // contain the behavior of all atoms
-        CBondTolerance            *m_pBondEvaluator;   //
+        mutable CCartesianCoordinates       *m_pCartesian;
+        std::vector<CElement>                m_Element;          // contain the chemical property of all atoms
+        std::vector<CAtom*>                  m_Atom;             // contain the behavior of all atoms
+        CBondTolerance                      *m_pBondEvaluator;   //
         // type of coordinate
         CATAZJUT::DEFINED::CoordinateType    m_CoordinateType;
         // type of dimensional

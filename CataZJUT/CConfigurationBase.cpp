@@ -694,8 +694,11 @@ void CConfigurationBase::setConstraintBit(const Bitset& othrBit)
 }
 CFractionCoordinates* CConfigurationBase::Fractioncoordinates()
 {
-   //nothing
+    //nothing is needed to be done.
 }
-
+void CConfigurationBase::moveAtom(CAtom* atom, Point3 vect)
+{
+    atom->SetPosition(atom->position()+vect);
+}
 
 }

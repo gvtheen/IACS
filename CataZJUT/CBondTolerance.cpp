@@ -44,7 +44,7 @@ CBondTolerance::CBondTolerance(CConfigurationBase* curConfig,double minF,double 
 {
 
 }
-CBondTolerance::CBondTolerance(CConfigurationBase* curConfig,std::vector<std::pair<std::string,std::string>> excludebond)
+CBondTolerance::CBondTolerance(CConfigurationBase* curConfig,std::vector<std::pair<std::string*,std::string*>> excludebond)
   :m_pConfiguration(curConfig),m_pExcludeBond(excludebond)
 {
    lower_tolerance_factor = 0.6;
@@ -180,21 +180,15 @@ bool CBondTolerance::isExcludeBond(const std::string& e1,const std::string& e2)
     if(m_pExcludeBond.size()==0)
         return false;
 
-    std::vector<std::pair<std::string,std::string>>::iterator iter;
-    for(iter=m_pExcludeBond.begin();iter!=m_pExcludeBond.end();iter++)
-       if((iter->first==e1 && iter->second==e2) || \
-          (iter->first==e2 && iter->second==e1) )
+    for(size_t i=0;i<m_pExcludeBond.size();i++)
+       if( (*(m_pExcludeBond[i].first)==e1 && *(m_pExcludeBond[i].second)==e2 ) || \
+           (*(m_pExcludeBond[i].first)==e2 && *(m_pExcludeBond[i].second)==e1 ) )
               return true;
     return false;
 }
 bool CBondTolerance::isExcludeBond(CElement& e1,CElement& e2)
 {
-    std::vector<std::pair<std::string,std::string>>::iterator iter;
-    for(iter=m_pExcludeBond.begin();iter!=m_pExcludeBond.end();iter++)
-       if((iter->first==e1.symbol() && iter->second==e2.symbol()) || \
-          (iter->first==e2.symbol() && iter->second==e1.symbol()) )
-              return true;
-    return false;
+    return isExcludeBond(e1.symbol(),e2.symbol());
 }
 void CBondTolerance::setTolerancefactor(std::pair<double,double> &mht)
 {
@@ -215,7 +209,7 @@ void CBondTolerance::setTolerancefactor(const double minV,const double maxV)
         m_pBondType[i]->m_MaxBondLength = vdw_12*this->upper_tolerance_factor;
     }
 }
-void CBondTolerance::setExcludeBond(std::vector<std::pair<std::string,std::string>> tmp)
+void CBondTolerance::setExcludeBond(std::vector<std::pair<std::string*,std::string*>>& tmp)
 {
     this->m_pExcludeBond.insert(m_pExcludeBond.end(),tmp.begin(),tmp.end());
 }

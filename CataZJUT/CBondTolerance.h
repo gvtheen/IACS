@@ -15,7 +15,7 @@ class CBondTolerance
 {
     public:
         CBondTolerance(CConfigurationBase*);
-        CBondTolerance(CConfigurationBase*,std::vector<std::pair<std::string,std::string>>);
+        CBondTolerance(CConfigurationBase*,std::vector<std::pair<std::string*,std::string*>>);
         CBondTolerance(CConfigurationBase*,double,double);
 
         CBondTolerance(CBondTolerance&other);
@@ -23,7 +23,7 @@ class CBondTolerance
         //element of bond
         void addElement(const CElement&);
         void removeElement(CElement&);
-        void setExcludeBond(std::vector<std::pair<std::string,std::string>>);
+        void setExcludeBond(std::vector<std::pair<std::string*,std::string*>>&);
         //bond property
         int IsExistBond(const std::string&,const std::string&);
 
@@ -45,7 +45,7 @@ class CBondTolerance
         bool isExcludeBond(CElement& Elem_1,CElement& Elem_2);
     private:
         CConfigurationBase*        m_pConfiguration;
-        std::vector<std::pair<std::string,std::string>>  m_pExcludeBond;
+        std::vector<std::pair<std::string*,std::string*>>  m_pExcludeBond;
         double lower_tolerance_factor; //BondCriteria
         double upper_tolerance_factor;
 
