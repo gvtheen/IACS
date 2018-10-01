@@ -1,5 +1,6 @@
 #include <boost/algorithm/string.hpp>
 #include <string>
+#include <strings.h>
 #include <math.h>
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CCalcCluster.h"
@@ -15,6 +16,13 @@
 #include "../Util/utilFunction.h"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
+#include "Cios.h"
+#include "CIOMol.h"
+#include "CIOCar.h"
+#include "CIOGjf.h"
+#include "CIOPoscar.h"
+
+
 using util::Log;
 
 namespace CALCZJUT{
@@ -90,11 +98,30 @@ void CCalcCluster::Initialization(const std::vector<std::string*>& inputfiles)  
 {
    std::string str;
    std::vector<std::string> vecStr;
+   Cios* inputIO;
+   size_t pos=0;
    for(size_t i=0;i<inputfiles.size();i++){
-      str=*(inputfiles[i]);
-      boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
-
+       str=*(inputfiles[i]);
+       boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
+       if(strcasecmp(vecStr.c_str(),"gjf"))
+          inputIO = new CIOGjf(this->m_PopuPeriodicFramework[pos++]);
+       else if(strcasecmp(vecStr.c_str(),"car"))
+          inputIO = new CIOCar(this->m_PopuPeriodicFramework[pos++]);
+       else if(strcasecmp(vecStr.c_str(),"mol"))
+          inputIO = new CIOMol(this->m_PopuPeriodicFramework[pos++]);
+       else if(strcasecmp(vecStr.c_str(),"poscar"))
+          inputIO = new CIOPoscar(this->m_PopuPeriodicFramework[pos++]);
+       else{
+          Log::Error<<vecStr[i] << " file is not supported by cluster model! Initialization_CCalcCluster\n";
+          boost::throw_exception(std::runtime_error(vecStr[i]+ " file is not supported by cluster model! Initialization_CCalcCluster!"));
+       }
+       // read structure and save m_PopuPeriodicFramework[pos++]
+       inputIO->input(str);
    }
+   this->chemicalFormula= *(m_PopuPeriodicFramework[0]->composition());
+
+   for(size_t i=pos;i<this->m_pParameter->GaParameter()->PopNum();i++)
+      RandomBuildFromChemicalFormula(this->m_PopuPeriodicFramework[i]);
 }
 void CCalcCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct)
 {
@@ -104,10 +131,9 @@ void CCalcCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* 
         res.push_back(new CATAZJUT::CElement(chemicalFormula[i].first));
         atom_Sum = atom_Sum + chemicalFormula[i].second;
      }
-
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
-
+       spherePredict(predict_struct);
      }else if(cluster_type==2){  //pure nonmetal
 
      }else if(cluster_type==3){   //pure mixed nonmetal
