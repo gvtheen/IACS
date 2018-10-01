@@ -38,11 +38,12 @@ class CCalcCluster:public CCalcModeStruct
 
         void Initialization(const std::string& chemicalformulaStr);          // initialize from chemical formula
         void Initialization(const char* chemicalformulaStr);                 // initialize from chemical formula
-        void Initialization(const std::vector<std::string>& inputfiles);     // initialize from exit structure
+        void Initialization(const std::vector<std::string*>& inputfiles);     // initialize from exit structure
 
     protected:
         void RandomBuildFromChemicalFormula(std::vector<std::pair<std::string,size_t>> mth);
         void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
+        void eliminateFragment(CATAZJUT::CPeriodicFramework*);
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
 
         //predicting methods: sphere,

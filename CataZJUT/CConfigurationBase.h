@@ -129,6 +129,7 @@ class CConfigurationBase
         CFragment* fragmentForAtom(const CAtom *atom);
         FragmentRange fragments();
         CFragment* fragment(size_t index);
+        size_t fragmentNum();
         void setFragmentsPerceived(bool perceived);
         bool fragmentsPerceived()const;
 

@@ -5,8 +5,10 @@
 #include <vector>
 
 #include "../Util/Bitset.h"
+#include "../Util/Point-Vector.h"
 
 using util::Bitset;
+using util::Point3;
 
 namespace CATAZJUT{
 
@@ -39,6 +41,8 @@ class CFragment
        std::vector<CBond *> bonds() const;
        size_t bondCount() const;
        bool contains(const CBond *bond) const;
+       std::vector<Point3> coordinates() const;
+       void move(const Vect3&);
 
     protected:
 
@@ -46,6 +50,7 @@ class CFragment
         CConfigurationBase*  m_pConfiguration;
         Bitset  m_bitset;
 };
+
 }
 #include "CFragment_sub.h"
 #endif // CFRAGMENT_H

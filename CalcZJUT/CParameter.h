@@ -47,6 +47,12 @@ class CParameter
         std::vector<std::string*> cluster_Input_File;
 
         std::string output_struct_format;
+
+//        size_t PopSize()const;
+//        double Pm()const;
+//        double Pc()const;
+//        size_t GeneNum();
+
     protected:
         // system command
         void setSysName(std::string);

@@ -33,10 +33,10 @@ class CSphere
         size_t maxDist(Point3);
         bool checkPointIs(const Point3&,const Point3&);
     private:
-       CConfigurationBase *m_pConfiguration;
+        CConfigurationBase *m_pConfiguration;
         //sphere (x-x0)**2 + (y-y0)**2 + (z-z0)**2 =R0**2;
         // x0=m_Equation[0]; y0=m_Equation[1];z0=m_Equation[2];R=m_Equation[3]
-       Eigen::Vector4d m_Equation;
+        Eigen::Vector4d m_Equation;
 };
 
 

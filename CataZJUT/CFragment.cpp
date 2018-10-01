@@ -39,7 +39,17 @@ Bitset CFragment::bitSet()const
 {
     return this->m_bitset;
 }
-
-
+std::vector<Point3> CFragment::coordinates() const
+{
+    std::vector<Point3> coordinate_res;
+    foreach(CAtom* atom, atoms())
+        coordinate_res.push_back(atom->position());
+    return coordinate_res;
+}
+void CFragment::move(const Vect3& vect_R)
+{
+    foreach(CAtom* atom, atoms())
+       atom->SetPosition( atom->position() + vect_R );
+}
 
 }

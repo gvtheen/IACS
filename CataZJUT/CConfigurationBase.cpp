@@ -4,7 +4,7 @@
 #include <sstream>
 #include "CConfigurationBase.h"
 #include "CConfigurationBase_sub.h"
-#include "foreach.h"
+#include "../Util/foreach.h"
 #include "CAtom.h"
 #include "CBond.h"
 #include "CElement.h"
@@ -535,6 +535,7 @@ void CConfigurationBase::perceiveFragments()
         if(pos == Bitset::npos)
             break;
     }
+    setFragmentsPerceived(true);
 }
 bool CConfigurationBase::isFragments(std::vector<size_t> *indexAtom)
 {
@@ -598,7 +599,7 @@ CConfigurationBase::FragmentRange CConfigurationBase::fragments()
 {
     if(fragmentsPerceived()==false)
        perceiveFragments();
-    setFragmentsPerceived(true);
+    //setFragmentsPerceived(true);
     return boost::make_iterator_range(m_pData->fragments.begin(),m_pData->fragments.end());
 }
 CFragment* CConfigurationBase::fragment(size_t index)
@@ -619,6 +620,12 @@ void CConfigurationBase::setFragmentsPerceived(bool perceived)
         m_pData->fragments.clear();
     }
     m_pData->fragmentsPerceived = perceived;
+}
+size_t CConfigurationBase::fragmentNum()
+{
+    if(fragmentsPerceived()==false)
+        perceiveFragments();
+    return m_pData->fragments.size();
 }
 
 bool CConfigurationBase::fragmentsPerceived()const
@@ -700,5 +707,14 @@ void CConfigurationBase::moveAtom(CAtom* atom, Point3 vect)
 {
     atom->SetPosition(atom->position()+vect);
 }
+
+
+
+
+
+
+
+
+
 
 }

@@ -7,11 +7,14 @@
 #include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CElement.h"
 #include "../Util/log.hpp"
+#include "../Util/foreach.h"
 #include "../Util/Bitset.h"
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
+#include "../CataZJUT/CFragment.h"
+#include "../Util/utilFunction.h"
 #include "../Util/CRandomgenerator.h"
-
+#include "../GaZJUT/CGaparameter.h"
 using util::Log;
 
 namespace CALCZJUT{
@@ -21,7 +24,7 @@ CCalcCluster::CCalcCluster(CParameter* mPara)
 {
     CATAZJUT::CConfigurationBase* temp = new CATAZJUT::CConfigurationBase(mPara);
 
-    for(size_t i=0;i<mPara->;i++)
+    for(size_t i=0;i<mPara->GaParameter()->PopNum();i++)
         this->m_PopuPeriodicFramework.push_back(new CATAZJUT::CPeriodicFramework(*temp));
 
     this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(*temp);
@@ -74,7 +77,8 @@ void CCalcCluster::Initialization(const std::string& mth)
             ChemicalStr.second = std::stoi(str);
         this->chemicalFormula.push_back(ChemicalStr);
     }
-
+    for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++)
+        RandomBuildFromChemicalFormula(this->m_PopuPeriodicFramework[i]);
 
 }
 void CCalcCluster::Initialization(char* mth)
@@ -82,37 +86,28 @@ void CCalcCluster::Initialization(char* mth)
      std::string tmp(mth);
      this->Initialization(tmp);
 }
-void CCalcCluster::Initialization(const std::vector<std::string>& inputfiles)  // initialize from exit
+void CCalcCluster::Initialization(const std::vector<std::string*>& inputfiles)  // initialize from exit
 {
+   std::string str;
+   std::vector<std::string> vecStr;
+   for(size_t i=0;i<inputfiles.size();i++){
+      str=*(inputfiles[i]);
+      boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
 
+   }
 }
-void CCalcCluster::RandomBuildFromChemicalFormula(std::vector<std::pair<std::string,size_t>> mht)
+void CCalcCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct)
 {
      std::vector<CATAZJUT::CElement*> res;
      size_t atom_Sum=0;
-     for(size_t i=0;i<mht.size();i++){
-        res.push_back(new CATAZJUT::CElement(mht[i].first));
-        atom_Sum = atom_Sum + mht[i].second;
+     for(size_t i=0;i<chemicalFormula.size();i++){
+        res.push_back(new CATAZJUT::CElement(chemicalFormula[i].first));
+        atom_Sum = atom_Sum + chemicalFormula[i].second;
      }
 
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
-         basic_coord<< std::pow(atom_Sum,1.0/3),180.0,360.0;
-         CATAZJUT::CPeriodicFramework* new_Struct = new CATAZJUT::CPeriodicFramework(this->m_pParameter);
-         for(size_t i=0;i<mht.size();i++)
-            for(size_t j=0;j<mht[i].second;j++){
-                    // using polar coordinate to predict it
-                polar_coord =basic_coord.cwiseProduct(util::Vector3::Random().normalized());
-                   // transfer polar coordinate to cartesian coordinate.
-                cosTheta= std::cos(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
-                sinTheta= std::sin(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
-                cosPhi = std::cos(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
-                sinPhi = std::sin(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
-                coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
-                new_Struct->addAtom(mht[i].first,coordinate);
-            }
-        new_Struct->perceiveBonds();
-        this->m_PopuPeriodicFramework.push_back(new_Struct);
+
      }else if(cluster_type==2){  //pure nonmetal
 
      }else if(cluster_type==3){   //pure mixed nonmetal
@@ -170,7 +165,9 @@ void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
             coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
             predict_struct->addAtom(this->chemicalFormula[i].first,coordinate);
         }
-    predict_struct->perceiveBonds();
+    //predict_struct->perceiveBonds(); // it is not necessary to perform it.
+    this->eliminateFragment(predict_struct);
+    this->eliminateCloseContacts(predict_struct);
 }
 void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
 {
@@ -204,5 +201,42 @@ void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_str
             }
     }
 }
+void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
+{
+    if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure
+         curr_struct->perceiveFragments();
+    if( curr_struct->fragmentNum() > 1 ){
+        size_t maxCount=0;
+        CATAZJUT::CFragment* mainFragment;
+        foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments()){
+            if(maxCount<fragment_s->atomCount()){
+                maxCount=fragment_s->atomCount();
+                mainFragment=fragment_s;
+            }
+        }
+        //
+        Matrix mainsphereEquation4(4,1), othersphereEquation4(4,1);
+        Point3 maincenter,othercenter;
+        double mainR, otherR, differ;
+        Vector3 differVect;
+        //main center, radius of the largest fragment.
+        //all other fragments move toward it.
+        mainsphereEquation4 = util::SphereEquationFromPoints(mainFragment->coordinates());
+        maincenter<<mainsphereEquation4[0],mainsphereEquation4[1],mainsphereEquation4[2];
+        mainR=mainsphereEquation4[3];
+        foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments())
+            if(mainFragment!=fragment_s){
+               othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
+               othercenter<<othersphereEquation4[0],othersphereEquation4[1],othersphereEquation4[2];
+               otherR=othersphereEquation4[3];
+               differ = (maincenter-othercenter).norm - mainR - otherR;
+               differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+               fragment_s->move(differVect);
+            }
+    }
+
+}
+
+
 
 }
