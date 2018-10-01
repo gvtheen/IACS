@@ -38,9 +38,7 @@ void CCalcModeStruct::createMoleAdsorb(Bitset & mt)
 }
 void CCalcModeStruct::createStructureAtGene()
 {
-   CATAZJUT::CPeriodicFramework* newStructure= new (CATAZJUT::CPeriodicFramework)(*m_backupPeriodicFramework);
-   m_PopuPeriodicFramework.push_back(newStructure);
-   m_pPeriodicFramework = m_PopuPeriodicFramework[m_PopuPeriodicFramework.size()-1];
+
 }
 void CCalcModeStruct::removeStructureOfGene()
 {

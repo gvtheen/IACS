@@ -103,7 +103,7 @@ void CCalcVASP::init()
         CCalcCluster* cluster = new CCalcCluster(this->m_Parameter);
         m_pIO = new CIOPoscar( cluster->periodicFramework());
         this->m_pCalcModeStruct = cluster;
-        m_pIO->input("POSCAR");
+        //m_pIO->input("POSCAR");
      }
 
     //initialize gene varible

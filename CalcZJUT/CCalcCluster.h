@@ -35,7 +35,7 @@ class CCalcCluster:public CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         std::vector<double>*  getGeneValuefromStruct()const;
         std::vector<GENEVAR>* GeneVarRange();
-
+        void Init();
         void Initialization(const std::string& chemicalformulaStr);          // initialize from chemical formula
         void Initialization(const char* chemicalformulaStr);                 // initialize from chemical formula
         void Initialization(const std::vector<std::string*>& inputfiles);     // initialize from exit structure

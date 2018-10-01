@@ -81,6 +81,10 @@ void CCalc2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
 void CCalc2DSupport::createStructureAtGene()
 {
    CCalcModeStruct::createStructureAtGene();
+   CATAZJUT::CPeriodicFramework* newStructure= new (CATAZJUT::CPeriodicFramework)(*m_backupPeriodicFramework);
+   m_PopuPeriodicFramework.push_back(newStructure);
+   m_pPeriodicFramework = m_PopuPeriodicFramework[m_PopuPeriodicFramework.size()-1];
+
    m_pSupport->setConfiguration(this->periodicFramework());
    m_pAdsorbMolecule->setConfiguration(this->periodicFramework());
 }
