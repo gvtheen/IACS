@@ -5,9 +5,10 @@
 #include <boost/config.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include "Point-Vector.h"
+#include "../CataZJUT/Geometry.h"
 namespace util{
 //
-Matrix SphereEquationFromPoints(std::vector<Point3>& coordinate)
+Matrix SphereEquationFromPoints(const std::vector<Point3>& coordinate)
 {
    double ans  =1e12,eps=1e-12,R,step,res,temp;
 

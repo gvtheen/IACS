@@ -51,20 +51,29 @@ bool CBond::isTerminal() const
 {
     return atom1()->isTerminal()&& atom2()->isTerminal();
 }
-void CBond::setOrder(CBond::BondOrderType order)
+void CBond::setBondOrder(CBond::BondOrderType order)
 {
     m_pConfiguration->m_pData->bondOrders[this->m_index]=order;
 }
-CBond::BondOrderType CBond::order() const
+CBond::BondOrderType CBond::bondOrder() const
 {
     return m_pConfiguration->m_pData->bondOrders[this->m_index];
 }
-bool is(CBond::BondOrderType order) const
+bool CBond::is(CBond::BondOrderType order) const
 {
     if(m_pConfiguration->m_pData->bondOrders[this->m_index] == order)
         return true;
     else
         return false;
 }
+//other atom <------- atom
+Vector3 CBond::bondVector(const CAtom* atom)const
+{
+    if(this->contains(atom)==false)
+        return Vector3(0,0,0);
+    return otherAtom(atom)->position() - atom->position();
+}
+
+
 
 }

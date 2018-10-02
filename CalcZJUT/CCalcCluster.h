@@ -41,7 +41,7 @@ class CCalcCluster:public CCalcModeStruct
         void Initialization(const std::vector<std::string*>& inputfiles);     // initialize from exit structure
 
     protected:
-        void RandomBuildFromChemicalFormula(std::vector<std::pair<std::string,size_t>> mth);
+        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut);
         void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
         void eliminateFragment(CATAZJUT::CPeriodicFramework*);
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);

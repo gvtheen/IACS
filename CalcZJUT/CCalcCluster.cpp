@@ -1,12 +1,14 @@
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <string>
 #include <strings.h>
+#include <cstring>
 #include <math.h>
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CCalcCluster.h"
 #include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
-#include "../CataZJUT/CElement.h"
+#include "../CataZJUT/CAtom.h"
 #include "../Util/log.hpp"
 #include "../Util/foreach.h"
 #include "../Util/Bitset.h"
@@ -16,6 +18,7 @@
 #include "../Util/utilFunction.h"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
+#include "../CataZJUT/CElement.h"
 #include "Cios.h"
 #include "CIOMol.h"
 #include "CIOCar.h"
@@ -24,6 +27,8 @@
 
 
 using util::Log;
+using util::Point3;
+using util::Matrix;
 
 namespace CALCZJUT{
 
@@ -102,7 +107,7 @@ void CCalcCluster::Initialization(const std::string& mth)
         RandomBuildFromChemicalFormula(this->m_PopuPeriodicFramework[i]);
 
 }
-void CCalcCluster::Initialization(char* mth)
+void CCalcCluster::Initialization(const char* mth)
 {      // initialize from chemical formula
      std::string tmp(mth);
      this->Initialization(tmp);
@@ -116,13 +121,13 @@ void CCalcCluster::Initialization(const std::vector<std::string*>& inputfiles)  
    for(size_t i=0;i<inputfiles.size();i++){
        str=*(inputfiles[i]);
        boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
-       if(strcasecmp(vecStr.c_str(),"gjf"))
+       if(boost::iequals(vecStr[1],"gjf"))
           inputIO = new CIOGjf(this->m_PopuPeriodicFramework[pos++]);
-       else if(strcasecmp(vecStr.c_str(),"car"))
+       else if(boost::iequals(vecStr[1],"car"))
           inputIO = new CIOCar(this->m_PopuPeriodicFramework[pos++]);
-       else if(strcasecmp(vecStr.c_str(),"mol"))
+       else if(boost::iequals(vecStr[1],"mol"))
           inputIO = new CIOMol(this->m_PopuPeriodicFramework[pos++]);
-       else if(strcasecmp(vecStr.c_str(),"poscar"))
+       else if(boost::iequals(vecStr[1],"poscar")==0)
           inputIO = new CIOPoscar(this->m_PopuPeriodicFramework[pos++]);
        else{
           Log::Error<<vecStr[i] << " file is not supported by cluster model! Initialization_CCalcCluster\n";
@@ -193,10 +198,11 @@ void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
                                           m_pParameter->bondToleranceFactor.second)*0.5;
     // determine:  radius, theta, Phi
     basic_coord<< bondrange*std::pow(atom_Sum,1.0/3),180.0,360.0;
-    for(size_t i=0;i<mht.size();i++)
-        for(size_t j=0;j<mht[i].second;j++){
+    util::CRandomgenerator* myRandomgenerator = new util::CRandomgenerator();
+    for(size_t i=0;i<chemicalFormula.size();i++)
+        for(size_t j=0;j<chemicalFormula[i].second;j++){
                     // using polar coordinate to predict it
-            polar_coord =basic_coord.cwiseProduct(new util::CRandomgenerator()->randomVector01(i*j));
+            polar_coord =basic_coord.cwiseProduct(myRandomgenerator->randomVector01(i*j));
                    // transfer polar coordinate to cartesian coordinate.
             cosTheta= std::cos(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
             sinTheta= std::sin(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
@@ -216,12 +222,51 @@ void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
     for(size_t i=0;i<chemicalFormula.size();i++)
       chemicalelement.push_back(std::make_pair(new CATAZJUT::CElement(chemicalFormula[i].first),\
                                                chemicalFormula[i].second));
+    size_t PBlockAtomNum=0;
+    for(size_t i=0;i<chemicalelement.size();i++)
+        if(chemicalelement[i].first->maxCoordinationNum()>1)
+            PBlockAtomNum = PBlockAtomNum + chemicalelement[i].second;
+    Point3 position;
+    for(size_t i=0;i<chemicalelement.size();i++)
+        if(chemicalelement[i].first->maxCoordinationNum()>1)
+            for(size_t j=0;j<chemicalelement[i].second;j++ ){
+                position = 1.20*std::pow(PBlockAtomNum,0.5)*(Point3::Random().normalized());
+                predict_struct->addAtom(chemicalelement[i].first->symbol(),position);
+            }
 
+   predict_struct->perceiveBonds();
+   this->eliminateCloseContacts(predict_struct);
+   this->eliminateFragment(predict_struct);
+   double bondlength;
+   bool isAdd;
+   for(size_t i=0;i<chemicalelement.size();i++)
+      if(chemicalelement[i].first->maxCoordinationNum()<=1){
+         for(size_t j=0;j<chemicalelement[i].second;j++){
+            isAdd=false;
+            foreach(CATAZJUT::CAtom* atom,predict_struct->atoms())
+                if(atom->isBondSaturated() == false){
+                    bondlength = chemicalelement[i].first->covalentRadius() + atom->element().covalentRadius();
+                    predict_struct->addAtom(chemicalelement[i].first->symbol(),atom->position()+bondlength*atom->NewBondingVect());
+                    isAdd=true;
+                    break;
+                }
+            if(!isAdd){
+                position = 1.20*std::pow(PBlockAtomNum,0.5)*(Point3::Random().normalized());
+                predict_struct->addAtom(chemicalelement[i].first->symbol(),position);
+              }
+          }
+      }
+   predict_struct->perceiveBonds();
+   this->eliminateCloseContacts(predict_struct);
+   this->eliminateFragment(predict_struct);
 
-
+   // clear heap space
+   for(size_t i=0;i<chemicalelement.size();i++)
+       delete chemicalelement[i].first;
+   chemicalelement.erase();
 
 }
-void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff=1.0)
+void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
 {
     util::Vector3 vect;
     util::Point3  center_P;
@@ -236,7 +281,7 @@ void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_str
        foreach(CATAZJUT::CAtom* atom_s, curr_struct->atoms())
           foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms())
             if( curr_struct->distance(atom_m,atom_s) < distanceCutOff ){
-                if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm ){
+                if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm() ){
                     vect = atom_m->position() - atom_s->position();
                     vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
                     curr_struct->moveAtom(atom_m,vect);
@@ -270,14 +315,14 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
         //main center, radius of the largest fragment.
         //all other fragments move toward it.
         mainsphereEquation4 = util::SphereEquationFromPoints(mainFragment->coordinates());
-        maincenter<<mainsphereEquation4[0],mainsphereEquation4[1],mainsphereEquation4[2];
-        mainR=mainsphereEquation4[3];
+        maincenter<<mainsphereEquation4(0,0),mainsphereEquation4(1,0),mainsphereEquation4(2,0);
+        mainR=mainsphereEquation4(3,0);
         foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments())
             if(mainFragment!=fragment_s){
                othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
-               othercenter<<othersphereEquation4[0],othersphereEquation4[1],othersphereEquation4[2];
-               otherR=othersphereEquation4[3];
-               differ = (maincenter-othercenter).norm - mainR - otherR;
+               othercenter<<othersphereEquation4(0,0),othersphereEquation4(1,0),othersphereEquation4(2,0);
+               otherR=othersphereEquation4(3,0);
+               differ = (maincenter-othercenter).norm() - mainR - otherR;
                differVect= (differ-1.5)*(maincenter-othercenter).normalized();
                fragment_s->move(differVect);
             }

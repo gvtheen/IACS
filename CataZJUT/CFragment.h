@@ -9,6 +9,7 @@
 
 using util::Bitset;
 using util::Point3;
+using util::Vector3;
 
 namespace CATAZJUT{
 
@@ -42,7 +43,7 @@ class CFragment
        size_t bondCount() const;
        bool contains(const CBond *bond) const;
        std::vector<Point3> coordinates() const;
-       void move(const Vect3&);
+       void move(const Vector3&);
 
     protected:
 

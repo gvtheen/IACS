@@ -10,6 +10,7 @@
 #include "CElement.h"
 #include "CCoordinateSet.h"
 #include "CBondPrivate.h"
+#include "CBond.h"
 #include "../GaZJUT/GaUtilityFunction.h"
 namespace CATAZJUT{
 /*
@@ -213,5 +214,28 @@ void CBondTolerance::setExcludeBond(std::vector<std::pair<std::string*,std::stri
 {
     this->m_pExcludeBond.insert(m_pExcludeBond.end(),tmp.begin(),tmp.end());
 }
+void CBondTolerance::setBondOrderType(CBond* mthBond)
+{
+    if(mthBond->atom1()->maxCoordinationNum()==1 || mthBond->atom1()->maxCoordinationNum()==1)
+        mthBond->setBondOrder(CBond::Single);
+    else if(mthBond->atom1()->element().isTransitionMetal() || mthBond->atom2()->element().isTransitionMetal() )
+        mthBond->setBondOrder(CBond::Single);
+    else if(mthBond->atom1()->element().isPblockElement()&& mthBond->atom2()->element().isPblockElement()){
+        double coventL1,coventL2;
+        coventL1=mthBond->atom1()->CovalentRadius();
+        coventL2=mthBond->atom2()->CovalentRadius();
+        if(mthBond->Length() > (coventL1+coventL2-0.2))
+            mthBond->setBondOrder(CBond::Single);
+        else if(mthBond->Length()<=(coventL1+coventL2-0.2) && (mthBond->Length()>(coventL1+coventL2-0.3)))
+            mthBond->setBondOrder(CBond::Double);
+        else
+            mthBond->setBondOrder(CBond::Triple);
+    }else
+        mthBond->setBondOrder(CBond::Single);
+
+}
+
+
+
 
 }

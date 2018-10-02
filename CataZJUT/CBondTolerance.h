@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include<map>
+#include "CBond.h"
 
 namespace CATAZJUT{
 //declare
@@ -40,6 +41,9 @@ class CBondTolerance
         void setTolerancefactor(const double,const double);
         void setTolerancefactor(std::pair<double,double> &mht);
         void OutputTofile(std::string& outfile);
+
+        void setBondOrderType(CBond*);
+
     protected:
         bool isExcludeBond(const std::string&,const std::string&);
         bool isExcludeBond(CElement& Elem_1,CElement& Elem_2);

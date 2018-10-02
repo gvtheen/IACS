@@ -3,7 +3,9 @@
 #include "../Util/Point-Vector.h"
 #include "CElement.h"
 
+
 using util::Point3;
+using util::Vector3;
 
 namespace CATAZJUT{
 
@@ -13,7 +15,7 @@ class CAtom;
 class CBond
 {
     public:
-        enum BondType{
+        enum BondOrderType{
              Single = 1,
              Double = 2,
              Triple = 3,
@@ -37,10 +39,14 @@ class CBond
 
         inline CConfigurationBase* Configuration() const;
         inline size_t index() const;
-
-        void setOrder(BondOrderType order);
-        BondOrderType order() const;
+        // bond order
+        void setBondOrder(BondOrderType order);
+        BondOrderType bondOrder() const;
         bool is(BondOrderType order) const;
+        //bond vector
+
+        Vector3 bondVector(const CAtom*)const;
+
     private:
         friend class CConfigurationBase;
     private:

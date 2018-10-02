@@ -21,7 +21,7 @@ typedef Eigen::Matrix<double, 3, 1> Vector3;
 typedef Eigen::Matrix<float, 3, 1>  Vector3f;
 typedef Eigen::Matrix<double, 3, 1> Vector3d;
 
-typedef Eigen::Matrix<double,3,3>   Circle3D
+typedef Eigen::Matrix<double,3,3>   Circle3D;
 
 //typedef Eigen::Matrix<double, 3, 1> Vector3
 

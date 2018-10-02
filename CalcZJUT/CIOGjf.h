@@ -20,12 +20,12 @@ class CIOGjf:public Cios
         CIOGjf(CATAZJUT::CPeriodicFramework*);
         virtual ~CIOGjf();
 
-        void output(std::string& file);
+        void output(const std::string& file);
          void input(std::string file="");
          Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE);
     protected:
 
-    private
+    private:
         std::vector<std::string> m_Commandline;
         std::vector<int> m_Constranit;  // 0,-1;
 

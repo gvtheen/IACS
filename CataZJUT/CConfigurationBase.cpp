@@ -261,7 +261,7 @@ CConfigurationBase::CoordinateSetRange CConfigurationBase::coordinateSets() cons
 /*
 
 */
-void CConfigurationBase::addAtom(std::string& elementName, Point3& position)
+void CConfigurationBase::addAtom(const std::string& elementName, const Point3& position)
 {
      CElement* newElement =new CElement(elementName);
 
@@ -289,13 +289,13 @@ void CConfigurationBase::addAtom(std::string& elementName, Point3& position)
      else if(m_CoordinateType==CATAZJUT::DEFINED::Cartesian)
         this->coordinates()->append(position);
 }
- void CConfigurationBase::addAtom(std::string& elementName, double& x, double& y, double& z)
+ void CConfigurationBase::addAtom(const std::string& elementName, const double& x, const double& y, const double& z)
  {
      Point3 tempPoint;
      tempPoint<<x,y,z;
      addAtom(elementName,tempPoint);
  }
-void CConfigurationBase::addAtom(std::string& elementName, Point3i& connection,Point3& coordinate)
+void CConfigurationBase::addAtom(const std::string& elementName, const Point3i& connection,const Point3& coordinate)
 {
     CElement* newElement =new CElement(elementName);
     //Check whether new atom lable is valid
@@ -313,7 +313,7 @@ void CConfigurationBase::addAtom(std::string& elementName, Point3i& connection,P
 
     this->Internalcoordinates()->addInternalCoordinates(connection,coordinate);
 }
-void CConfigurationBase::addAtom(std::string& elementName, int atom1, double dist, \
+void CConfigurationBase::addAtom(const std::string& elementName, int atom1, double dist, \
                                   int atom2, double angle, int  atom3, double twist)
 {
      Point3 tempCoord;
@@ -403,7 +403,8 @@ void CConfigurationBase::perceiveBonds()
         for(size_t j=i+1;i<m_Atom.size();j++)
         {
             if(m_pBondEvaluator->IsBond(m_Atom[i],m_Atom[j]) == true)
-                addBond(m_Atom[i],m_Atom[j]);
+                // first generate bond and identify bond order
+                m_pBondEvaluator->setBondOrderType(addBond(m_Atom[i],m_Atom[j]));
         }
 }
 

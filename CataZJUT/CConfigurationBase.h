@@ -66,11 +66,11 @@ class CConfigurationBase
 
         //interface function  from other objects
         //Cartesian coordinate
-        void addAtom(std::string& elementName, Point3& position);
-        void addAtom(std::string& elementName, double& x, double& y, double& z);
+        void addAtom(const std::string& elementName, const Point3& position);
+        void addAtom(const std::string& elementName, const double& x, const double& y, const double& z);
         //Internal Coordinates
-        void addAtom(std::string& elementName, Point3i& connection,Point3& coordinate);
-        void addAtom(std::string& elementName, int atom1=-1, double dist=-1, int atom2=-1, double angle=0.0, int atom3=-1, double twist=0.0);
+        void addAtom(const std::string& elementName, const Point3i& connection,const Point3& coordinate);
+        void addAtom(const std::string& elementName, int atom1=-1, double dist=-1, int atom2=-1, double angle=0.0, int atom3=-1, double twist=0.0);
 
         inline size_t size() const;
         inline bool isEmpty() const;

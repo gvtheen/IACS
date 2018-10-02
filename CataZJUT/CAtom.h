@@ -1,7 +1,6 @@
 #ifndef CATOM_H
 #define CATOM_H
 
-#include "gacata.h"
 #include <vector>
 #include <boost/function.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -12,6 +11,7 @@
 #include "../Util/Point-Vector.h"
 
 using util::Point3;
+using util::Vector3;
 
 namespace CATAZJUT{
 
@@ -74,6 +74,10 @@ class CAtom
         bool isBondedTo(const CElement &element) const;
         bool isTerminal() const;
         bool isTerminalHydrogen() const;
+
+        bool isBondSaturated()const;   // Judge whether bond saturation
+        Vector3 NewBondingVect()const;
+
         CFragment* fragment() const;
 
         enum AtomName{

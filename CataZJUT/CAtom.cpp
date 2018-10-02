@@ -175,7 +175,16 @@ CFragment* CAtom::fragment() const
 {
     return this->m_pConfiguration->fragmentForAtom(this);
 }
-
-
+bool CAtom::isBondSaturated()const
+{
+    return element().maxCoordinationNum() <= bondCount();
+}
+Vector3 CAtom::NewBondingVect()const
+{
+    Vector3 res(0,0,0);
+    foreach(CBond *bond,this->bonds())
+         res = res + (bond->bondVector(this)).normalized();
+    return -1* res.normalized();
+}
 
 }
