@@ -23,9 +23,11 @@ class CCalcModeStruct
         virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
         virtual std::vector<double>*  getGeneValuefromStruct()const =0;
         virtual std::vector<GENEVAR>* GeneVarRange()=0;
+        // only effective for supported catalyst
         virtual void createSupport( const Bitset &);
         virtual void createMoleAdsorb( const Bitset &);
 
+        virtual void init();
         virtual void createStructureAtGene();
         virtual void removeStructureOfGene();
         CATAZJUT::CPeriodicFramework* periodicFramework();

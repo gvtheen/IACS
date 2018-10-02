@@ -57,6 +57,19 @@ std::vector<GENEVAR>* CCalcCluster::GeneVarRange()
 {
 
 }
+void CCalcCluster::init()
+{
+    // perform all initialized work
+    if(this->m_pParameter->cluster_Input_File.size()!=0){
+        this->Initialization(m_pParameter->cluster_Input_File);
+    }else if(this->m_pParameter->cluster_Formula!=""){
+        this->Initialization(m_pParameter->cluster_Formula);
+    }else{
+       Log::Error<< " Chemical formula and structural files is required. init_CCalcCluster!\n";
+       boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. init_CCalcCluster!!\n"));//ERROR TREATMENT;
+    }
+
+}
 void CCalcCluster::Initialization(const std::string& mth)
 {
        // initialize from chemical
@@ -133,7 +146,7 @@ void CCalcCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* 
      }
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
-       spherePredict(predict_struct);
+        spherePredict(predict_struct);
      }else if(cluster_type==2){  //pure nonmetal
 
      }else if(cluster_type==3){   //pure mixed nonmetal
@@ -159,6 +172,7 @@ size_t CCalcCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
         return 3;
     return 0;
 }
+// for metal clusters
 void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
 {
     util::Vector3 polar_coord, basic_coord;
@@ -195,8 +209,16 @@ void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
     this->eliminateFragment(predict_struct);
     this->eliminateCloseContacts(predict_struct);
 }
+// nonmetal compounds
 void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
 {
+    std::vector<std::pair<CATAZJUT::CElement*,size_t>> chemicalelement;
+    for(size_t i=0;i<chemicalFormula.size();i++)
+      chemicalelement.push_back(std::make_pair(new CATAZJUT::CElement(chemicalFormula[i].first),\
+                                               chemicalFormula[i].second));
+
+
+
 
 }
 void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff=1.0)

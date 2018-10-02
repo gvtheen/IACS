@@ -441,6 +441,8 @@ void CConfigurationBase::removeBond(CBond *bond)
 
     m_pData->atomBonds.erase(m_pData->atomBonds.begin()+bond->index());
 
+    m_pData->bondOrders.erase(m_pData->bondOrders.begin()+bond->index());
+
     for(size_t i=bond->index();m_pData->bonds.size();i++)
         m_pData->bonds[i]->m_index--;
 

@@ -26,6 +26,7 @@ public:
     std::vector<std::pair<CAtom*, CAtom*> > bondAtoms;
     std::vector<std::vector<CBond *> > atomBonds;
     std::vector<double> partialCharges;
+    std::vector<CBond::BondOrderType> bondOrders;
     std::vector<boost::shared_ptr<CCoordinateSet> > coordinateSets;
 };
 

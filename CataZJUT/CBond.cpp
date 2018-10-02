@@ -51,6 +51,20 @@ bool CBond::isTerminal() const
 {
     return atom1()->isTerminal()&& atom2()->isTerminal();
 }
-
+void CBond::setOrder(CBond::BondOrderType order)
+{
+    m_pConfiguration->m_pData->bondOrders[this->m_index]=order;
+}
+CBond::BondOrderType CBond::order() const
+{
+    return m_pConfiguration->m_pData->bondOrders[this->m_index];
+}
+bool is(CBond::BondOrderType order) const
+{
+    if(m_pConfiguration->m_pData->bondOrders[this->m_index] == order)
+        return true;
+    else
+        return false;
+}
 
 }

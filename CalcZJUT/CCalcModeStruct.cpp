@@ -46,6 +46,9 @@ void CCalcModeStruct::removeStructureOfGene()
        delete m_PopuPeriodicFramework[i];
    m_PopuPeriodicFramework.clear();
 }
-
+void CCalcModeStruct::init()
+{
+    // nothing to do
+}
 
 }

@@ -732,8 +732,7 @@ size_t CElement::maxCoordinationNum()
 }
 std::string CElement::valentConfigurationStr()
 {
-    std::string str=ChemicalData[m_atomicNumber].ValentStruct;
-    return str;
+    return ChemicalData[m_atomicNumber].ValentStruct;
 }
 
 

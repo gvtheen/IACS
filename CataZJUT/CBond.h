@@ -13,6 +13,12 @@ class CAtom;
 class CBond
 {
     public:
+        enum BondType{
+             Single = 1,
+             Double = 2,
+             Triple = 3,
+             Quadruple = 4
+             };
         CBond(CConfigurationBase*,size_t);
         virtual ~CBond();
 
@@ -31,6 +37,10 @@ class CBond
 
         inline CConfigurationBase* Configuration() const;
         inline size_t index() const;
+
+        void setOrder(BondOrderType order);
+        BondOrderType order() const;
+        bool is(BondOrderType order) const;
     private:
         friend class CConfigurationBase;
     private:
