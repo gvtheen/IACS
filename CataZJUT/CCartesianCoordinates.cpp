@@ -536,6 +536,9 @@ void CCartesianCoordinates::clear()
 {
     m_coordinates.clear();
 }
-
+std::vector<Point3>&  CCartesianCoordinates::coordinates()
+{
+    return this->m_coordinates;
+}
 
 }   //namespace of CATAZJUT

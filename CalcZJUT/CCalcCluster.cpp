@@ -9,6 +9,7 @@
 #include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CAtom.h"
+#include "../CataZJUT/CCartesianCoordinates.h"
 #include "../Util/log.hpp"
 #include "../Util/foreach.h"
 #include "../Util/Bitset.h"
@@ -28,7 +29,7 @@
 
 using util::Log;
 using util::Point3;
-using util::Matrix;
+using util::Vector4;
 
 namespace CALCZJUT{
 
@@ -54,13 +55,26 @@ void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfge
 {
 
 }
-std::vector<double>*  CCalcCluster::getGeneValuefromStruct()const
+void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
 
 }
-std::vector<GENEVAR>* CCalcCluster::GeneVarRange()
+void CCalcCluster::GeneVarRange(std::vector<GENEVAR>& currentGeneVarible)
 {
-
+   double max_radius=0;
+   Vector4 tempVect;
+   for(size_t i=0; this->m_PopuPeriodicFramework.size();i++)
+   {
+      m_PopuPeriodicFramework[i]->setCenter(m_PopuPeriodicFramework[i]->center());
+      // adjust the coordinate original to center point.
+      tempVect=util::SphereEquationFromPoints(m_PopuPeriodicFramework[i]->coordinates()->coordinates());
+      if(max_radius<tempVect(3,0))
+         max_radius=tempVect(3,0);
+   }
+   max_radius = max_radius + 0.50;
+   size_t num = m_PopuPeriodicFramework[0]->size();
+   for(size_t i=0;i<3*num;i++)
+       currentGeneVarible.push_back({-1*max_radius,max_radius,0.001});
 }
 void CCalcCluster::init()
 {
@@ -263,7 +277,7 @@ void CCalcCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_
    // clear heap space
    for(size_t i=0;i<chemicalelement.size();i++)
        delete chemicalelement[i].first;
-   chemicalelement.erase();
+   chemicalelement.clear();
 
 }
 // nonmetal-metal cluster
@@ -313,7 +327,7 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
             }
         }
         //
-        Matrix mainsphereEquation4(4,1), othersphereEquation4(4,1);
+        Vector4 mainsphereEquation4, othersphereEquation4;
         Point3 maincenter,othercenter;
         double mainR, otherR, differ;
         Vector3 differVect;

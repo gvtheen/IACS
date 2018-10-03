@@ -15,8 +15,10 @@
 #include "CPlane.h"
 #include "CBondTolerance.h"
 #include "GaUtilityFunction.h"
+#include  "../Util/Point-Vector.h"
 
-using GAZJUT::ERROR_OUTPUT;
+using util::Log;
+
 namespace CALCZJUT{
 
 
@@ -139,7 +141,7 @@ void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOf
         m_pAdsorbMolecule->rotate(target_p,realValueOfgene[6]);
 
     }else{
-       ERROR_OUTPUT("Lattice Direction is error!","setGeneValueToStruct","CCalc2DSupport");
+       Log::Error<<("Lattice Direction is error! setGeneValueToStruct_CCalc2DSupport");
        boost::throw_exception(std::runtime_error("Lattice Direction is error!! Check the file: Error_information.txt."));
     }
 
@@ -166,45 +168,46 @@ void CCalc2DSupport::eliminateCloseContacts(double distanceCutOff)
        }
     }
 }
-std::vector<double>* CCalc2DSupport::getGeneValuefromStruct()const
+void CCalc2DSupport::getGeneValuefromStruct(std::vector<double>& geneRealValue)
 {
+   geneRealValue.clear();
    return nullptr;
 }
-std::vector<GENEVAR>* CCalc2DSupport::GeneVarRange()
+void CCalc2DSupport::GeneVarRange(std::vector<GENEVAR>& geneVaribleVect)
 {
-    std::vector<GENEVAR>* res= new (std::vector<GENEVAR>);
+    //clear vector!
+    geneVaribleVect.clear();
     //distance of adsorbent on 2d support
-    res->push_back({1.0,2.5,0.01});
+    geneVaribleVect.push_back({1.0,2.5,0.01});
     // a axes displacing
     if(m_latticeDirection==CCalc2DSupport::NONE_DIR)
         IdentifyvacuumLayerDirection();
 
     if(m_latticeDirection == CCalc2DSupport::C_AXIS){
         //c a,b
-        res->push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
-        res->push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
     }else if (m_latticeDirection == CCalc2DSupport::B_AXIS){
         //b c  a
-        res->push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
-        res->push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
         m_latticeDirection = CCalc2DSupport::B_AXIS;
     }else if(m_latticeDirection == CCalc2DSupport::A_AXIS){
         //a b  c
-        res->push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
-        res->push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
     }else{
          ERROR_OUTPUT("It has no vacuum layer!","GeneVarRange","CCalc2DSupport");
          boost::throw_exception(std::runtime_error("It has no vacuum layer!! Check the file: Error_information.txt."));
     }
     //rotation axis
-    res->push_back({-1,1,0.01});
-    res->push_back({-1,1,0.01});
-    res->push_back({-1,1,0.01});
+    geneVaribleVect.push_back({-1,1,0.01});
+    geneVaribleVect.push_back({-1,1,0.01});
+    geneVaribleVect.push_back({-1,1,0.01});
 
     //rotation angle
-    res->push_back({0.0,360.0,2.0});
+    geneVaribleVect.push_back({0.0,360.0,2.0});
 
-    return res;
 
 }
 void CCalc2DSupport::IdentifyvacuumLayerDirection()  //-1: none, 0:a,  1:b  2:c

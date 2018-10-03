@@ -60,7 +60,7 @@ public:
     void moveBy(double x, double y, double z);
     void rotate(const Vector3 &axis, double angle);
     Matrix distanceMatrix() const;
-
+    std::vector<Point3>&  coordinates();
     // derivatives
     boost::array<Vector3, 2> distanceGradient(size_t i, size_t j) const;
     boost::array<Vector3, 3> angleGradient(size_t i, size_t j, size_t k) const;
@@ -85,6 +85,7 @@ public:
     CInternalCoordinates* toInternalCoordinates();
     std::vector<size_t>   CheckConnection(size_t);
     CFractionCoordinates* toFractionCoordinates(CPeriodicFramework*);
+
 
 private:
     std::vector<Point3>        m_coordinates;

@@ -36,8 +36,9 @@ class CCalc2DSupport:public CCalcModeStruct
 
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
-        std::vector<double>*  getGeneValuefromStruct()const;
-        std::vector<GENEVAR>* GeneVarRange();
+        void getGeneValuefromStruct(std::vector<double>&);
+        void GeneVarRange(std::vector<GENEVAR>&);
+
         void createSupport(Bitset &);
         void createMoleAdsorb(Bitset &);
         //overload the father class's function
