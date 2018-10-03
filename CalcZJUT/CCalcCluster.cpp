@@ -151,11 +151,11 @@ void CCalcCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* 
      }
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
-        spherePredict(predict_struct);
+        metalClusterPredict(predict_struct);
      }else if(cluster_type==2){  //pure nonmetal
-
+        nonMetalClusterPredict(predict_struct);
      }else if(cluster_type==3){   //pure mixed nonmetal
-
+        mixedClusterPredict(predict_struct);
      }
 }
 size_t CCalcCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
@@ -178,7 +178,7 @@ size_t CCalcCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
     return 0;
 }
 // for metal clusters
-void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
+void CCalcCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
 {
     util::Vector3 polar_coord, basic_coord;
     util::Point3 coordinate;
@@ -216,7 +216,7 @@ void CCalcCluster::spherePredict(CATAZJUT::CPeriodicFramework* predict_struct)
     this->eliminateCloseContacts(predict_struct);
 }
 // nonmetal compounds
-void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
+void CCalcCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
 {
     std::vector<std::pair<CATAZJUT::CElement*,size_t>> chemicalelement;
     for(size_t i=0;i<chemicalFormula.size();i++)
@@ -266,6 +266,11 @@ void CCalcCluster::planePredict(CATAZJUT::CPeriodicFramework* predict_struct)
    chemicalelement.erase();
 
 }
+// nonmetal-metal cluster
+void CCalcCluster::mixedClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
+{
+
+}
 void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
 {
     util::Vector3 vect;
@@ -302,9 +307,9 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
         size_t maxCount=0;
         CATAZJUT::CFragment* mainFragment;
         foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments()){
-            if(maxCount<fragment_s->atomCount()){
-                maxCount=fragment_s->atomCount();
-                mainFragment=fragment_s;
+            if(maxCount < fragment_s->atomCount()){
+                maxCount = fragment_s->atomCount();
+                mainFragment = fragment_s;
             }
         }
         //
@@ -325,6 +330,11 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
                differ = (maincenter-othercenter).norm() - mainR - otherR;
                differVect= (differ-1.5)*(maincenter-othercenter).normalized();
                fragment_s->move(differVect);
+               // further judge whether two fragments is bonded.
+               while(mainFragment->isBondTo(fragment_s)!=true){
+                   differVect= 0.2*(maincenter-othercenter).normalized();
+                   fragment_s->move(differVect);
+               }
             }
     }
 

@@ -103,6 +103,8 @@ class CConfigurationBase
         BondRange bonds() const;
         size_t bondCount() const;
         bool contains(const CBond *bond) const;
+
+        bool isBondBetween(const CAtom*, const CAtom*);
         void clear();
 
         CCartesianCoordinates* coordinates();

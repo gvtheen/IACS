@@ -46,10 +46,25 @@ std::vector<Point3> CFragment::coordinates() const
         coordinate_res.push_back(atom->position());
     return coordinate_res;
 }
-void CFragment::move(const Vect3& vect_R)
+void CFragment::move(const Vector3& vect_R)
 {
     foreach(CAtom* atom, atoms())
        atom->SetPosition( atom->position() + vect_R );
 }
+bool CFragment::isBondTo(const CFragment* otherFragment)
+{
+
+    if(this->m_pConfiguration != otherFragment->Configuration())
+        return false;
+
+    foreach(CAtom* atom_s, this->atoms())
+      foreach(CAtom* atom_m, otherFragment->atoms())
+      {
+          if(this->m_pConfiguration->isBondBetween(atom_s,atom_m))
+             return true;
+      }
+    return false;
+}
+
 
 }

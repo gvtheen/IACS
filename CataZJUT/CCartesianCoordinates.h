@@ -86,7 +86,6 @@ public:
     std::vector<size_t>   CheckConnection(size_t);
     CFractionCoordinates* toFractionCoordinates(CPeriodicFramework*);
 
-
 private:
     std::vector<Point3>        m_coordinates;
     CConfigurationBase        *m_pConfiguration;

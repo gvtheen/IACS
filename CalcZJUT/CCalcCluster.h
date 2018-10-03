@@ -47,8 +47,10 @@ class CCalcCluster:public CCalcModeStruct
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
 
         //predicting methods: sphere,
-        void spherePredict(CATAZJUT::CPeriodicFramework*);
-        void planePredict(CATAZJUT::CPeriodicFramework*);
+        void metalClusterPredict(CATAZJUT::CPeriodicFramework*);
+        void nonMetalClusterPredict(CATAZJUT::CPeriodicFramework*);
+        void mixedClusterPredict(CATAZJUT::CPeriodicFramework*);
+
 
     private:
         std::vector<Point3i>                         currentConnection;

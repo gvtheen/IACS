@@ -496,7 +496,7 @@ bool CConfigurationBase::contains(const CBond *bond) const
 }
 bool CConfigurationBase::isBondBetween(const CAtom* atom1, const CAtom* atom2)
 {
-   return m_pBondEvaluator->IsBond(atom1,atom2);
+   return m_pBondEvaluator->IsBond(atom1,atom2)
 }
 void CConfigurationBase::clear()
 {
