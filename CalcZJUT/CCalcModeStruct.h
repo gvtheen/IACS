@@ -5,7 +5,7 @@
 #include "../GaZJUT/GaDeclaration.h"
 //
 using util::Bitset;
-using GAZJUT::GENEVAR;
+using GAZJUT::GeneVAR;
 
 namespace CATAZJUT{
   class CPeriodicFramework;
@@ -22,7 +22,7 @@ class CCalcModeStruct
 
         virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
         virtual void getGeneValuefromStruct(std::vector<double>&) =0;
-        virtual void GeneVarRange(std::vector<GENEVAR>&)=0;
+        virtual void GeneVARRange(std::vector<GeneVAR>&)=0;
         // only effective for supported catalyst
         virtual void createSupport( const Bitset &);
         virtual void createMoleAdsorb( const Bitset &);
@@ -36,7 +36,7 @@ class CCalcModeStruct
 
     public:
                           CParameter*          m_pParameter;
-                std::vector<GENEVAR>*          m_pGeneVar;
+                std::vector<GeneVAR>*          m_pGeneVAR;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
 std::vector<CATAZJUT::CPeriodicFramework*>     m_PopuPeriodicFramework;

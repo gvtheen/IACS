@@ -59,7 +59,7 @@ void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealVa
 {
 
 }
-void CCalcCluster::GeneVarRange(std::vector<GENEVAR>& currentGeneVarible)
+void CCalcCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 {
    double max_radius=0;
    Vector4 tempVect;
@@ -74,7 +74,7 @@ void CCalcCluster::GeneVarRange(std::vector<GENEVAR>& currentGeneVarible)
    max_radius = max_radius + 0.50;
    size_t num = m_PopuPeriodicFramework[0]->size();
    for(size_t i=0;i<3*num;i++)
-       currentGeneVarible.push_back({-1*max_radius,max_radius,0.001});
+       currentGeneVARible.push_back({-1*max_radius,max_radius,0.001});
 }
 void CCalcCluster::init()
 {

@@ -6,7 +6,7 @@
 #include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Bitset.h"
 
-using GAZJUT::GENEVAR;
+using GAZJUT::GeneVAR;
 using util::Bitset;
 namespace CATAZJUT{
    class CCrystalPlanes;
@@ -27,7 +27,7 @@ class CCalcClusterSupport:public CCalcModeStruct
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVarRange(std::vector<GENEVAR>&);
+        void GeneVARRange(std::vector<GeneVAR>&);
 
         void backUpStructure();
         void fromBackupToCurrent();

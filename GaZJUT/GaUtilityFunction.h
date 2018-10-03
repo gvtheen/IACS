@@ -3,13 +3,16 @@
 #include<string>
 #include<vector>
 #include "GaDeclaration.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
 
 namespace GAZJUT{
 
-double binaryDecode(std::vector<unsigned int>*,GENEVAR);
-int    calcBitNum(GENEVAR);
-void   grayTobit(std::vector<unsigned int>*);
-void   bitTogray(std::vector<unsigned int>* );
+double binaryDecode(Bitset&,GeneVAR);
+int    calcBitNum(GeneVAR);
+void   grayTobit(Bitset&);
+void   bitTogray(Bitset&);
 
 //void   ERROR_OUTPUT(std::string );
 //void   ERROR_OUTPUT(std::string,std::string );

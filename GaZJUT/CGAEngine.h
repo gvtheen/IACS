@@ -27,8 +27,8 @@ class CGAEngine
 
 
 
-        void SetGeneVar(const std::vector<GENEVAR>*);
-        std::vector<GENEVAR>* GeneVar()const;
+        void SetGeneVAR(const std::vector<GeneVAR>*);
+        std::vector<GeneVAR>* GeneVAR()const;
 
 		void init();
 		void evolve();
@@ -39,7 +39,7 @@ class CGAEngine
 CALCZJUT::CCalcFitnessInterface       *m_pFitnessCalculator;
 	    CGaparameter                  *m_pGaparameter;
 	    CALCZJUT::CParameter          *m_pParameter;
-	    std::vector<GENEVAR>           m_GeneVar;
+	    std::vector<GeneVAR>           m_GeneVAR;
 
 };
 

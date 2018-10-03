@@ -95,7 +95,7 @@ void CCalcGaussian::init()
 
     //initialize gene varible
     //
-    m_Parameter->GaParameter()->setGeneVar( m_pCalcModeStruct->GeneVarRange());
+    m_Parameter->GaParameter()->setGeneVAR( m_pCalcModeStruct->GeneVARRange());
 
     m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setExcludeBond(m_Parameter->excludeBond);
 

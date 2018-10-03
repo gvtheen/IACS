@@ -11,20 +11,21 @@ CGenome::CGenome()
 	this->m_varNumofGenome=0;
 	this->m_totalbitNum=0;
 	//pointer
-	this->m_pgeneVarofGenome=nullptr;
+	this->m_pGeneVARofGenome=nullptr;
 	this->m_pGenome=nullptr;
-	this->m_ptotalgeneofGenome=nullptr;
 	this->m_ptotalRealofGenome=nullptr;
 }
-CGenome::CGenome(std::vector <GENEVAR>*vec_genVal,E_CODE_TYPE codeType)
+CGenome::CGenome(std::vector <GeneVAR>*vec_genVal,E_CODE_TYPE codeType)
 {
 	this->m_codeType = codeType;
 	this->init(vec_genVal);
 }
 CGenome::CGenome(CGenome& myGenome)
 {
-	this->init(myGenome.m_pgeneVarofGenome);
-    this->updateDecValueGene(myGenome.getDecValue());
+	this->init(myGenome.m_pGeneVARofGenome);
+	std::vector <double> realValue;
+	myGenome.getDecValue(realValue);
+    this->updateDecValueGene(realValue);
 }
 //copy object
 CGenome* CGenome::clone()
@@ -38,7 +39,7 @@ void  CGenome::init()
 
 }
 ///
-void CGenome::updateDecValueGene(std::vector <double>* myDecValue)
+void CGenome::updateDecValueGene(std::vector <double>& myDecValue)
 {
 	assert(m_ptotalRealofGenome);
 	assert(m_ptotalgeneofGenome);
@@ -46,7 +47,7 @@ void CGenome::updateDecValueGene(std::vector <double>* myDecValue)
     int index=0;
 	for(int i=0;i<this->m_geneNum;i++)
     {
-        m_pGenome->at(i)->updatecode(myDecValue->at(i));
+        m_pGenome->at(i)->updatecode(myDecValue[i]);
         //collect gene into total gen of genome
         if( this->m_codeType!=REAL ){
              std::vector<unsigned int>* tempbitGene=m_pGenome->at(i)->bitGene();
@@ -71,12 +72,12 @@ void CGenome::updateTotalGeneToIndividualGene()
     if(this->m_codeType == REAL)
     {
         for(int i=0;i<this->m_geneNum;i++)
-            this->m_pGenome->realGene()=this->m_ptotalRealofGenome->at(i);
+            (*m_pGenome)[i]->realGene()=this->m_ptotalRealofGenome->at(i);
     }else{
         int index=0;
         for(int i=0;i<this->m_geneNum;i++)
         {
-            int bit_Num = this->m_pGenome->at(i)->bitnum();
+            int bit_Num = this->m_pGenome->at(i)->bitNum();
             std::vector<unsigned int> *bitGene = this->m_pGenome->at(i)->bitGene();
             for(int j=0;j<bit_Num;j++)
                 bitGene->at(j)=this->m_ptotalgeneofGenome->at(index++);
@@ -84,14 +85,11 @@ void CGenome::updateTotalGeneToIndividualGene()
         }
     }
 }
-std::vector <double>* CGenome::getDecValue()
+void CGenome::getDecValue(std::vector <double>& realValue)
 {
-	std::vector <double>* realValue;
-	realValue=new (std::vector <double>)();
 	std::vector<CGenebase*>::iterator it;
 	for(it=this->m_pGenome->begin(); it<this->m_pGenome->end(); it++)
-        realValue->push_back((*it)->value());
-	return realValue;
+        realValue.push_back((*it)->value());
 }
 //
 void CGenome::setFitness(const double fit)
@@ -139,15 +137,14 @@ void  CGenome::setRelativefitness(const double value)
 	this->m_relativefitness=value;
 }
 //return two type of gene
-std::vector <unsigned int>* CGenome::totalbitGene()
+Bitset& CGenome::totalbitGene()
 {
-	assert(m_ptotalgeneofGenome);
-	return this->m_ptotalgeneofGenome;
+
+	return this->m_totalgeneofGenome;
 }
-void CGenome::setTotalbitGene(std::vector <unsigned int>* my_totalbitgene)
+void CGenome::setTotalbitGene(Bitset my_totalbitgene)
 {
-    assert(this->m_ptotalgeneofGenome);
-    this->m_ptotalgeneofGenome->assign(my_totalbitgene->begin(),my_totalbitgene->end());
+    this->m_totalgeneofGenome = my_totalbitgene;
 }
 
 //
@@ -155,10 +152,10 @@ std::vector <double>* CGenome::totalrealGene()
 {
     return this->m_ptotalRealofGenome;
 }
-void CGenome::setTotalrealGene(std::vector <double>* my_totalrealgene)
+void CGenome::setTotalrealGene(std::vector <double>& my_totalrealgene)
 {
     assert(this->m_ptotalRealofGenome);
-    this->m_ptotalRealofGenome->assign(my_totalrealgene->begin(),my_totalrealgene->end());
+    this->m_ptotalRealofGenome->assign(my_totalrealgene.begin(),my_totalrealgene.end());
 }
 
 //
@@ -170,15 +167,15 @@ int CGenome::totalbitNum()
 {
 	return this->m_totalbitNum;
 }
-std::vector <GENEVAR>* geneVariable()
+std::vector <GeneVAR>* CGenome::GeneVARiable()
 {
-    return this->m_pgeneVarofGenome;
+    return this->m_pGeneVARofGenome;
 }
 CGenebase* CGenome::extractGene(int i)
 {
 	if(i<1)
 	{
-	    util::Log::OutputToFile<<"Error: i<1. CGenome_extractGene"<<std::endl;
+	    util::Log::Error<<"i<1. CGenome_extractGene"<<std::endl;
 	    std::exit(-1);
 	}
 	return this->m_pGenome->at(i-1);
@@ -188,7 +185,7 @@ void  CGenome::insertGeneToGenome(CGenebase* mygene)
 	this->m_geneNum=this->m_geneNum+1;
 	this->m_totalbitNum=this->m_geneNum + mygene->bitNum();
 	this->m_pGenome->push_back(mygene);
-	this->m_pgeneVarofGenome->push_back(*(mygene->m_geneVar));
+	this->m_pGeneVARofGenome->push_back(*(mygene->m_GeneVAR));
 	for(int i=0;i<mygene->bitNum();i++)
 	   this->m_ptotalgeneofGenome->push_back(mygene->bitNum());
 }
@@ -203,7 +200,7 @@ void CGenome:setFinishState(bool stat)
 //
 
 //
-void CGenome::init(std::vector <GENEVAR>* vec_genVal)
+void CGenome::init(std::vector <GeneVAR>* vec_genVal)
 {
 	assert(vec_genVal);
 
@@ -212,8 +209,8 @@ void CGenome::init(std::vector <GENEVAR>* vec_genVal)
 	this->m_totalbitNum=0;
 	// pointer
 	//General_GA_Parameter.CodeMode=REAL;
-	this->m_pgeneVarofGenome=new (std::vector<GENEVAR>)();   //contruct empty vector<GENEVAR> pointer
-    this->m_pgeneVarofGenome->assign(vec_genVal->begin(),vec_genVal->end());
+	this->m_pGeneVARofGenome=new (std::vector<GeneVAR>)();   //contruct empty vector<GeneVAR> pointer
+    this->m_pGeneVARofGenome->assign(vec_genVal->begin(),vec_genVal->end());
 
     this->m_pGenome = new (std::vector<CGenebase*>)(m_geneNum);
 
@@ -297,8 +294,7 @@ CGenome::~CGenome()
 	for(size_t i=0;i<m_pGenome->size();i++)
         delete (*m_pGenome)[i];
 	delete m_pGenome;
-	delete m_ptotalgeneofGenome;
-	delete m_pgeneVarofGenome;
+	delete m_pGeneVARofGenome;
 }
 
 }

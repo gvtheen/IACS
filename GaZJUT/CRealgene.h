@@ -7,10 +7,10 @@ class CRealgene:public CGenebase
 {
     public:
         CRealgene();
-        CRealgene(GENEVAR);
+        CRealgene(GeneVAR);
         virtual ~CRealgene();
         virtual double decode();
-        virtual void init(GENEVAR);
+        virtual void init(GeneVAR);
         virtual void updatecode(double);
         virtual double& realGene();
         virtual int bitNum();

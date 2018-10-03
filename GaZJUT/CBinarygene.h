@@ -2,6 +2,9 @@
 #define CBinarygene_H
 #include "CGenebase.h"
 #include "GaDeclaration.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
 
 namespace GAZJUT{
 
@@ -9,15 +12,15 @@ class CBinarygene:public CGenebase
 {
     public:
         CBinarygene();
-        CBinarygene(GENEVAR);
+        CBinarygene(GeneVAR);
         virtual ~CBinarygene();
         virtual double decode();
-        virtual void init(GENEVAR);
+        virtual void init(GeneVAR);
         virtual void updatecode(double);
-        virtual std::vector<unsigned int>* bitGene();
+        virtual Bitset& bitGene();
         virtual int bitNum();
     protected:
-        std::vector<unsigned int> *m_bitdata;
+        Bitset m_bitdata;
         int m_bitNum;
     private:
 };

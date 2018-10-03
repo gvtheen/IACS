@@ -5,7 +5,9 @@
 #include <string>
 #include "CGenebase.h"
 #include "GaDeclaration.h"
+#include "../Util/Bitset.h"
 
+using util::Bitset;
 
 namespace GAZJUT{
 
@@ -14,14 +16,14 @@ class CGenome
 	public:
 		//constructor
 		CGenome();
-		CGenome(std::vector <GENEVAR>*, E_CODE_TYPE );
+		CGenome(std::vector <GeneVAR>*, E_CODE_TYPE );
 		CGenome(CGenome&);
 		~CGenome();
 		//operations function
 		CGenome* clone();
 		CGenebase* extractGene(int);
 		void   insertGeneToGenome(CGenebase*);
-		void   init(std::vector <GENEVAR>*);
+		void   init(std::vector <GeneVAR>*);
 		void   init();
 		//input output of varible
 		double fitness();
@@ -39,17 +41,17 @@ class CGenome
 		double relativefitness();
 		void   setRelativefitness(const double);
 
-		std::vector <GENEVAR>*     geneVariable();       //return varible
-		std::vector <double>       *getDecValue();
+		std::vector <GeneVAR>*     GeneVARiable();       //return varible
+        void getDecValue(std::vector <double>&);
 
-		void updateDecValueGene(std::vector <double>*);              // after Genetor operatoration, it will be updated.
-        void   updateTotalGeneToIndividualGene();
+		void updateDecValueGene(std::vector <double>&);              // after Genetor operatoration, it will be updated.
+        void updateTotalGeneToIndividualGene();
 
 		std::vector <unsigned int> *totalbitGene();
-		void setTotalbitGene(std::vector <unsigned int>*);
+		void setTotalbitGene(std::vector <unsigned int>&);
 
 		std::vector <double>       *totalrealGene();
-		void setTotalrealGene(std::vector <double>*);
+		void setTotalrealGene(std::vector <double>&);
 
 		int                    geneNum();
 		int                    totalbitNum();
@@ -63,9 +65,9 @@ class CGenome
 		// varible
 	protected:
 		std::vector <CGenebase*>   *m_pGenome;
-		std::vector <unsigned int> *m_ptotalgeneofGenome;   // for bit  gray gene;
+		Bitset                      m_totalgeneofGenome;   // for bit  gray gene;
 		std::vector <double>       *m_ptotalRealofGenome;   // for real
-		std::vector <GENEVAR>      *m_pgeneVarofGenome;
+		std::vector <GeneVAR>      *m_pGeneVARofGenome;
 		          E_CODE_TYPE       m_codeType;
                           int       m_totalbitNum;
 		                  int       m_geneNum;

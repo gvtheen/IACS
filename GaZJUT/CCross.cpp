@@ -115,7 +115,7 @@ void CCross::X_Crossover(CGpopulation* CurrentPopulation,int one,int two)
          {
             case ARITHMETIC:
              {
-                 //std::vector <GENEVAR> *varofGenome= ((*CurrentPopulation)[one])->geneVariable();
+                 //std::vector <GeneVAR> *varofGenome= ((*CurrentPopulation)[one])->GeneVARiable();
                  std::vector <double>*temp_one = ((*CurrentPopulation)[one])->totalrealGene();
                  std::vector <double>*temp_two = ((*CurrentPopulation)[two])->totalrealGene();
                  int geneNum = ((*CurrentPopulation)[one])->geneNum();
@@ -138,7 +138,7 @@ void CCross::X_Crossover(CGpopulation* CurrentPopulation,int one,int two)
              break;
             case UNARITHMETIC:
              {
-                // std::vector <GENEVAR> *varofGenome= ((*CurrentPopulation)[one])->geneVariable();
+                // std::vector <GeneVAR> *varofGenome= ((*CurrentPopulation)[one])->GeneVARiable();
                  std::vector <double>*temp_one = ((*CurrentPopulation)[one])->totalrealGene();
                  std::vector <double>*temp_two = ((*CurrentPopulation)[two])->totalrealGene();
                  int geneNum = ((*CurrentPopulation)[one])->geneNum();

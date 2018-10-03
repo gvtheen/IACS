@@ -42,7 +42,7 @@ std::vector<double>* CCalcClusterSupport::getGeneValuefromStruct()const
 {
 
 }
-std::vector<GENEVAR>* CCalcClusterSupport::GeneVarRange()
+std::vector<GeneVAR>* CCalcClusterSupport::GeneVARRange()
 {
 
 }

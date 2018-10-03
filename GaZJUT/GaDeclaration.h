@@ -49,7 +49,7 @@ typedef struct str_001{
 	double min;
 	double max;
 	double accuracy;
-}GENEVAR;
+}GeneVAR;
 
 }
 

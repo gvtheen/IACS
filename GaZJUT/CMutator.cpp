@@ -43,7 +43,7 @@ void CMutator::run(const CGpopulation* CurrentPopulation)
        }else{                      //real gene
            int geneNum = CurrentPopulation->m_pGpopulation->at(i)->geneNum();
            std::vector <double> *currentGeneofGenome = CurrentPopulation->m_pGpopulation->at(i)->totalrealGene();
-           std::vector <GENEVAR> *varofGenome= CurrentPopulation->m_pGpopulation->at(i)->geneVariable();
+          std::vector <GeneVAR> *varofGenome= CurrentPopulation->m_pGpopulation->at(i)->GeneVARiable();
            for(int j=0;j<geneNum;j++)
              if ( Rndgenerator->uniformRandom01(i*j) > Pm )
                switch(mutateMode)

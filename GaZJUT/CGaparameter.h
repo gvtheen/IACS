@@ -12,7 +12,7 @@ class CGaparameter
 
         CGaparameter();
         virtual ~CGaparameter();
-        CGaparameter(std::vector <GENEVAR>* myVar);
+        CGaparameter(std::vector <GeneVAR>* myVar);
         CGaparameter(const CGaparameter& other);
         CGaparameter& operator=(const CGaparameter& other);
 
@@ -28,9 +28,9 @@ class CGaparameter
         double MutaProb();
         //void   SetMutaProb(double);
 
-        std::vector <GENEVAR>* GeneVar();
-        void                   setGeneVar(std::vector <GENEVAR>*);
-        void                   checkGeneVar();
+        std::vector <GeneVAR>* GeneVAR();
+        void                   setGeneVAR(std::vector <GeneVAR>*);
+        void                   checkGeneVAR();
         std::string            GeneFile();
         std::string            InputFile();
         //void   SetGeneFile(string);
@@ -67,7 +67,7 @@ class CGaparameter
     protected:
         std::map<std::string, std::string>      *m_mapCmdString;
     private:
-        std::vector <GENEVAR>   *m_pGeneVarofPopulation;
+        std::vector <GeneVAR>   *m_pGeneVARofPopulation;
         int                      m_PopNum;
         int                      m_GenerationNum;
         int                      m_CrossNum;

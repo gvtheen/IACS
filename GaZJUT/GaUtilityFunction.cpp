@@ -5,10 +5,11 @@
 #include<ctime>
 #include "GaUtilityFunction.h"
 
+
 namespace GAZJUT{
 
 //
-double binaryDecode(std::vector<unsigned int> *myCode,GENEVAR myGenVar)
+double binaryDecode(const Bitset & myCode,GeneVAR myGenVar)
 {
      int i,m;
      double low,high,sum;
@@ -16,37 +17,36 @@ double binaryDecode(std::vector<unsigned int> *myCode,GENEVAR myGenVar)
      low= myGenVar.min;
      high=myGenVar.max;
      sum=0.0;
-     m=myCode->size();
+     m=myCode.size();
      for(i=0;i<m;i++)
-          sum=sum+(double)(myCode->at(i))*std::pow(2.0,m-i-1);
+          sum=sum+(double)(myCode[i])*std::pow(2.0,m-i-1);
      return  low+(high-low)*sum/(std::pow(2.0,m)-1);
 }
-int calcBitNum(GENEVAR myGeneVar)
+int calcBitNum(GeneVAR myGeneVAR)
 {
     double c,m;
-    m=(myGeneVar.max - myGeneVar.min)/myGeneVar.accuracy;
+    m=(myGeneVAR.max - myGeneVAR.min)/myGeneVAR.accuracy;
     c=std::log10(m)/std::log10(2.0);
     return (int)c+1;
 }
-void grayTobit(std::vector<unsigned int>* data)
+void grayTobit(Bitset& data)
 {
-     int num=data->size();
-     std::vector<unsigned int>* temp= new (std::vector<unsigned int>)(num);
-     temp->assign(data->begin(),data->end());
-     data->at(0)=temp->at(0);
+     int num=data.size();
+     Bitset temp= data;
+     data[0]=temp[0];
      for(int i=1;i<num;i++)
-        data->at(i)=(data->at(i-1))^(temp->at(i));
-     delete temp;
+        data[i]=(data[i-1])^(temp[i]);
+     temp.clear();
 }
-void bitTogray(std::vector<unsigned int>* data)
+void bitTogray(Bitset& data)
 {
-     int num=data->size();
-     std::vector<unsigned int>* temp= new (std::vector<unsigned int>)(num);
-     temp->assign(data->begin(),data->end());
-     data->at(0)=temp->at(0);
+     int num=data.size();
+     Bitset temp= data;
+
+     data[0]=temp[0];
      for(int i=1;i<num;i++)
-        data->at(i)=(temp->at(i))^(temp->at(i-1));
-     delete temp;
+        data[i]=(temp[i])^(temp[i-1]);
+     temp.clear();
 }
 
 //ERROR OutPut

@@ -2,6 +2,9 @@
 #define CODE_H
 #include<vector>
 #include "GaDeclaration.h"
+#include "../Util/Bitset.h"
+
+using util::Bitset;
 
 namespace GAZJUT{
 
@@ -9,18 +12,18 @@ class CGenebase
 {
     public:
         CGenebase();
-        CGenebase(GENEVAR);
+        CGenebase(GeneVAR);
         virtual ~CGenebase();
         virtual double decode();
-        virtual void init(GENEVAR);
+        virtual void init(GeneVAR);
         virtual void updatecode(double);
         virtual int bitNum();
-        virtual std::vector<unsigned int>* bitGene();
-        virtual double& realGene();
+        virtual Bitset& bitGene();
+        virtual double realGene();
         double  value();
     public:
         double  m_value;
-        GENEVAR *m_geneVar;
+        GeneVAR *m_GeneVAR;
 
 };
 

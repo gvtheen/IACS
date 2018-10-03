@@ -7,7 +7,7 @@
 #include "CCalcModeStruct.h"
 #include "../Util/Point-Vector.h"
 
-using GAZJUT::GENEVAR;
+using GAZJUT::GeneVAR;
 using util::Point3;
 using util::Vector3;
 
@@ -37,7 +37,7 @@ class CCalc2DSupport:public CCalcModeStruct
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVarRange(std::vector<GENEVAR>&);
+        void GeneVARRange(std::vector<GeneVAR>&);
 
         void createSupport(Bitset &);
         void createMoleAdsorb(Bitset &);

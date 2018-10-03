@@ -1,5 +1,5 @@
-#ifndef CCLUSTERGENEVAR_H
-#define CCLUSTERGENEVAR_H
+#ifndef CCLUSTERGeneVAR_H
+#define CCLUSTERGeneVAR_H
 
 #include<vector>
 #include "../Util/Point-Vector.h"
@@ -8,7 +8,7 @@ using util::Point3i;
 
 namespace CALCZJUT{
 
-class CClusterGeneVar
+class CClusterGeneVAR
 {
     typedef enum EEUUR0001{
                  DISTANCE,
@@ -17,10 +17,10 @@ class CClusterGeneVar
               }VAR_TYPE;
 
     public:
-        CClusterGeneVar();
-        CClusterGeneVar(VAR_TYPE, int, Point3i);
+        CClusterGeneVAR();
+        CClusterGeneVAR(VAR_TYPE, int, Point3i);
 
-        virtual ~CClusterGeneVar();
+        virtual ~CClusterGeneVAR();
 
         VAR_TYPE type();
         void setType(const VAR_TYPE&);
@@ -30,8 +30,8 @@ class CClusterGeneVar
         void setIndex(int i,int j,int k,int h);
         void setIndex(size_t,Point3i);
 
-        bool operator == (CClusterGeneVar&);
-        void operator = (CClusterGeneVar&);
+        bool operator == (CClusterGeneVAR&);
+        void operator = (CClusterGeneVAR&);
 
     protected:
 
@@ -47,4 +47,4 @@ class CClusterGeneVar
 
 
 }
-#endif // CCLUSTERGENEVAR_H
+#endif // CCLUSTERGeneVAR_H

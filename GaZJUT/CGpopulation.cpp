@@ -2,6 +2,9 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include "CGpopulation.h"
+#include "../Util/log.hpp"
+#include "GACatalyst.h"
+
 namespace GAZJUT{
 
 CGpopulation::CGpopulation()
@@ -15,12 +18,12 @@ CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
 	assert(my_Gaparameter);
     assert(my_Gaparameter->PopNum());
 
-	//firstly built empty vector<GENEVAR>
+	//firstly built empty vector<GeneVAR>
 	this->m_pObjGaparameter=my_Gaparameter;
 
 	for(size_t i=0;i<my_Gaparameter->PopNum();i++)
     {
-        CGenome *it = new CGenome(m_ObjGaparameter->m_pGeneVarofPopulation,m_ObjGaparameter->CodeMode());
+        CGenome *it = new CGenome(m_ObjGaparameter->m_pGeneVARofPopulation,m_ObjGaparameter->CodeMode());
         m_Gpopulation.push_back(it);
     }
 
@@ -58,8 +61,8 @@ CGenome* CGpopulation::operator[](const int index)
 {
 	if(index>=m_pObjGaparameter->PopNum())
     {
-        ERROR_OUTPUT("Error: index is out of range","CGpopulation","operator[]");
-        exit(-1);
+         util::Log::Error<<"Index is out of range! CGpopulation_operator[]!\n";
+         boost::throw_exception(std::runtime_error("Index is out of range! CGpopulation_operator[]!"));
     }
 	return m_Gpopulation[index];
 }
@@ -86,8 +89,8 @@ double CGpopulation::operator[](std::string mystr)
      else if(indexName=="maxori")
          return this->m_MaxOriValue;
 	 else{
-	 	 ERROR_OUTPUT("Error: indexStr cannot match with them","CGpopulation","operator[]");
-		 abort();
+		 util::Log::Error<<"IndexStr cannot match with them! CGpopulation_operator[]!\n";
+         boost::throw_exception(std::runtime_error("IndexStr cannot match with them! CGpopulation_operator[]!"));
 	 }
 }
 
@@ -181,24 +184,24 @@ void CGpopulation::setPopNum(int popnum)
 {
     if(popnum<=0)
     {
-        ERROR_OUTPUT("Error: pop num <=0","CGpopulation","setPopNum");
-        exit(-1);
+        util::Log::Error<<"Population num is less than 0! CGpopulation_setPopNum!\n";
+        boost::throw_exception(std::runtime_error("Population num is less than 0! CGpopulation_setPopNum!\n"));
     }
     (*m_pObjGaparameter)["Population"]=std::to_string(popnum);
 
 }
-std::vector <GENEVAR>* CGpopulation::geneVarArray()
+std::vector <GeneVAR>* CGpopulation::GeneVARArray()
 {
-    return m_pObjGaparameter->GeneVar();
+    return m_pObjGaparameter->GeneVAR();
 }
-void CGpopulation::setGeneVarArray(std::vector <GENEVAR>* my_geneVar)
+void CGpopulation::setGeneVARArray(std::vector <GeneVAR>* my_GeneVAR)
 {
-    if(my_geneVar==nullptr)
+    if(my_GeneVAR==nullptr)
     {
-        ERROR_OUTPUT("Error: Pointer of my_geneVar is null","CGpopulation","setGeneVarArray");
-        exit(-1);
+        util::Log::Error<<"Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n";
+        boost::throw_exception(std::runtime_error("Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n"));
     }
-    m_pObjGaparameter->setGeneVar(my_geneVar);
+    m_pObjGaparameter->setGeneVAR(my_GeneVAR);
 }
 void CGpopulation::modifyPopulation(std::vector <CGenome*> *newGenome)
 {

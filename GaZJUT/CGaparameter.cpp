@@ -14,36 +14,36 @@ namespace GAZJUT{
 
 CGaparameter::CGaparameter()
 {
-    this->m_pGeneVarofPopulation=nullptr;
+    this->m_pGeneVARofPopulation=nullptr;
     this->defaultInit();
 }
 
-CGaparameter::CGaparameter(std::vector <GENEVAR>* myVar)
+CGaparameter::CGaparameter(std::vector <GeneVAR>* myVar)
 {
-    this->m_pGeneVarofPopulation= new (std::vector <GENEVAR>);
-    this->m_pGeneVarofPopulation->assign(myVar->begin(),myVar->end());
+    this->m_pGeneVARofPopulation= new (std::vector <GeneVAR>);
+    this->m_pGeneVARofPopulation->assign(myVar->begin(),myVar->end());
     this->defaultInit();
 }
 CGaparameter::~CGaparameter()
 {
     delete m_mapCmdString;
-    delete m_pGeneVarofPopulation;
+    delete m_pGeneVARofPopulation;
 }
 
 CGaparameter::CGaparameter(const CGaparameter& other)
 {
     assert(&other);
     assert(other.m_mapCmdString);
-    assert(other.m_pGeneVarofPopulation);
+    assert(other.m_pGeneVARofPopulation);
 
     this->Curr_Generation = other.Curr_Generation;
 
     this->m_mapCmdString = new (std::map <std::string, std::string>);
     this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
 
-    this->m_pGeneVarofPopulation= new (std::vector <GENEVAR>);
-    this->m_pGeneVarofPopulation->assign(other.m_pGeneVarofPopulation->begin(), \
-                                         other.m_pGeneVarofPopulation->end());
+    this->m_pGeneVARofPopulation= new (std::vector <GeneVAR>);
+    this->m_pGeneVARofPopulation->assign(other.m_pGeneVARofPopulation->begin(), \
+                                         other.m_pGeneVARofPopulation->end());
 
 }
 CGaparameter& CGaparameter::operator=(const CGaparameter& rhs)
@@ -78,9 +78,9 @@ void CGaparameter::add_Curr_Generation()
 {
     this->Curr_Generation = this->Curr_Generation + 1;
 }
-std::vector <GENEVAR>* CGaparameter::GeneVar()
+std::vector <GeneVAR>* CGaparameter::GeneVAR()
 {
-    return this->m_pGeneVarofPopulation;
+    return this->m_pGeneVARofPopulation;
 }
 int CGaparameter::PopNum()
 {
@@ -118,32 +118,32 @@ int CGaparameter::CrossNum()
      }
      return d_value;
 }
-void CGaparameter::setGeneVar(std::vector <GENEVAR>* myVar)
+void CGaparameter::setGeneVAR(std::vector <GeneVAR>* myVar)
 {
     assert(myVar);
 
-    if(m_pGeneVarofPopulation==nullptr)
-        m_pGeneVarofPopulation = new (std::vector <GENEVAR>)(myVar->size());
-    if(m_pGeneVarofPopulation->size()!=myVar->size()){
-        delete m_pGeneVarofPopulation;
-        m_pGeneVarofPopulation = new (std::vector <GENEVAR>)(myVar->size());
+    if(m_pGeneVARofPopulation==nullptr)
+        m_pGeneVARofPopulation = new (std::vector <GeneVAR>)(myVar->size());
+    if(m_pGeneVARofPopulation->size()!=myVar->size()){
+        delete m_pGeneVARofPopulation;
+        m_pGeneVARofPopulation = new (std::vector <GeneVAR>)(myVar->size());
     }
-    for(size_t i=0;i<m_pGeneVarofPopulation->size();i++)
-        m_pGeneVarofPopulation->at(i) = myVar->at(i);
+    for(size_t i=0;i<m_pGeneVARofPopulation->size();i++)
+        m_pGeneVARofPopulation->at(i) = myVar->at(i);
 
-    checkGeneVar();
+    checkGeneVAR();
 }
-void CGaparameter::checkGeneVar()
+void CGaparameter::checkGeneVAR()
 {
-    std::vector<GENEVAR>::iterator it;
-    for(it=m_pGeneVarofPopulation->begin();it<m_pGeneVarofPopulation->end();it++)
+    std::vector<GeneVAR>::iterator it;
+    for(it=m_pGeneVARofPopulation->begin();it<m_pGeneVARofPopulation->end();it++)
     {
         if((it->min) > (it->max))
            std::swap(it->min,it->max);     //call std::swap(x,y) function
 
         if((it->accuracy)==0.0)
         {
-	       ERROR_OUTPUT("Error: Accuracy of geneVar is 0.0","CGaparameter","checkGeneVar");
+	       ERROR_OUTPUT("Error: Accuracy of GeneVAR is 0.0","CGaparameter","checkGeneVAR");
 	       exit(-1);
         }
     }

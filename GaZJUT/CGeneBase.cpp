@@ -4,9 +4,9 @@
 namespace GAZJUT{
 CGenebase::CGenebase()
 {
-    this->m_geneVar=nullptr;
+    this->m_GeneVAR=nullptr;
 }
-CGenebase::CGenebase(GENEVAR var)
+CGenebase::CGenebase(GeneVAR var)
 {
     this->init(var);
 }
@@ -14,18 +14,19 @@ double CGenebase::decode()
 {
     return this->m_value;
 }
-void CGenebase::init(GENEVAR var)
+void CGenebase::init(GeneVAR var)
 {
-    this->m_geneVar=new GENEVAR();
-    *m_geneVar=var;
+    this->m_GeneVAR=new GeneVAR();
+    *m_GeneVAR=var;
 }
 void CGenebase::updatecode(double m)
 {
 
 }
-std::vector<unsigned int>* CGenebase::bitGene()
+Bitset& CGenebase::bitGene()
 {
-    return nullptr;
+    Bitset a1;        // nothing
+    return a1;
 }
 double CGenebase::realGene()
 {
@@ -41,6 +42,6 @@ int CGenebase::bitNum()
 }
 CGenebase::~CGenebase()
 {
-    delete this->m_geneVar;
+    delete this->m_GeneVAR;
 }
 }

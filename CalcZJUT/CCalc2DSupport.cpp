@@ -173,40 +173,40 @@ void CCalc2DSupport::getGeneValuefromStruct(std::vector<double>& geneRealValue)
    geneRealValue.clear();
    return nullptr;
 }
-void CCalc2DSupport::GeneVarRange(std::vector<GENEVAR>& geneVaribleVect)
+void CCalc2DSupport::GeneVARRange(std::vector<GeneVAR>& GeneVARibleVect)
 {
     //clear vector!
-    geneVaribleVect.clear();
+    GeneVARibleVect.clear();
     //distance of adsorbent on 2d support
-    geneVaribleVect.push_back({1.0,2.5,0.01});
+    GeneVARibleVect.push_back({1.0,2.5,0.01});
     // a axes displacing
     if(m_latticeDirection==CCalc2DSupport::NONE_DIR)
         IdentifyvacuumLayerDirection();
 
     if(m_latticeDirection == CCalc2DSupport::C_AXIS){
         //c a,b
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
     }else if (m_latticeDirection == CCalc2DSupport::B_AXIS){
         //b c  a
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
         m_latticeDirection = CCalc2DSupport::B_AXIS;
     }else if(m_latticeDirection == CCalc2DSupport::A_AXIS){
         //a b  c
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
-        geneVaribleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
     }else{
-         ERROR_OUTPUT("It has no vacuum layer!","GeneVarRange","CCalc2DSupport");
+         ERROR_OUTPUT("It has no vacuum layer!","GeneVARRange","CCalc2DSupport");
          boost::throw_exception(std::runtime_error("It has no vacuum layer!! Check the file: Error_information.txt."));
     }
     //rotation axis
-    geneVaribleVect.push_back({-1,1,0.01});
-    geneVaribleVect.push_back({-1,1,0.01});
-    geneVaribleVect.push_back({-1,1,0.01});
+    GeneVARibleVect.push_back({-1,1,0.01});
+    GeneVARibleVect.push_back({-1,1,0.01});
+    GeneVARibleVect.push_back({-1,1,0.01});
 
     //rotation angle
-    geneVaribleVect.push_back({0.0,360.0,2.0});
+    GeneVARibleVect.push_back({0.0,360.0,2.0});
 
 
 }

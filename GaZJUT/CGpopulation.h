@@ -34,8 +34,8 @@ class CGpopulation
 		int  popNum();
         void setPopNum(int);
 
-        GENEVAR* geneVarArray();
-        void setGeneVarArray(std::vector <GENEVAR>*);
+        GeneVAR* GeneVARArray();
+        void setGeneVARArray(std::vector <GeneVAR>*);
 
         void modifyPopulation(std::vector <CGenome*>,int pos);
 		//operator function
