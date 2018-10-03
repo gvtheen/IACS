@@ -16,21 +16,23 @@ CEvaluator::~CEvaluator()
 void CEvaluator::run(CGpopulation* CurrentPopulation)
 {
    bool runstate=false;
+   double tempValue;
    int pop_num = CurrentPopulation->popNum();
 
-   std::vector<double> *Temp_OrigScore = new (std::vector<double>)(pop_num);
+   std::vector<double> Temp_OrigScore;
    // calculate the fitness of each genome in population
    for(int i=0;i<pop_num;i++)
    {
-      Temp_OrigScore->at(i) = m_pEvaluator->CalcuRawFit(((*CurrentPopulation)[i])->getDecValue(),runstate);
-      ((*CurrentPopulation)[i])->setOrigValue( Temp_OrigScore->at(i) );
+      tempValue = m_pEvaluator->CalcuRawFit(((*CurrentPopulation)[i])->getDecValue(),runstate);
+      Temp_OrigScore.push_back(tempValue);
+      ((*CurrentPopulation)[i])->setOrigValue( Temp_OrigScore[i] );
       ((*CurrentPopulation)[i])->setFinishState(runstate);
    }
    // call the function of m_pEvaluator for converting the original value to Raw score.
-   m_pEvaluator->ConvOrigToRawScore(Temp_OrigScore);
+   m_pEvaluator->ConvOrigToRawScore(&Temp_OrigScore);
 
    for(int i=0;i<pop_num;i++)
-      ((*CurrentPopulation)[i])->setRawScore(Temp_OrigScore->at(i));
+      ((*CurrentPopulation)[i])->setRawScore(Temp_OrigScore[i]);
 }
 void CEvaluator::setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcFitness)
 {

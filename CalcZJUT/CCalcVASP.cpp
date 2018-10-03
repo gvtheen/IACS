@@ -139,6 +139,7 @@ double CCalcVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop
         m_pCalcModeStruct->createStructureAtGene();
      }
      //transfer gene value to POSCAR file
+    // if( currGeneration != 0 )
      m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
      m_pIO->output("POSCAR");
