@@ -31,7 +31,7 @@ class CGpopulation
 		void asscendSort();
 		void descendSort();
 		//input output
-		int  popNum();
+		size_t  popNum();
         void setPopNum(int);
 
         GeneVAR* GeneVARArray();

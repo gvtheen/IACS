@@ -81,7 +81,8 @@ void CBinarygene::init(GeneVAR myVal)
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
 
-    for(int i=0;i<this->m_bitNum;i++)
+    this->m_bitdata.clear();
+    for(size_t i=0;i<this->m_bitNum;i++)
     {
         rndNum=rndgenerator->uniformRandom01(i+100);
         if (rndNum>=0.5)
@@ -90,12 +91,14 @@ void CBinarygene::init(GeneVAR myVal)
 	       this->m_bitdata.push_back(0);
     }
     this->m_value=decode();
+
+    delete rndgenerator;
 }
 Bitset& CBinarygene::bitGene()
 {
     return this->m_bitdata;
 }
-int CBinarygene::bitNum()
+size_t CBinarygene::bitNum()
 {
     return this->m_bitNum;
 }

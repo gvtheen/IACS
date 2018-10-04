@@ -3,15 +3,19 @@
 #include <algorithm>
 #include "CGpopulation.h"
 #include "../Util/log.hpp"
-#include "GACatalyst.h"
+#include "../GACatalyst.h"
 
 namespace GAZJUT{
 
 CGpopulation::CGpopulation()
 {
-    m_minRawGenome  = nullptr;
-    m_maxRawGenome  = nullptr;
-    m_ObjGaparameter= nullptr;
+    m_minRawGenome   = nullptr;
+    m_maxRawGenome   = nullptr;
+    m_ObjGaparameter = nullptr;
+    m_pMinFitGenome  = nullptr;
+    m_pMaxFitGenome  = nullptr;
+    m_pMaxOriGenome  = nullptr;
+    m_pMaxOriGenome  = nullptr;
 }
 CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
 {
@@ -23,13 +27,18 @@ CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
 
 	for(size_t i=0;i<my_Gaparameter->PopNum();i++)
     {
-        CGenome *it = new CGenome(m_ObjGaparameter->m_pGeneVARofPopulation,m_ObjGaparameter->CodeMode());
+        CGenome *it = new CGenome(m_ObjGaparameter->m_pGeneVARofPopulation,m_ObjGaparameter->CodeMode(),i);
         m_Gpopulation.push_back(it);
     }
 
     //until this time, both best genome and worst genome are unknown.
-    m_minRawGenome = nullptr;
-    m_maxRawGenome = nullptr;
+    m_minRawGenome   = nullptr;
+    m_maxRawGenome   = nullptr;
+    m_ObjGaparameter = nullptr;
+    m_pMinFitGenome = nullptr;
+    m_pMaxFitGenome = nullptr;
+    m_pMaxOriGenome = nullptr;
+    m_pMaxOriGenome = nullptr;
 }
 CGpopulation::CGpopulation(CGpopulation& mypopulation)
 {
@@ -44,13 +53,18 @@ CGpopulation::CGpopulation(CGpopulation& mypopulation)
         tempCGenome = new CGenome(*(mypopulation[i]));
         m_Gpopulation.push_back(tempCGenome);
     }
-//    this->m_pMinRawGenome=new CGenome(*(mypopulation.m_minRawGenome));
-//    this->m_pMaxRawGenome=new CGenome(*(mypopulation.m_maxRawGenome));
+    this->m_pMinRawGenome=this->m_Gpopulation[mypopulation.m_pMinRawGenome->index()];
+    this->m_pMaxRawGenome=this->m_Gpopulation[mypopulation.m_pMaxRawGenome->index()];
+    this->m_pMinFitGenome=this->m_Gpopulation[mypopulation.m_pMinFitGenome->index()];
+    this->m_pMaxFitGenome=this->m_Gpopulation[mypopulation.m_pMaxFitGenome->index()];
+    this->m_pMinOriGenome=this->m_Gpopulation[mypopulation.m_pMinOriGenome->index()];
+    this->m_pMaxOriGenome=this->m_Gpopulation[mypopulation.m_pMaxOriGenome->index()];
 }
 CGpopulation::~CGpopulation()
 {
     for(size_t i=0;i<m_Gpopulation.size();i++)
 	    delete m_Gpopulation[i];
+    m_Gpopulation.clear();
 }
 CGpopulation* CGpopulation::clone()
 {

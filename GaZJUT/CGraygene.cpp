@@ -21,18 +21,17 @@ CGraygene::~CGraygene()
 
 double CGraygene::decode()
 {
-     int i,m;
      double low,high,sum;
 
      low= this->m_GeneVAR->min;
      high=this->m_GeneVAR->max;
      sum=0.0;
-     m=this->m_bitdata.size();
+     size_t m=this->m_bitdata.size();
 
      Bitset tempData=this->m_bitdata;
      grayTobit(tempData);
 
-     for(i=0;i<m;i++)
+     for(size_t i=0;i<m;i++)
           sum=sum+(double)(tempData[i])*pow(2.0,m-i-1);
 
      this->m_value=low+(high-low)*sum/(pow(2.0,m)-1);
@@ -51,7 +50,7 @@ void CGraygene::init(GeneVAR myVal)
     this->m_bitNum = calcBitNum(myVal);
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
-    for(int i=0;i<this->m_bitNum;i++)
+    for(size_t i=0;i<this->m_bitNum;i++)
     {
         rndNum=rndgenerator->uniformRandom01(i+100);
         if (rndNum>=0.5)
@@ -60,6 +59,8 @@ void CGraygene::init(GeneVAR myVal)
 	       this->m_bitdata.push_back(0);
     }
     this->m_value=decode();
+
+    delete rndgenerator;
 }
 void CGraygene::updatecode(double value)
 {
@@ -91,7 +92,7 @@ Bitset& CGraygene::bitGene()
 {
     return this->m_bitdata;
 }
-int CGraygene::bitNum()
+size_t CGraygene::bitNum()
 {
     return this->m_bitNum;
 }

@@ -36,7 +36,7 @@ double CGenebase::value()
 {
     return this->m_value;
 }
-int CGenebase::bitNum()
+size_t CGenebase::bitNum()
 {
     return 0;
 }

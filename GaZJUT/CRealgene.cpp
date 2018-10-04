@@ -42,7 +42,7 @@ double& CRealgene::realGene()
 {
     return this->m_value;
 }
-int CRealgene::bitNum()
+size_t CRealgene::bitNum()
 {
     return 1;
 }

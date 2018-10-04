@@ -16,7 +16,7 @@ class CGenome
 	public:
 		//constructor
 		CGenome();
-		CGenome(std::vector <GeneVAR>*, E_CODE_TYPE );
+		CGenome(std::vector <GeneVAR>*, E_CODE_TYPE,size_t);
 		CGenome(CGenome&);
 		~CGenome();
 		//operations function
@@ -41,20 +41,22 @@ class CGenome
 		double relativefitness();
 		void   setRelativefitness(const double);
 
-		std::vector <GeneVAR>*     GeneVARiable();       //return varible
+		std::vector <GeneVAR>&     GeneVARiable();       //return varible
         void getDecValue(std::vector <double>&);
 
 		void updateDecValueGene(std::vector <double>&);              // after Genetor operatoration, it will be updated.
         void updateTotalGeneToIndividualGene();
 
-		Bitset& totalbitGene()const;
-		void setTotalbitGene(const Bitset&);
+		Bitset& totalbitGene();
+		void setTotalbitGene(const Bitset);
 
 		std::vector <double>& totalrealGene();
 		void setTotalrealGene(std::vector <double>&);
 
-		int                    geneNum();
-		int                    totalbitNum();
+		size_t geneNum();
+		size_t totalbitNum();
+
+		size_t index();
 
 		bool   isNormalFinish()const;
 		void   setFinishState(bool);
@@ -63,15 +65,18 @@ class CGenome
 		bool   operator ^= (CGenome&);         // Approximately equal
 		double operator [] (std::string);      // obtained value;
 		// varible
+    private:
+        void concatenateBitsets(Bitset& first, const Bitset& second);
 	protected:
+	                      size_t    m_index;
 		std::vector <CGenebase*>    m_Genome;
 		Bitset                      m_totalgeneofGenome;   // for bit  gray gene;
 		std::vector <double>        m_totalRealofGenome;   // for real
 		std::vector <GeneVAR>       m_GeneVARofGenome;
 		          E_CODE_TYPE       m_codeType;
-                          int       m_totalbitNum;
-		                  int       m_geneNum;
-		                  int       m_varNumofGenome;
+                       size_t       m_totalbitNum;
+                       size_t       m_geneNum;
+                       size_t       m_varNumofGenome;
 		// three value for evaluation of evaluator
 		                double      m_origValue;      // it is obtained from energy of DFT
 		                                         // Importantly, only this value can be compared with those from parents, grandparents

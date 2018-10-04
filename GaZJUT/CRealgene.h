@@ -9,11 +9,11 @@ class CRealgene:public CGenebase
         CRealgene();
         CRealgene(GeneVAR);
         virtual ~CRealgene();
-        virtual double decode();
-        virtual void init(GeneVAR);
-        virtual void updatecode(double);
-        virtual double& realGene();
-        virtual int bitNum();
+        double decode();
+        void init(GeneVAR);
+        void updatecode(double);
+        double& realGene();
+        size_t bitNum();
     protected:
 
     private:

@@ -20,10 +20,10 @@ class CGraygene:public CGenebase
         virtual void init(GeneVAR);
         virtual void updatecode(double);
         virtual Bitset& bitGene();
-        virtual int bitNum();
+        virtual size_t bitNum();
     protected:
         Bitset m_bitdata;
-        int m_bitNum;
+        size_t m_bitNum;
     private:
 
 };

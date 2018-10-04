@@ -14,14 +14,14 @@ class CBinarygene:public CGenebase
         CBinarygene();
         CBinarygene(GeneVAR);
         virtual ~CBinarygene();
-        virtual double decode();
-        virtual void init(GeneVAR);
-        virtual void updatecode(double);
-        virtual Bitset& bitGene();
-        virtual int bitNum();
+        double decode();
+        void init(GeneVAR);
+        void updatecode(double);
+        Bitset& bitGene();
+        size_t bitNum();
     protected:
         Bitset m_bitdata;
-        int    m_bitNum;
+        size_t m_bitNum;
     private:
 };
 
