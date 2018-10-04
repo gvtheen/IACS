@@ -22,8 +22,9 @@ class CGenebase
         virtual double realGene();
         double  value();
     public:
-        double  m_value;
-        GeneVAR *m_GeneVAR;
+        double      m_value;
+        GeneVAR    *m_GeneVAR;
+        E_CODE_TYPE codeType;
 
 };
 

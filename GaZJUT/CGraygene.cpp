@@ -6,10 +6,12 @@ namespace GAZJUT{
 CGraygene::CGraygene():CGenebase()
 {
     //nothing is done.
+    this->codeType=GRAY;
 }
 CGraygene::CGraygene(GeneVAR myVal):CGenebase(myVal)
 {
     this->init(myVal);
+    this->codeType=GRAY;
 }
 
 CGraygene::~CGraygene()

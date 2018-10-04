@@ -23,7 +23,7 @@ class CGenome
 		CGenome* clone();
 		CGenebase* extractGene(int);
 		void   insertGeneToGenome(CGenebase*);
-		void   init(std::vector <GeneVAR>*);
+		void   init(std::vector <GeneVAR>&);
 		void   init();
 		//input output of varible
 		double fitness();
@@ -47,10 +47,10 @@ class CGenome
 		void updateDecValueGene(std::vector <double>&);              // after Genetor operatoration, it will be updated.
         void updateTotalGeneToIndividualGene();
 
-		std::vector <unsigned int> *totalbitGene();
-		void setTotalbitGene(std::vector <unsigned int>&);
+		Bitset& totalbitGene()const;
+		void setTotalbitGene(const Bitset&);
 
-		std::vector <double>       *totalrealGene();
+		std::vector <double>& totalrealGene();
 		void setTotalrealGene(std::vector <double>&);
 
 		int                    geneNum();
@@ -64,10 +64,10 @@ class CGenome
 		double operator [] (std::string);      // obtained value;
 		// varible
 	protected:
-		std::vector <CGenebase*>   *m_pGenome;
+		std::vector <CGenebase*>    m_Genome;
 		Bitset                      m_totalgeneofGenome;   // for bit  gray gene;
-		std::vector <double>       *m_ptotalRealofGenome;   // for real
-		std::vector <GeneVAR>      *m_pGeneVARofGenome;
+		std::vector <double>        m_totalRealofGenome;   // for real
+		std::vector <GeneVAR>       m_GeneVARofGenome;
 		          E_CODE_TYPE       m_codeType;
                           int       m_totalbitNum;
 		                  int       m_geneNum;

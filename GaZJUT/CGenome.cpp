@@ -3,6 +3,8 @@
 #include "../GACatalyst.h"
 #include "../Util/log.hpp"
 
+using util::Log;
+
 namespace GAZJUT{
 
 CGenome::CGenome()
@@ -11,18 +13,15 @@ CGenome::CGenome()
 	this->m_varNumofGenome=0;
 	this->m_totalbitNum=0;
 	//pointer
-	this->m_pGeneVARofGenome=nullptr;
-	this->m_pGenome=nullptr;
-	this->m_ptotalRealofGenome=nullptr;
 }
 CGenome::CGenome(std::vector <GeneVAR>*vec_genVal,E_CODE_TYPE codeType)
 {
 	this->m_codeType = codeType;
-	this->init(vec_genVal);
+	this->init(*vec_genVal);
 }
 CGenome::CGenome(CGenome& myGenome)
 {
-	this->init(myGenome.m_pGeneVARofGenome);
+	this->init(myGenome.m_GeneVARofGenome);
 	std::vector <double> realValue;
 	myGenome.getDecValue(realValue);
     this->updateDecValueGene(realValue);
@@ -41,16 +40,14 @@ void  CGenome::init()
 ///
 void CGenome::updateDecValueGene(std::vector <double>& myDecValue)
 {
-	assert(m_ptotalRealofGenome);
-	assert(m_ptotalgeneofGenome);
 
     int index=0;
 	for(int i=0;i<this->m_geneNum;i++)
     {
-        m_pGenome->at(i)->updatecode(myDecValue[i]);
+        m_Genome[i]->updatecode(myDecValue[i]);
         //collect gene into total gen of genome
         if( this->m_codeType!=REAL ){
-             std::vector<unsigned int>* tempbitGene=m_pGenome->at(i)->bitGene();
+             std::vector<unsigned int>* tempbitGene=m_Genome[i]->bitGene();
              if(m_ptotalgeneofGenome->empty()==true)
                 m_ptotalgeneofGenome->insert(m_ptotalgeneofGenome->end(),tempbitGene->begin(), \
                                          tempbitGene->end());
@@ -173,21 +170,25 @@ std::vector <GeneVAR>* CGenome::GeneVARiable()
 }
 CGenebase* CGenome::extractGene(int i)
 {
-	if(i<1)
+	if(i<0)
 	{
-	    util::Log::Error<<"i<1. CGenome_extractGene"<<std::endl;
-	    std::exit(-1);
+	    Log::Error<<"i<1. CGenome_extractGene"<<std::endl;
+	    boost::throw_exception(std::runtime_error("i<1. CGenome_extractGene!\n"));
 	}
-	return this->m_pGenome->at(i-1);
+	return this->m_Genome[i];
 }
 void  CGenome::insertGeneToGenome(CGenebase* mygene)
 {
 	this->m_geneNum=this->m_geneNum+1;
 	this->m_totalbitNum=this->m_geneNum + mygene->bitNum();
-	this->m_pGenome->push_back(mygene);
-	this->m_pGeneVARofGenome->push_back(*(mygene->m_GeneVAR));
-	for(int i=0;i<mygene->bitNum();i++)
-	   this->m_ptotalgeneofGenome->push_back(mygene->bitNum());
+	this->m_Genome.push_back(mygene);
+	this->m_GeneVARofGenome.push_back(*(mygene->m_GeneVAR));
+
+	if(mygene->codeType!= REAL)
+	  this->concatenateBitsets(this->m_totalgeneofGenome,mygene->bitGene());
+    else
+      this->m_totalRealofGenome.push_back(mygene->m_value);
+
 }
 bool CGenome:isNormalFinish()const
 {
@@ -200,57 +201,57 @@ void CGenome:setFinishState(bool stat)
 //
 
 //
-void CGenome::init(std::vector <GeneVAR>* vec_genVal)
+void CGenome::init(std::vector <GeneVAR>& vec_genVal)
 {
 	assert(vec_genVal);
 
-	this->m_varNumofGenome=vec_genVal->size();
+	this->m_varNumofGenome=vec_genVal.size();
 	this->m_geneNum=m_varNumofGenome;
 	this->m_totalbitNum=0;
-	// pointer
-	//General_GA_Parameter.CodeMode=REAL;
-	this->m_pGeneVARofGenome=new (std::vector<GeneVAR>)();   //contruct empty vector<GeneVAR> pointer
-    this->m_pGeneVARofGenome->assign(vec_genVal->begin(),vec_genVal->end());
 
-    this->m_pGenome = new (std::vector<CGenebase*>)(m_geneNum);
-
-    //for 3 type of gene,initialization.
-    if( General_GA_Parameter.CodeMode != REAL ){
-        m_ptotalgeneofGenome = new (std::vector <unsigned int>);
-    }else
-        m_ptotalRealofGenome = new (std::vector <double>);
+    this->m_GeneVARofGenome.assign(vec_genVal.begin(),vec_genVal.end());
 
     for(int i=0;i<this->m_varNumofGenome;i++)
 	{
 	    if (General_GA_Parameter.CodeMode==BINARY)
-	         m_pGenome->at(i) = new CBinarygene(vec_genVal->at(i));
+	         m_Genome.push_back( new CBinarygene(vec_genVal[i] ));
         else if (General_GA_Parameter.CodeMode==GRAY)
-             m_pGenome->at(i) = new CGraygene(vec_genVal->at(i));
+             m_Genome.push_back( new CGraygene(vec_genVal[i])) );
         else
-             m_pGenome->at(i) = new CRealgene(vec_genVal->at(i));
+             m_Genome.push_back( new CRealgene(vec_genVal[i]) );
         if( General_GA_Parameter.CodeMode!=REAL ){
-            std::vector<unsigned int>* tempbitGene=m_pGenome->at(i)->bitGene();
-            m_ptotalgeneofGenome->insert(m_ptotalgeneofGenome->end(),tempbitGene->begin(), \
-                                         tempbitGene->end());
-            this->m_totalbitNum=this->m_totalbitNum + m_pGenome->at(i)->bitNum();
+              this->concatenateBitsets(this->m_totalgeneofGenome,m_Genome[i]->bitGene());
         }else
-            m_ptotalRealofGenome->push_back(m_pGenome->at(i)->realGene());
+               m_totalRealofGenome.push_back(m_Genome[i]->realGene());
 	}
+	this->m_totalbitNum = m_totalgeneofGenome.size();
+}
+void CGenome::concatenateBitsets(boost::dynamic_bitset<>& first, const boost::dynamic_bitset<>& second)
+{
+    Bitset secondCopy(second);
+
+    secondCopy.resize(first.size() + second.size());
+    //Increase the size of the bit buffer to fit the data being placed in it
+    first.resize(first.size() + second.size());
+
+
+    //shift the bits in the firstCopy to the left
+    first <<= second.size();
+
+    //"copy" the bits from the secondCopy into the firstCopy
+    first |= secondCopy;
+
 }
 // operator
 bool CGenome::operator==(CGenome& myGenome)
 {
-	bool res=true;
 	if (this->m_geneNum!=myGenome.geneNum() || (General_GA_Parameter.CodeMode!=REAL && \
                                              this->m_totalbitNum!=myGenome.totalbitNum()) )
 	   return false;
-	for(unsigned int i=0; i<m_ptotalgeneofGenome->size(); i++)
-	   if(m_ptotalgeneofGenome->at(i)!=(myGenome.totalbitGene())->at(i))
-	   {
-	   	    res=false;
-	   	    break;
-	   }
-	return res;
+    if(m_totalgeneofGenome == myGenome.totalbitGene())
+       return true;
+    else
+	   return false;
 }
 bool CGenome::operator ^= (CGenome& myGenome)
 {
@@ -285,16 +286,16 @@ double CGenome::operator[](std::string index_name)
 	else if(index_name=="origvalue")
 	   return this->m_origValue;
 	else{
-	   ERROR_OUTPUT("Error: str of [] can not match","CGenome","[]operator");
-	   return 0;
+	   Log::Error<<(" str of [] can not match! CGenome_[]operator!\n";
+	   boost::throw_exception(std::runtime_error("str of [] can not match! CGenome_[]operator!\n"));
 	}
 }
 CGenome::~CGenome()
 {
-	for(size_t i=0;i<m_pGenome->size();i++)
-        delete (*m_pGenome)[i];
-	delete m_pGenome;
-	delete m_pGeneVARofGenome;
+	for(size_t i=0;i<m_Genome.size();i++)
+        delete m_pGenome[i];
+	m_Genome.clear();
+	m_GeneVARofGenome.clear();
 }
 
 }

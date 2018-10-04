@@ -21,7 +21,7 @@ class CBinarygene:public CGenebase
         virtual int bitNum();
     protected:
         Bitset m_bitdata;
-        int m_bitNum;
+        int    m_bitNum;
     private:
 };
 

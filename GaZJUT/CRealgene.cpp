@@ -3,11 +3,12 @@ namespace GAZJUT{
 
 CRealgene::CRealgene():CGenebase()
 {
-
+    this->codeType=REAL;
 }
 CRealgene::CRealgene(GeneVAR myVal):CGenebase(myVal)
 {
     this->init(myVal);
+    this->codeType=REAL;
 }
 
 CRealgene::~CRealgene()

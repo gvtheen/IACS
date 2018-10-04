@@ -7,12 +7,13 @@ namespace GAZJUT{
 
 CBinarygene::CBinarygene():CGenebase()
 {
-
+    this->codeType=BINARY;
 }
 CBinarygene::CBinarygene(GeneVAR myVal):CGenebase(myVal)
 {//ctor
 //    CGenebase::CGenebase(myVal);
     this->init(myVal);
+    this->codeType=BINARY;
 }
 
 CBinarygene::~CBinarygene()
