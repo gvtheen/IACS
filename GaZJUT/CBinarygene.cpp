@@ -9,7 +9,7 @@ CBinarygene::CBinarygene():CGenebase()
 {
     this->codeType=BINARY;
 }
-CBinarygene::CBinarygene(GeneVAR myVal):CGenebase(myVal)
+CBinarygene::CBinarygene(GeneVAR *myVal):CGenebase(myVal)
 {//ctor
 //    CGenebase::CGenebase(myVal);
     this->init(myVal);
@@ -66,18 +66,14 @@ double CBinarygene::decode()
     //std::cout<<"value of CBinarygene:"<<this->m_value<<endl;
      return  this->m_value;
 }
-void CBinarygene::init(GeneVAR myVal)
+void CBinarygene::init(GeneVAR*myVal)
 {
     double rndNum;
-    assert(this->m_GeneVAR);
+    assert(myVal);
 
-    if(this->m_GeneVAR==nullptr)
-    {
-        this->m_GeneVAR=new GeneVAR();
-        *m_GeneVAR=myVal;
-    }
+    this->m_GeneVAR=myVal;
    // using CGeneBase::init(myVal);
-    this->m_bitNum = calcBitNum(myVal);
+    this->m_bitNum = calcBitNum(*myVal);
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
 

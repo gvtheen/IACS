@@ -6,7 +6,7 @@ namespace GAZJUT{
 CEvaluator::CEvaluator()
 {
 }
-CEvaluator::CEvaluator(CCalcFitnessInterface* myEvaluator)
+CEvaluator::CEvaluator(CALCZJUT::CCalcFitnessInterface* myEvaluator)
 {
     this->m_pEvaluator = myEvaluator->clone();
 }
@@ -16,23 +16,30 @@ CEvaluator::~CEvaluator()
 void CEvaluator::run(CGpopulation* CurrentPopulation)
 {
    bool runstate=false;
-   double tempValue;
-   int pop_num = CurrentPopulation->popNum();
+   double tempOrigValue;
+   size_t pop_num = CurrentPopulation->popNum();
 
-   std::vector<double> Temp_OrigScore;
+   std::vector<double> OrigScore;
+   std::vector<double> DecValueOfGenome;
    // calculate the fitness of each genome in population
-   for(int i=0;i<pop_num;i++)
+   for(size_t i=0;i<pop_num;i++)
    {
-      tempValue = m_pEvaluator->CalcuRawFit(((*CurrentPopulation)[i])->getDecValue(),runstate);
-      Temp_OrigScore.push_back(tempValue);
-      ((*CurrentPopulation)[i])->setOrigValue( Temp_OrigScore[i] );
+      //clear all content of DecValueOfGenome
+      DecValueOfGenome.clear();
+      // get dec. Value of ith Genome.
+      ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
+      // Run evaluator, obtained raw value.
+      tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
+
+      OrigScore.push_back(tempOrigValue);
+      ((*CurrentPopulation)[i])->setOrigValue( OrigScore[i] );
       ((*CurrentPopulation)[i])->setFinishState(runstate);
    }
-   // call the function of m_pEvaluator for converting the original value to Raw score.
-   m_pEvaluator->ConvOrigToRawScore(&Temp_OrigScore);
+      // call the function of m_pEvaluator for converting the original value to Raw score.
+   m_pEvaluator->ConvOrigToRawScore(OrigScore);
 
-   for(int i=0;i<pop_num;i++)
-      ((*CurrentPopulation)[i])->setRawScore(Temp_OrigScore[i]);
+   for(size_t i=0;i<pop_num;i++)
+      ((*CurrentPopulation)[i])->setRawScore(OrigScore[i]);
 }
 void CEvaluator::setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcFitness)
 {
@@ -42,4 +49,8 @@ CALCZJUT::CCalcFitnessInterface* CEvaluator::CalcFitnessInterface()
 {
    return this->m_pEvaluator;
 }
+
+
+
+
 }

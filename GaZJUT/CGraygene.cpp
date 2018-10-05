@@ -8,7 +8,7 @@ CGraygene::CGraygene():CGenebase()
     //nothing is done.
     this->codeType=GRAY;
 }
-CGraygene::CGraygene(GeneVAR myVal):CGenebase(myVal)
+CGraygene::CGraygene(GeneVAR*myVal):CGenebase(myVal)
 {
     this->init(myVal);
     this->codeType=GRAY;
@@ -16,6 +16,7 @@ CGraygene::CGraygene(GeneVAR myVal):CGenebase(myVal)
 
 CGraygene::~CGraygene()
 {
+    m_bitdata.clear();
     //nothing is done.
 }
 
@@ -38,16 +39,14 @@ double CGraygene::decode()
      tempData.clear();
      return  this->m_value;
 }
-void CGraygene::init(GeneVAR myVal)
+void CGraygene::init(GeneVAR* myVal)
 {
     double rndNum;
-    assert(this->m_GeneVAR);
-    if(this->m_GeneVAR==nullptr)
-    {
-        this->m_GeneVAR=new GeneVAR();
-        *m_GeneVAR=myVal;
-    }
-    this->m_bitNum = calcBitNum(myVal);
+    assert(myVal);
+
+    this->m_GeneVAR=myVal;
+
+    this->m_bitNum = calcBitNum(*myVal);
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
     for(size_t i=0;i<this->m_bitNum;i++)

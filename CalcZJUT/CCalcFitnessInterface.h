@@ -25,8 +25,8 @@ class CCalcFitnessInterface
 		 virtual CCalcFitnessInterface* clone()=0;
 
 		 virtual void init()=0;
-		 virtual double CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist)=0;
-         virtual void   ConvOrigToRawScore(std::vector<double>*)=0;
+		 virtual double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist)=0;
+         virtual void   ConvOrigToRawScore(std::vector<double>&)=0;
 
          void setCalcModeStruct(CCalcModeStruct* Temp_calcModeStruct);
          CCalcModeStruct* calcModeStruct();

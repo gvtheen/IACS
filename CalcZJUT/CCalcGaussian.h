@@ -13,8 +13,8 @@ class CCalcGaussian:public CCalcFitnessInterface
 		~CCalcGaussian();
 
 		 void init();
-		 double CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
-		 void ConvOrigToRawScore(std::vector<double>*);
+		 double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
+		 void ConvOrigToRawScore(std::vector<double>&);
 
 		 //normal function
 		 void   CheckInputFile();

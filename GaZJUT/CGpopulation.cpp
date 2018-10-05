@@ -113,15 +113,23 @@ double CGpopulation::operator[](std::string mystr)
 //{
 //
 //}
-void CGpopulation::asscendSort()
+void CGpopulation::ascendSort()
 {
 	std::sort(m_Gpopulation.begin(),m_Gpopulation.end(),\
       [](CGenome* A,CGenome* B){ return (*A)["fitness"] < (*B)["fitness"];});   // use lamba
+
+    // after sorting, index of Genome must be reseted
+    for(size_t i=0;i<m_Gpopulation.size();i++)
+        m_Gpopulation[i]->setIndex(i);
 }
 void CGpopulation::descendSort()
 {
 	std::sort(m_Gpopulation.begin(),m_Gpopulation.end(),\
       [](CGenome* A,CGenome* B){ return (*A)["fitness"] > (*B)["fitness"];});   // use lamba
+
+    // after sorting, index of Genome must be reseted.
+    for(size_t i=0;i<m_Gpopulation.size();i++)
+        m_Gpopulation[i]->setIndex(i);
 }
 //after genetic operatoration, updatepopulation is necessary.
 void CGpopulation::updatePopulation()

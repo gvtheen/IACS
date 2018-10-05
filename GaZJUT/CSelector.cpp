@@ -1,5 +1,6 @@
 #include "CSelector.h"
 #include "CGaparameter.h"
+#include "CGenome.h"
 #include "GaDeclaration.h"
 #include "../Util/log.hpp"
 #include "../GACatalyst.h"
@@ -13,6 +14,7 @@ namespace GAZJUT{
 CSelector::CSelector()
 :CGaOperatorBase()
 {
+    this->mix_index=0;
 }
 CSelector::CSelector(const CSelector& myselector)
 {
@@ -52,6 +54,15 @@ void CSelector::run(CGpopulation* PCurrentPopulation)
 			this->tournament_Select(PCurrentPopulation);
 			break;
 		case MIXED:
+		    this->mix_index +=1;
+		    if(mix_index%3==0)
+               this->roulette_Wheel_Select(PCurrentPopulation);
+            else if(mix_index%3==1)
+               this->rondom_Select(PCurrentPopulation);
+            else if(mix_index%3==2){
+               this->tournament_Select(PCurrentPopulation);
+               this->mix_index=2;
+            }
 			break;
 		default:
 			this->roulette_Wheel_Select(PCurrentPopulation);

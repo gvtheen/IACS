@@ -12,7 +12,7 @@ class CGenebase
 {
     public:
         CGenebase();
-        CGenebase(GeneVAR);
+        CGenebase(GeneVAR*);
         virtual ~CGenebase();
         virtual double decode();
         virtual void init(GeneVAR);

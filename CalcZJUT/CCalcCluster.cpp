@@ -51,11 +51,11 @@ CCalcCluster::~CCalcCluster()
 {
     //dtor
 }
-void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
+void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene, size_t mth_Genome)
 {
 
 }
-void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
+void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue, size_t mth_Genome)
 {
 
 }
@@ -73,8 +73,11 @@ void CCalcCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
    }
    max_radius = max_radius + 0.50;
    size_t num = m_PopuPeriodicFramework[0]->size();
+   if(currentGeneVARible.size()!=0)
+      currentGeneVARible.clear();
+
    for(size_t i=0;i<3*num;i++)
-       currentGeneVARible.push_back({-1*max_radius,max_radius,0.001});
+       currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
 }
 void CCalcCluster::init()
 {

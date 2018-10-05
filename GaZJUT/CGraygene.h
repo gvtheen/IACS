@@ -14,10 +14,10 @@ class CGraygene:public CGenebase
 {
     public:
         CGraygene();
-        CGraygene(GeneVAR);
+        CGraygene(GeneVAR*);
         virtual ~CGraygene();
         virtual double decode();
-        virtual void init(GeneVAR);
+        virtual void init(GeneVAR*);
         virtual void updatecode(double);
         virtual Bitset& bitGene();
         virtual size_t bitNum();

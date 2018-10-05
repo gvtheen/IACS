@@ -29,7 +29,7 @@ class CGpopulation
 
 		void raw_statistic();
 		void fitness_statistic();
-		void asscendSort();
+		void ascendSort();
 		void descendSort();
 		//input output
 		size_t  popNum();

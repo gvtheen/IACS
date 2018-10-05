@@ -9,6 +9,9 @@ class CCalcLammps:public CCalcFitnessInterface
         CCalcLammps();
         virtual ~CCalcLammps();
 
+        double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
+		 void ConvOrigToRawScore(std::vector<double>&);
+
     protected:
 
     private:

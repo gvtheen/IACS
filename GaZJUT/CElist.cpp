@@ -1,8 +1,10 @@
 #include "CElist.h"
 #include "CGaparameter.h"
+#include <vector>
 namespace GAZJUT{
 
 CElist::CElist()
+:CGaOperatorBase()
 {
 }
 
@@ -10,7 +12,7 @@ void CElist::run(CGpopulation* pCurrentPopulation)
 {
     assert(pCurrentPopulation);
 
-    int current_generation = pCurrentPopulation->m_pObjGaparameter->Curr_Generation;
+    size_t current_generation = pCurrentPopulation->m_pObjGaparameter->Curr_Generation;
 
     if(current_generation==0){
         this->m_OldPopulation = new CGpopulation(*pCurrentPopulation);
@@ -21,13 +23,17 @@ void CElist::run(CGpopulation* pCurrentPopulation)
        delete this->m_OldPopulation;
        this->m_OldPopulation = new CGpopulation(*pCurrentPopulation);
     }else if((*m_OldPopulation)["minOri"]<(*pCurrentPopulation)["minOri"]){
-       this->m_OldPopulation->descendSort();   //max   min  Fitness
-          pCurrentPopulation->asscendSort();   //min   max  Fitness
+                                            //  index= 0 1 2   ... N-1
+       this->m_OldPopulation->descendSort();   //      max         min          Fitness
+          pCurrentPopulation->ascendSort();    //      min         max          Fitness
 
-       int popnum = pCurrentPopulation->popNum();
-       for(int i=0;i<popnum;i++)
-          if( (*m_OldPopulation)[i]->origValue() < (*pCurrentPopulation)[i]->origValue() )
-            (*pCurrentPopulation)[i]->updateDecValueGene((*m_OldPopulation)[i]->getDecValue());
+       size_t popnum = pCurrentPopulation->popNum();
+       std::vector<double> tempValue;
+       for(size_t i=0;i<popnum;i++)
+          if( (*m_OldPopulation)[i]->origValue() < (*pCurrentPopulation)[i]->origValue() ){
+             (*m_OldPopulation)[i]->getDecValue(tempValue);
+             (*pCurrentPopulation)[i]->updateDecValueGene(tempValue);
+          }
     }
 }
 CElist::~CElist()

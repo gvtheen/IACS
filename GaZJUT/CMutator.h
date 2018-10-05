@@ -1,6 +1,7 @@
 #ifndef CMUTATOR_H
 #define CMUTATOR_H
 #include "CGpopulation.h"
+#include "CGaOperatorBase.h"
 
 namespace GAZJUT{
 

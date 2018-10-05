@@ -57,6 +57,7 @@ class CGenome
 		size_t totalbitNum();
 
 		size_t index();
+		void setIndex(size_t);
 
 		bool   isNormalFinish()const;
 		void   setFinishState(bool);

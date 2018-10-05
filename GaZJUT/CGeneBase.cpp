@@ -6,7 +6,7 @@ CGenebase::CGenebase()
 {
     this->m_GeneVAR=nullptr;
 }
-CGenebase::CGenebase(GeneVAR var)
+CGenebase::CGenebase(GeneVAR* var)
 {
     this->init(var);
 }
@@ -14,10 +14,9 @@ double CGenebase::decode()
 {
     return this->m_value;
 }
-void CGenebase::init(GeneVAR var)
+void CGenebase::init(GeneVAR* var)
 {
-    this->m_GeneVAR=new GeneVAR();
-    *m_GeneVAR=var;
+    m_GeneVAR=var;
 }
 void CGenebase::updatecode(double m)
 {
@@ -42,6 +41,8 @@ size_t CGenebase::bitNum()
 }
 CGenebase::~CGenebase()
 {
-    delete this->m_GeneVAR;
+    //delete this->m_GeneVAR;
 }
+
+
 }

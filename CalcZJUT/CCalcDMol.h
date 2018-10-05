@@ -12,8 +12,8 @@ class CCalcDMol:public CCalcFitnessInterface
 		~CCalcDMol();
 
          void init();
-		 double CalcuRawFit(std::vector<double>* ,size_t& , bool& );
-         void   ConvOrigToRawScore(std::vector<double>* OrigRawScore);
+		 double CalcuRawFit(std::vector<double>& ,size_t& , bool& );
+         void   ConvOrigToRawScore(std::vector<double>& OrigRawScore);
 
          void   CheckInputFile();
          bool   IsNormalComplete();

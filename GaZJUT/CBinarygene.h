@@ -12,10 +12,10 @@ class CBinarygene:public CGenebase
 {
     public:
         CBinarygene();
-        CBinarygene(GeneVAR);
+        CBinarygene(GeneVAR*);
         virtual ~CBinarygene();
         double decode();
-        void init(GeneVAR);
+        void init(GeneVAR*);
         void updatecode(double);
         Bitset& bitGene();
         size_t bitNum();

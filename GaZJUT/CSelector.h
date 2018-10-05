@@ -1,7 +1,6 @@
 #ifndef CSELECTOR_H
 #define CSELECTOR_H
 #include "CGpopulation.h"
-#include "CGenome.h"
 #include "CGaOperatorBase.h"
 
 namespace GAZJUT{
@@ -23,6 +22,7 @@ class CSelector:public CGaOperatorBase
 		void tournament_Select(CGpopulation*); //TOURNAMENT
 
 	protected:
+	    size_t mix_index;
 
 
 };

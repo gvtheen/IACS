@@ -7,6 +7,7 @@
 namespace GAZJUT{
 
 CFitnessScaling::CFitnessScaling()
+:CGaOperatorBase()
 {
 }
 
@@ -16,7 +17,7 @@ CFitnessScaling::~CFitnessScaling()
 void CFitnessScaling::run(CGpopulation* currentPopulation)
 {
      E_SCALING_TYPE myStype = currentPopulation->m_pObjGaparameter->ScalingMode();
-     switch(myStype )
+     switch( (int)myStype )
      {
         case LINEAR:
             this->linearScaling(currentPopulation);
@@ -56,9 +57,9 @@ void CFitnessScaling::linearScaling(CGpopulation* currentPopulation)
        b = -1*raw_min * raw_avg / delta;
     }
     double temp_raw;
-    int popnum = currentPopulation->popNum();
+    size_t popnum = currentPopulation->popNum();
     //std::vector <CGenome*> *p_genome=currentPopulation->m_pGpopulation;
-    for(int i=0;i<popnum;i++)
+    for(size_t i=0;i<popnum;i++)
     {
        temp_raw = ((*currentPopulation)[i])->rawscore();
        temp_raw = temp_raw*a + b;
@@ -76,10 +77,10 @@ void CFitnessScaling::sigmaTruncScaling(CGpopulation* currentPopulation)
     double raw_avg = (*currentPopulation)["avgRaw"];
     double raw_dev = (*currentPopulation)["rawDev"];
 
-    int popnum = currentPopulation->popNum();
+    size_t popnum = currentPopulation->popNum();
     //std::vector <CGenome*> *p_genome=currentPopulation->m_pGpopulation;
     double temp_raw;
-    for(int i=0;i<popnum;i++)
+    for(size_t i=0;i<popnum;i++)
     {
        temp_raw = ((*currentPopulation)[i])->rawscore() - raw_avg;
        temp_raw = temp_raw + raw_dev*c;
@@ -91,11 +92,11 @@ void CFitnessScaling::powerLawScaling(CGpopulation* currentPopulation)
     currentPopulation->raw_statistic();
 
     double k = currentPopulation->m_pObjGaparameter->ScalePowerLawFactor;
-    int popnum = currentPopulation->popNum();
+    size_t popnum = currentPopulation->popNum();
 
     //std::vector <CGenome*> *p_genome=currentPopulation->m_pGpopulation;
     double temp_raw;
-    for(int i=0;i<popnum;i++)
+    for(size_t i=0;i<popnum;i++)
     {
        temp_raw = ((*currentPopulation)[i])->rawscore();
        temp_raw = std::pow(temp_raw,k);

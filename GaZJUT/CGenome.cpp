@@ -205,6 +205,10 @@ size_t CGenome::index()
 {
    return this->m_index;
 }
+void CGenome::setIndex(size_t m)
+{
+    this->m_index=m;
+}
 //
 /*
 according to the gene-variable array, all of gene objects were initialized
@@ -221,11 +225,11 @@ void CGenome::init(std::vector <GeneVAR>& vec_genVal)
     for(size_t i=0;i<this->m_varNumofGenome;i++)
 	{
 	    if (this->m_codeType==BINARY)
-	         m_Genome.push_back( new CBinarygene(vec_genVal[i]));
+	         m_Genome.push_back( new CBinarygene(&vec_genVal[i]));
         else if (this->m_codeType==GRAY)
-             m_Genome.push_back( new CGraygene(vec_genVal[i]));
+             m_Genome.push_back( new CGraygene(&vec_genVal[i]));
         else
-             m_Genome.push_back( new CRealgene(vec_genVal[i]));
+             m_Genome.push_back( new CRealgene(&vec_genVal[i]));
         if( this->m_codeType!=REAL ){
               this->concatenateBitsets(this->m_totalgeneofGenome,m_Genome[i]->bitGene());
         }else

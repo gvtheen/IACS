@@ -23,7 +23,7 @@ class CEvaluator:public CGaOperatorBase
 
 		void clone();
 		void init();
-		virtual void run( CGpopulation* );
+		void run( CGpopulation* );
 
         void setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcModeStruct);
         CALCZJUT::CCalcFitnessInterface* CalcFitnessInterface();
