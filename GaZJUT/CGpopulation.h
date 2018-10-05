@@ -50,9 +50,9 @@ class CGpopulation
 		     CGenome            *m_pMaxFitGenome;
 		     CGenome            *m_pMaxOriGenome;
 		     CGenome            *m_pMinOriGenome;
-	protected:
-		std::vector <CGenome*>   m_Gpopulation;
 
+		std::vector <CGenome*>   m_Gpopulation;
+    protected:
 		// analyse the score of current Population
 		     double              m_MinRawScore;
 		     double              m_MaxRawScore;

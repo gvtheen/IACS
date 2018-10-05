@@ -1,14 +1,14 @@
-#ifndef CGaoperatorBase_H
-#define CGaoperatorBase_H
+#ifndef CGaOperatorBase_H
+#define CGaOperatorBase_H
 #include "CGpopulation.h"
 
 namespace GAZJUT{
 
-class CGaoperatorBase
+class CGaOperatorBase
 {
 	public:
-		CGaoperatorBase();
-		virtual ~CGaoperatorBase();
+		CGaOperatorBase();
+		virtual ~CGaOperatorBase();
 		virtual void run(CGpopulation*)=0;
 	protected:
 };

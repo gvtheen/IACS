@@ -1,10 +1,10 @@
 #ifndef CROSS_H
 #define CROSS_H
 #include "CGpopulation.h"
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 namespace GAZJUT{
 
-class CCross:public CGaoperatorBase
+class CCross:public CGaOperatorBase
 {
 	public:
 		CCross();

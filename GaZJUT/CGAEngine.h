@@ -13,7 +13,7 @@ namespace CALCZJUT{
 namespace GAZJUT{
 
 class CGpopulation;
-class CGaoperatorBase;
+class CGaOperatorBase;
 class CGaparameter;
 
 class CGAEngine
@@ -34,7 +34,7 @@ class CGAEngine
 		void evolve();
 
 	protected:
-	    std::vector<CGaoperatorBase*>  m_GeneticOperator;
+	    std::vector<CGaOperatorBase*>  m_GeneticOperator;
         CGpopulation                  *m_pCurrentPopulation;
 CALCZJUT::CCalcFitnessInterface       *m_pFitnessCalculator;
 	    CGaparameter                  *m_pGaparameter;

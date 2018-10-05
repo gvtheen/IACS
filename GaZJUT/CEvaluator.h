@@ -1,7 +1,7 @@
 #ifndef CEVALUATOR_H
 #define CEVALUATOR_H
 #include "CGpopulation.h"
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 
 /*
 The main function of class is that FitnessValuator conducts calculation to
@@ -14,7 +14,7 @@ namespace CALCZJUT{
 }
 namespace GAZJUT{
 
-class CEvaluator:public CGaoperatorBase
+class CEvaluator:public CGaOperatorBase
 {
 	public:
 		CEvaluator();

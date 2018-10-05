@@ -2,18 +2,19 @@
 #define CSELECTOR_H
 #include "CGpopulation.h"
 #include "CGenome.h"
-#include "CGene.h"
-#include "CRandomgenerator.h"
-namespace GAZJUT{
+#include "CGaOperatorBase.h"
 
-class CSelector:public CGaoperatorBase
+namespace GAZJUT{
+// declarization
+
+class CSelector:public CGaOperatorBase
 {
 	public:
 		CSelector();
 		CSelector(const CSelector&);
 		~CSelector();
 
-		void clone();
+		CSelector* clone();
 		void init();
 		void run(CGpopulation*);
 		// three different selectors

@@ -5,7 +5,7 @@
 #include "CElist.h"
 #include "CMutator.h"
 #include "CEvaluator.h"
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 #include "CCalcFitnessInterface.h"
 #include "CGaparameter.h"
 #include "CParameter.h"

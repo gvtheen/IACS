@@ -2,11 +2,11 @@
 #define CELIST_H
 #include "CGenome.h"
 #include "CGpopulation.h"
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 
 namespace GAZJUT{
 
-class CElist:public CGaoperatorBase
+class CElist:public CGaOperatorBase
 {
 	public:
 		CElist();

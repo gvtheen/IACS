@@ -1,10 +1,10 @@
 #ifndef CFITNESSSCALING_H
 #define CFITNESSSCALING_H
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 #include "CGpopulation.h"
 namespace GAZJUT{
 
-class CFitnessScaling:public CGaoperatorBase
+class CFitnessScaling:public CGaOperatorBase
 {
 	public:
 		CFitnessScaling();

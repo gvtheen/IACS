@@ -4,7 +4,7 @@
 
 namespace GAZJUT{
 
-class CMutator:public CGaoperatorBase
+class CMutator:public CGaOperatorBase
 {
 	public:
 		CMutator();

@@ -1,20 +1,29 @@
 #include "CSelector.h"
+#include "CGaparameter.h"
+#include "GaDeclaration.h"
+#include "../Util/log.hpp"
+#include "../GACatalyst.h"
+#include "../Util/CRandomgenerator.h"
+using util::Log;
+using namespace GAZJUT;
+
 namespace GAZJUT{
 
 //constructor
 CSelector::CSelector()
+:CGaOperatorBase()
 {
 }
 CSelector::CSelector(const CSelector& myselector)
 {
-    return new CSelector();
+    //this->CSelector();
 }
 //deconstructor
 CSelector::~CSelector()
 {
 }
 //property function
-void CSelector::clone()
+CSelector* CSelector::clone()
 {
 	return new CSelector(*this);
 }
@@ -25,13 +34,13 @@ void CSelector::run(CGpopulation* PCurrentPopulation)
 
     if(PCurrentPopulation==nullptr)
     {
-          ERROR_OUTPUT("Error: CurrentPopulation is null","CSelector","run");
-          abort();
+          Log::Error<<"Error: CurrentPopulation is null! CSelector_run!\n";
+          boost::throw_exception(std::runtime_error("Error: CurrentPopulation is null! CSelector_run!\n"));
     }
     // run statistic calculation
 	PCurrentPopulation->fitness_statistic();
 	//dispatch selector
-	switch (PCurrentPopulation->m_pObjGaparameter->SearchT())
+	switch ((int)(PCurrentPopulation->m_pObjGaparameter->SearchType()))
 	{
 		case ROULETTE_WHEEL:
 		    this->roulette_Wheel_Select(PCurrentPopulation);
@@ -50,97 +59,110 @@ void CSelector::run(CGpopulation* PCurrentPopulation)
 	}
 }
 
-void CSelector::roulette_Wheel_Select(CGpopulation* m_PCurrentPopulation)
+void CSelector::roulette_Wheel_Select(CGpopulation* P_CurrentPopulation)
 {
 	// copy original population to temp population for further treatment.
 	// After selector process, current population (m_PCurrentPopulation) modified is new population
 
-	CGpopulation* copy_of_currentPopulation = m_PCurrentPopulation->clone();
-	std::vector <CGenome*> p_copy_currentPopulation=copy_of_currentPopulation->m_pGpopulation;
+	CGpopulation* P_copy_of_CurrentPopulation = P_CurrentPopulation->clone();
+	std::vector <CGenome*>& R_copy_currentPopulation = P_copy_of_CurrentPopulation->m_Gpopulation;
 
 	std::vector <CGenome*>::iterator it;
 	double rndNum;
-    CRandomgenerator *Rndgenerator=new CRandomgenerator();
+    util::CRandomgenerator *Rndgenerator=new util::CRandomgenerator();
     unsigned int seedNum = 0;
 
-	for (it=m_PCurrentPopulation->m_pGpopulation->begin();it<m_PCurrentPopulation->m_pGpopulation->end();it++)
+    std::vector<double> tempDoubleVect;
+
+	for (it=P_CurrentPopulation->m_Gpopulation.begin();it<P_CurrentPopulation->m_Gpopulation.end();it++)
 	{
 		rndNum=Rndgenerator->uniformRandom01(seedNum++);
-		if( rndNum < p_copy_currentPopulation[0]->cumufitness()
-		    (*it)->updateDecValueGene(p_copy_currentPopulation[0]->getDecValue());
-		else
-		{
-			for(int i=0; i < p_copy_currentPopulation.size() - 1; i++)
-            {
-                    if(rndNum > p_copy_currentPopulation[i]->cumufitness() &&  \
-                       rndNum < p_copy_currentPopulation[i+1]->cumufitness())
-                    {
-                        (*it)->updateDecValueGene(p_copy_currentPopulation[i]->getDecValue());
+		if( rndNum < R_copy_currentPopulation[0]->cumufitness()){
+            // Get Dec value from copy population
+            R_copy_currentPopulation[0]->getDecValue(tempDoubleVect);
+            // Set Dec value into current Population
+           (*it)->updateDecValueGene(tempDoubleVect);
+        }else{
+			for(size_t i=0; i < R_copy_currentPopulation.size() - 1; i++){
+                    if(rndNum > R_copy_currentPopulation[i]->cumufitness() &&  \
+                       rndNum < R_copy_currentPopulation[i+1]->cumufitness()){
+                        // Get Dec value from copy population
+                        R_copy_currentPopulation[i]->getDecValue(tempDoubleVect);
+                        // Set Dec value into current Population
+                        (*it)->updateDecValueGene(tempDoubleVect);
 				    }
 			}
 		}
 	}
 	delete Rndgenerator;
-	delete copy_of_currentPopulation;
+	delete P_copy_of_CurrentPopulation;
 }
-void CSelector::rondom_Select(CGpopulation* m_PCurrentPopulation)
+void CSelector::rondom_Select(CGpopulation* P_CurrentPopulation)
 {
 	// copy original population to temp population for further treatment.
 	// After selector process, current population (m_PCurrentPopulation) modified is new population
-	CGpopulation* copy_of_currentPopulation = m_PCurrentPopulation->clone();
-	std::vector <CGenome*> p_copy_currentPopulation=copy_of_currentPopulation->m_pGpopulation;
+	CGpopulation* P_copy_of_currentPopulation = P_CurrentPopulation->clone();
+	std::vector <CGenome*>& R_p_copy_currentPopulation = P_copy_of_currentPopulation->m_Gpopulation;
 
-    std::vector <CGenome*>::iterator it;
-	double pointerdistance;
+	double pointerDistance;
 	int pointer;
-    CRandomgenerator *Rndgenerator=new CRandomgenerator();
+    util::CRandomgenerator *Rndgenerator=new util::CRandomgenerator();
 
-	pointerdistance=1.0/m_PCurrentPopulation->popNum();
-	pointer=pointerdistance*Rndgenerator->uniformRandom01(100);
+	pointerDistance=1.0/P_copy_of_currentPopulation->popNum();
+	pointer=pointerDistance*Rndgenerator->uniformRandom01(100);
 
-	for (it=m_PCurrentPopulation->m_pGpopulation->begin();it<m_PCurrentPopulation->m_pGpopulation->end();it++)
+	std::vector<double> tempDoubleVect;
+	for (size_t i=0;i<P_CurrentPopulation->popNum();i++)
 	{
 		pointer=pointer+i*pointerDistance;
-		if(pointer < p_copy_currentPopulation[0]->cumufitness())
-		   (*it)->updateDecValueGene(p_copy_currentPopulation[0]->getDecValue());
-		else{
-			for(int j=0;j<p_copy_currentPopulation.size() - 1;j++)
-			{
-				if(pointer > p_copy_currentPopulation[j]->cumufitness() && \
-				   pointer < p_copy_currentPopulation[j+1]->cumufitness() )
-				   (*it)->updateDecValueGene(p_copy_currentPopulation[i]->getDecValue());
+		if(pointer < R_p_copy_currentPopulation[0]->cumufitness()){
+             R_p_copy_currentPopulation[0]->getDecValue(tempDoubleVect);
+            (*P_CurrentPopulation)[i]->updateDecValueGene(tempDoubleVect);
+		}else{
+			for(size_t j=0;j<R_p_copy_currentPopulation.size() - 1;j++){
+				if(pointer > R_p_copy_currentPopulation[j]->cumufitness() && \
+				   pointer < R_p_copy_currentPopulation[j+1]->cumufitness() ){
+				      R_p_copy_currentPopulation[j]->getDecValue(tempDoubleVect);
+				      (*P_CurrentPopulation)[i]->updateDecValueGene(tempDoubleVect);
+				   }
 			}
 		}
 
 	}
-	delete copy_of_currentPopulation;
+	delete P_copy_of_currentPopulation;
 	delete Rndgenerator;
-	p_copy_currentPopulation.clear();
+
 }
 
-void CSelector::tournament_Select(CGpopulation* m_PCurrentPopulation)
+void CSelector::tournament_Select(CGpopulation* P_CurrentPopulation)
 {
-	CGpopulation* copy_of_currentPopulation = m_PCurrentPopulation->clone();
-	std::vector <CGenome*> p_copy_currentPopulation = copy_of_currentPopulation->m_pGpopulation;
-    std::vector <CGenome*>::iterator it;
-    std::vector <CGenome*> p_currpopu = m_PCurrentPopulation->m_pGpopulation;
+	CGpopulation* P_copy_of_currentPopulation = P_CurrentPopulation->clone();
+	std::vector <CGenome*>& R_p_copy_currentPopulation = P_copy_of_currentPopulation->m_Gpopulation;
+
 	int p_n1,p_n2;
-    CRandomgenerator *Rndgenerator=new CRandomgenerator();
-    unsigned int seedNum=100;
-	for(it=p_currpopu.begin();it<p_currpopu.end();it++)
+    util::CRandomgenerator *Rndgenerator=new util::CRandomgenerator();
+    unsigned int seedNum=1;
+    size_t popNum=P_CurrentPopulation->popNum();
+
+    std::vector<double> tempDoubleVect;
+	for(size_t i=0;i<popNum;i++)
 	{
-		p_n1=(int)(m_PCurrentPopulation->popNum()*(Rndgenerator->uniformRandom01(seedNum++));
-		p_n2=(int)(m_PCurrentPopulation->popNum()*(Rndgenerator->uniformRandom01(seedNum++));
+		p_n1=(int)(popNum*(Rndgenerator->uniformRandom01(seedNum++)));
+		p_n2=(int)(popNum*(Rndgenerator->uniformRandom01(seedNum++)));
 
 		// comparing value is fitness, but not cumufitness;
-		if(p_copy_currentPopulation[p_n1]->fitness() > p_copy_currentPopulation[p_n2]->fitness())
-		   (*it)->updateDecValueGene(p_copy_currentPopulation[p_n1]->getDecValue());
-		else
-		   (*it)->updateDecValueGene(p_copy_currentPopulation[p_n2]->getDecValue());
+		if(R_p_copy_currentPopulation[p_n1]->fitness() > R_p_copy_currentPopulation[p_n2]->fitness()){
+            R_p_copy_currentPopulation[p_n1]->getDecValue(tempDoubleVect);
+            (*P_CurrentPopulation)[i]->updateDecValueGene(tempDoubleVect);
+
+		}else{
+		    R_p_copy_currentPopulation[p_n2]->getDecValue(tempDoubleVect);
+            (*P_CurrentPopulation)[i]->updateDecValueGene(tempDoubleVect);
+		}
 	}
-	delete copy_of_currentPopulation;
+	delete P_copy_of_currentPopulation;
 	delete Rndgenerator;
-	p_copy_currentPopulation.clear();
+
 }
 
 

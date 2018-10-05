@@ -1,14 +1,14 @@
-#include "CGaoperatorBase.h"
+#include "CGaOperatorBase.h"
 namespace GAZJUT{
 
-CGaoperatorBase::CGaoperatorBase()
+CGaOperatorBase::CGaOperatorBase()
 {
 }
 
-CGaoperatorBase::~CGaoperatorBase()
+CGaOperatorBase::~CGaOperatorBase()
 {
 }
-void CGaoperatorBase::run(const CGpopulation*)
+void CGaOperatorBase::run(const CGpopulation*)
 {
 }
 
