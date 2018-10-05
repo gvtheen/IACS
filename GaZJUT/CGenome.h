@@ -16,7 +16,7 @@ class CGenome
 	public:
 		//constructor
 		CGenome();
-		CGenome(std::vector <GeneVAR>*, E_CODE_TYPE,size_t);
+		CGenome(std::vector<GeneVAR>&, E_CODE_TYPE,size_t);
 		CGenome(CGenome&);
 		~CGenome();
 		//operations function

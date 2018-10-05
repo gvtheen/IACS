@@ -1,5 +1,7 @@
 #include "CGaparameter.h"
 #include "GaUtilityFunction.h"
+#include "../Util/log.hpp"
+#include "../GACatalyst.h"
 //# - Scale methods defaults
 /*CDefScaleLinearMultiplier     = 1.2
 CDefScaleSigmaTruncMultiplier = 2.0
@@ -10,46 +12,55 @@ CDefScaleBoltzFactor          = 0.05
 CDefScaleBoltzStart           = 40.0
 */
 
+using util::Log;
+//using namespace GAZJUT;
+
 namespace GAZJUT{
 
 CGaparameter::CGaparameter()
 {
-    this->m_pGeneVARofPopulation=nullptr;
+    this->m_GeneVARofPopulation.clear();
     this->defaultInit();
 }
 
-CGaparameter::CGaparameter(std::vector <GeneVAR>* myVar)
+CGaparameter::CGaparameter(std::vector <GAZJUT::GeneVAR>& myVar)
 {
-    this->m_pGeneVARofPopulation= new (std::vector <GeneVAR>);
-    this->m_pGeneVARofPopulation->assign(myVar->begin(),myVar->end());
+    this->m_GeneVARofPopulation.assign(myVar.begin(),myVar.end());
     this->defaultInit();
 }
 CGaparameter::~CGaparameter()
 {
     delete m_mapCmdString;
-    delete m_pGeneVARofPopulation;
+    m_GeneVARofPopulation.clear();
 }
 
-CGaparameter::CGaparameter(const CGaparameter& other)
+CGaparameter::CGaparameter( CGaparameter& other)
 {
     assert(&other);
     assert(other.m_mapCmdString);
-    assert(other.m_pGeneVARofPopulation);
+
+    this->m_GeneVARofPopulation.assign(other.GeneVAR().begin(), other.GeneVAR().end());
+
+    this->defaultInit();
 
     this->Curr_Generation = other.Curr_Generation;
 
     this->m_mapCmdString = new (std::map <std::string, std::string>);
     this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
 
-    this->m_pGeneVARofPopulation= new (std::vector <GeneVAR>);
-    this->m_pGeneVARofPopulation->assign(other.m_pGeneVARofPopulation->begin(), \
-                                         other.m_pGeneVARofPopulation->end());
-
 }
-CGaparameter& CGaparameter::operator=(const CGaparameter& rhs)
+CGaparameter& CGaparameter::operator=( CGaparameter& other)
 {
-    if (this == &rhs) return *this; // handle self assignment
+    if (this == &other)
+        return *this; // handle self assignment
     //assignment operator
+    this->Curr_Generation = other.Curr_Generation;
+
+    this->m_mapCmdString = new (std::map <std::string, std::string>);
+    this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
+
+    this->m_GeneVARofPopulation.assign(other.GeneVAR().begin(), other.GeneVAR().end());
+
     return *this;
 }
 
@@ -78,73 +89,70 @@ void CGaparameter::add_Curr_Generation()
 {
     this->Curr_Generation = this->Curr_Generation + 1;
 }
-std::vector <GeneVAR>* CGaparameter::GeneVAR()
+std::vector <GeneVAR>& CGaparameter::GeneVAR()
 {
-    return this->m_pGeneVARofPopulation;
+    return this->m_GeneVARofPopulation;
 }
-int CGaparameter::PopNum()
+size_t CGaparameter::PopNum()
 {
      std::string keyValue=(*m_mapCmdString)["[Population_Size]"];
      int d_value;
      try{
         d_value=stoi(keyValue);
      }catch(const std::exception& e){
-        ERROR_OUTPUT("Error: key value is error:",e.what(),"CGaparameter","PopNum");
-        exit(-1);
+        Log::Error<< "key value is error:" << e.what() <<" CGaparameter_PopNum!\n";
+        boost::throw_exception(std::runtime_error("key value is error! CGaparameter_PopNum!\n"));
      }
      return d_value;
 }
-int CGaparameter::GenerationNum()
+size_t CGaparameter::GenerationNum()
 {
      std::string keyValue=(*m_mapCmdString)["[Generation_Number]"];
      int d_value;
      try{
         d_value=stoi(keyValue);
      }catch(const std::exception& e){
-        ERROR_OUTPUT("Error: key value is error:",e.what(),"CGaparameter","GenerationNum");
-        exit(-1);
+        Log::Error<< "key value is error:" << e.what() <<" CGaparameter_GenerationNum!\n";
+        boost::throw_exception(std::runtime_error("key value is error! CGaparameter_GenerationNum!\n"));
      }
      return d_value;
 }
-int CGaparameter::CrossNum()
+size_t CGaparameter::CrossNum()
 {
      std::string keyValue=(*m_mapCmdString)["[Cross_Number]"];
      int d_value;
      try{
         d_value=stoi(keyValue);
      }catch(const std::exception& e){
-        ERROR_OUTPUT("Error: key value is error:",e.what(),"CGaparameter","CrossNum");
-        exit(-1);
+        Log::Error<< "key value is error:" << e.what() <<" CGaparameter_CrossNum!\n";
+        boost::throw_exception(std::runtime_error("key value is error! CGaparameter_CrossNum!\n"));
      }
      return d_value;
 }
-void CGaparameter::setGeneVAR(std::vector <GeneVAR>* myVar)
+void CGaparameter::setGeneVAR(std::vector <GAZJUT::GeneVAR>& myVar)
 {
-    assert(myVar);
+    assert(&myVar);
 
-    if(m_pGeneVARofPopulation==nullptr)
-        m_pGeneVARofPopulation = new (std::vector <GeneVAR>)(myVar->size());
-    if(m_pGeneVARofPopulation->size()!=myVar->size()){
-        delete m_pGeneVARofPopulation;
-        m_pGeneVARofPopulation = new (std::vector <GeneVAR>)(myVar->size());
-    }
-    for(size_t i=0;i<m_pGeneVARofPopulation->size();i++)
-        m_pGeneVARofPopulation->at(i) = myVar->at(i);
+    if( m_GeneVARofPopulation.size()>0 )
+       m_GeneVARofPopulation.clear();
+
+    for(size_t i=0;i<myVar.size();i++)
+        m_GeneVARofPopulation.push_back(myVar[i]);
 
     checkGeneVAR();
 }
 void CGaparameter::checkGeneVAR()
 {
-    std::vector<GeneVAR>::iterator it;
-    for(it=m_pGeneVARofPopulation->begin();it<m_pGeneVARofPopulation->end();it++)
+    std::vector<GAZJUT::GeneVAR>::iterator it;
+    for(it=m_GeneVARofPopulation.begin();it<m_GeneVARofPopulation.end();it++)
     {
         if((it->min) > (it->max))
            std::swap(it->min,it->max);     //call std::swap(x,y) function
 
         if((it->accuracy)==0.0)
         {
-	       ERROR_OUTPUT("Error: Accuracy of GeneVAR is 0.0","CGaparameter","checkGeneVAR");
-	       exit(-1);
+	       Log::Error<< "checkGeneVAR! CGaparameter_checkGeneVAR!\n";
+           boost::throw_exception(std::runtime_error("Variable value is error! CGaparameter_checkGeneVAR!\n"));
         }
     }
 }
@@ -155,8 +163,8 @@ double CGaparameter::CrossProb()
      try{
         d_value=stof(keyValue);
      }catch(const std::exception& e){
-        ERROR_OUTPUT("Error: key value is error:",e.what(),"CGaparameter","CrossProb");
-        exit(-1);
+        Log::Error<< "key value is error:" << e.what() <<" CGaparameter_CrossProb!\n";
+        boost::throw_exception(std::runtime_error("key value is error! CGaparameter_CrossProb!\n"));
      }
      return d_value;
 }
@@ -167,8 +175,8 @@ double CGaparameter::MutaProb()
      try{
         d_value=stof(keyValue);
      }catch(const std::exception& e){
-        ERROR_OUTPUT("Error: key value is error:",e.what(),"CGaparameter","MutaProb");
-        exit(-1);
+        Log::Error<< "key value is error:" << e.what() <<" CGaparameter_MutaProb!\n";
+        boost::throw_exception(std::runtime_error("key value is error! CGaparameter_MutaProb!\n"));
      }
      return d_value;
 }
@@ -176,7 +184,7 @@ std::string CGaparameter::GeneFile()
 {
     return (*m_mapCmdString)["[Initial_Gene_File]"];
 }
-CGaparameter::E_GA_TYPE CGaparameter::SearchType()
+E_GA_TYPE CGaparameter::SearchType()
 {
     std::map <std::string, E_GA_TYPE> *mySearch=new (std::map <std::string, E_GA_TYPE>);
     E_GA_TYPE res;
@@ -186,7 +194,7 @@ CGaparameter::E_GA_TYPE CGaparameter::SearchType()
     delete mySearch;
     return res;
 }
-CGaparameter::E_SELECT_OPERATOR  CGaparameter::SelectMode()
+E_SELECT_OPERATOR  CGaparameter::SelectMode()
 {
       std::map <std::string, E_SELECT_OPERATOR> *mySearch=new (std::map <std::string, E_SELECT_OPERATOR>);
       E_SELECT_OPERATOR res;
@@ -198,7 +206,7 @@ CGaparameter::E_SELECT_OPERATOR  CGaparameter::SelectMode()
       delete mySearch;
       return res;
 }
-CGaparameter::E_CROSSOVER_OPERATOR CGaparameter::CrossMode()
+E_CROSSOVER_OPERATOR CGaparameter::CrossMode()
 {
     std::map <std::string, E_CROSSOVER_OPERATOR> *mySearch=new (std::map <std::string, E_CROSSOVER_OPERATOR>);
     E_CROSSOVER_OPERATOR res;
@@ -211,7 +219,7 @@ CGaparameter::E_CROSSOVER_OPERATOR CGaparameter::CrossMode()
     delete mySearch;
     return res;
 }
-CGaparameter::E_MUTATE_OPERATOR CGaparameter::MutateMode()
+E_MUTATE_OPERATOR CGaparameter::MutateMode()
 {
     std::map <std::string, E_MUTATE_OPERATOR> *mySearch=new (std::map <std::string,E_MUTATE_OPERATOR>);
     E_MUTATE_OPERATOR res;
@@ -224,7 +232,7 @@ CGaparameter::E_MUTATE_OPERATOR CGaparameter::MutateMode()
     delete mySearch;
     return res;
 }
-CGaparameter::E_GENEFORMATION_TYPE CGaparameter::InitGenMode()
+E_GENEFORMATION_TYPE CGaparameter::InitGenMode()
 {
     std::map <std::string, E_GENEFORMATION_TYPE> *mySearch=new (std::map <std::string,E_GENEFORMATION_TYPE>);
     E_GENEFORMATION_TYPE res;
@@ -234,7 +242,7 @@ CGaparameter::E_GENEFORMATION_TYPE CGaparameter::InitGenMode()
     delete mySearch;
     return res;
 }
-CGaparameter::E_EVALUATOR_EXE CGaparameter::EvaluateEXE()
+E_EVALUATOR_EXE CGaparameter::EvaluateEXE()
 {
     std::map <std::string, E_EVALUATOR_EXE> *mySearch=new (std::map <std::string,E_EVALUATOR_EXE>);
     E_EVALUATOR_EXE res;
@@ -247,7 +255,7 @@ CGaparameter::E_EVALUATOR_EXE CGaparameter::EvaluateEXE()
     delete mySearch;
     return res;
 }
-CGaparameter::E_SCALING_TYPE CGaparameter::ScalingMode()
+E_SCALING_TYPE CGaparameter::ScalingMode()
 {
     std::map <std::string, E_SCALING_TYPE> *mySearch=new (std::map <std::string,E_SCALING_TYPE>);
     E_SCALING_TYPE res;
@@ -258,7 +266,7 @@ CGaparameter::E_SCALING_TYPE CGaparameter::ScalingMode()
     delete mySearch;
     return res;
 }
-CGaparameter::E_CODE_TYPE CGaparameter::CodeMode()
+E_CODE_TYPE CGaparameter::CodeMode()
 {
     std::map <std::string, E_CODE_TYPE> *mySearch=new (std::map <std::string,E_CODE_TYPE>);
     E_CODE_TYPE res;
@@ -274,8 +282,8 @@ std::string& CGaparameter::operator[](std::string key_name)
 {
     if(m_mapCmdString->find(key_name) == m_mapCmdString->end())
     {
-        ERROR_OUTPUT("Error: keyname is error","CGaparameter","operator[]");
-        exit(-1);
+        Log::Error<< "keyname is error: CGaparameter_operator[]!\n";
+        boost::throw_exception(std::runtime_error("keyname is error! CGaparameter_operator[]!\n"));
     }
     return (*m_mapCmdString)[key_name];
 }

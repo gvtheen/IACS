@@ -1,7 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 //#define NDEBUG
-#include "assert.h"
+//#include "assert.h"
 
 namespace GAZJUT{
 

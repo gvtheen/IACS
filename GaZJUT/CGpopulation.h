@@ -28,18 +28,19 @@ class CGpopulation
 		void updatePopulation();
 
 		void raw_statistic();
+		void fitness_statistic();
 		void asscendSort();
 		void descendSort();
 		//input output
 		size_t  popNum();
-        void setPopNum(int);
+        void setPopNum(size_t);
 
-        GeneVAR* GeneVARArray();
-        void setGeneVARArray(std::vector <GeneVAR>*);
+        std::vector <GeneVAR>& GeneVARArray();
+        void setGeneVARArray(std::vector <GeneVAR>&);
 
-        void modifyPopulation(std::vector <CGenome*>,int pos);
+        void modifyPopulation(std::vector <CGenome*>,size_t pos);
 		//operator function
-		CGenome* operator[](const int);             //return   pointer of genome of x th
+		CGenome* operator[](const size_t);             //return   pointer of genome of x th
         double   operator[](std::string );          //return   minraw, maxraw, minfit,maxfit of population
     public:
         CGaparameter            *m_pObjGaparameter;

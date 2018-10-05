@@ -17,10 +17,10 @@ CGenome::CGenome()
 	this->m_totalbitNum=0;
 	//pointer
 }
-CGenome::CGenome(std::vector <GeneVAR>*vec_genVal,E_CODE_TYPE codeType,size_t index)
+CGenome::CGenome(std::vector <GeneVAR>&vec_genVal,E_CODE_TYPE codeType,size_t index)
 {
 	this->m_codeType = codeType;
-	this->init(*vec_genVal);
+	this->init(vec_genVal);
 	this->m_index = index;
 }
 CGenome::CGenome(CGenome& myGenome)

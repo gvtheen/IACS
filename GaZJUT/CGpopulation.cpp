@@ -9,9 +9,9 @@ namespace GAZJUT{
 
 CGpopulation::CGpopulation()
 {
-    m_minRawGenome   = nullptr;
-    m_maxRawGenome   = nullptr;
-    m_ObjGaparameter = nullptr;
+    m_pMinRawGenome  = nullptr;
+    m_pMaxRawGenome  = nullptr;
+   m_pObjGaparameter = nullptr;
     m_pMinFitGenome  = nullptr;
     m_pMaxFitGenome  = nullptr;
     m_pMaxOriGenome  = nullptr;
@@ -27,18 +27,18 @@ CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
 
 	for(size_t i=0;i<my_Gaparameter->PopNum();i++)
     {
-        CGenome *it = new CGenome(m_ObjGaparameter->m_pGeneVARofPopulation,m_ObjGaparameter->CodeMode(),i);
+        CGenome *it = new CGenome(m_pObjGaparameter->GeneVAR(),m_pObjGaparameter->CodeMode(),i);
         m_Gpopulation.push_back(it);
     }
 
     //until this time, both best genome and worst genome are unknown.
-    m_minRawGenome   = nullptr;
-    m_maxRawGenome   = nullptr;
-    m_ObjGaparameter = nullptr;
-    m_pMinFitGenome = nullptr;
-    m_pMaxFitGenome = nullptr;
-    m_pMaxOriGenome = nullptr;
-    m_pMaxOriGenome = nullptr;
+    m_pMinRawGenome  = nullptr;
+    m_pMaxRawGenome  = nullptr;
+   m_pObjGaparameter = nullptr;
+    m_pMinFitGenome  = nullptr;
+    m_pMaxFitGenome  = nullptr;
+    m_pMaxOriGenome  = nullptr;
+    m_pMaxOriGenome  = nullptr;
 }
 CGpopulation::CGpopulation(CGpopulation& mypopulation)
 {
@@ -48,7 +48,7 @@ CGpopulation::CGpopulation(CGpopulation& mypopulation)
     // pointer array
     this->m_pObjGaparameter= new CGaparameter(*(mypopulation.m_pObjGaparameter));
 	CGenome* tempCGenome=nullptr;
-	for(i=0;i<m_ObjGaparameter->PopNum();i++)
+	for(size_t i=0;i<m_pObjGaparameter->PopNum();i++)
     {
         tempCGenome = new CGenome(*(mypopulation[i]));
         m_Gpopulation.push_back(tempCGenome);
@@ -71,7 +71,7 @@ CGpopulation* CGpopulation::clone()
 	return new CGpopulation(*this);
 }
 //operator function
-CGenome* CGpopulation::operator[](const int index)
+CGenome* CGpopulation::operator[](const size_t index)
 {
 	if(index>=m_pObjGaparameter->PopNum())
     {
@@ -82,7 +82,7 @@ CGenome* CGpopulation::operator[](const int index)
 }
 double CGpopulation::operator[](std::string mystr)
 {
-	 std::string indexName = boost::to_lower_copy<std::string>(myStr);
+	 std::string indexName = boost::to_lower_copy<std::string>(mystr);
 
 	 if (indexName=="minraw")
 	     return this->m_MinRawScore;
@@ -126,9 +126,9 @@ void CGpopulation::descendSort()
 //after genetic operatoration, updatepopulation is necessary.
 void CGpopulation::updatePopulation()
 {
-	std::vector <CGenome*>::iterator it;
-	for(it=this->m_Gpopulation.begin();it<this->m_Gpopulation.end();it++)
-		(*it)->updateDecValueGene();
+//	std::vector <CGenome*>::iterator it;
+//	for(it=this->m_Gpopulation.begin();it<this->m_Gpopulation.end();it++)
+//		(*it)->updateDecValueGene();
 }
 void CGpopulation::fitness_statistic()
 {
@@ -148,10 +148,13 @@ void CGpopulation::fitness_statistic()
 		tmp = tmp + (*it)->relativefitness();
 		(*it)->setCumufitness(tmp);
 	}
-	this->m_pMaxFitGenome = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+	it = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+                         [](CGenome* A,CGenome* B){ return (*A)["fitness"] < (*B)["fitness"];});
+
+    this->m_pMaxFitGenome =*it;
+    it = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
                                     [](CGenome* A,CGenome* B){ return (*A)["fitness"] < (*B)["fitness"];});
-    this->m_pMinFitGenome = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
-                                    [](CGenome* A,CGenome* B){ return (*A)["fitness"] < (*B)["fitness"];});
+    this->m_pMinFitGenome = *it;
     this->m_MinFitness = this->m_pMinFitGenome->fitness();
     this->m_MaxFitness = this->m_pMaxFitGenome->fitness();
 }
@@ -169,32 +172,40 @@ void CGpopulation::raw_statistic()
 
 	for(it=m_Gpopulation.begin();it<m_Gpopulation.end();it++)
 	{
-		s=(*it)->rawscore() - this->avgRawScore;
+		s=(*it)->rawscore() - this->m_AvgRawScore;
 		tmp = tmp + s*s;
 	}
     this->m_DevrawScore = sqrt(tmp);
 
-    this->m_pMaxRawGenome = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+    it = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+                           [](CGenome* A,CGenome* B){ return (*A)["rawscore"] < (*B)["rawscore"];});
+    this->m_pMaxRawGenome = *it;
+
+    it = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
                                     [](CGenome* A,CGenome* B){ return (*A)["rawscore"] < (*B)["rawscore"];});
-    this->m_pMinRawGenome = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
-                                    [](CGenome* A,CGenome* B){ return (*A)["rawscore"] < (*B)["rawscore"];});
+    this->m_pMinRawGenome = *it;
+
     this->m_MinRawScore = this->m_pMinRawGenome->rawscore();
     this->m_MaxRawScore = this->m_pMaxRawGenome->rawscore();
 	//obtained best fitness
 
-	this->m_pMinOriGenome = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
-                                    [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
-    this->m_pMaxOriGenome = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
-                                    [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
+    it = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+                          [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
+    this->m_pMinOriGenome = *it;
+
+    it = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+                         [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
+    this->m_pMaxOriGenome = *it;
+
     this->m_MinOriValue = this->m_pMinOriGenome->origValue();
     this->m_MaxOriValue = this->m_pMaxOriGenome->origValue();
 }
 //input output
-int CGpopulation::popNum()
+size_t CGpopulation::popNum()
 {
 	return m_pObjGaparameter->PopNum();
 }
-void CGpopulation::setPopNum(int popnum)
+void CGpopulation::setPopNum(size_t popnum)
 {
     if(popnum<=0)
     {
@@ -204,22 +215,22 @@ void CGpopulation::setPopNum(int popnum)
     (*m_pObjGaparameter)["Population"]=std::to_string(popnum);
 
 }
-std::vector <GeneVAR>* CGpopulation::GeneVARArray()
+std::vector <GeneVAR>& CGpopulation::GeneVARArray()
 {
     return m_pObjGaparameter->GeneVAR();
 }
-void CGpopulation::setGeneVARArray(std::vector <GeneVAR>* my_GeneVAR)
+void CGpopulation::setGeneVARArray(std::vector <GeneVAR>& my_GeneVAR)
 {
-    if(my_GeneVAR==nullptr)
+    if(&my_GeneVAR==nullptr)
     {
         util::Log::Error<<"Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n";
         boost::throw_exception(std::runtime_error("Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n"));
     }
     m_pObjGaparameter->setGeneVAR(my_GeneVAR);
 }
-void CGpopulation::modifyPopulation(std::vector <CGenome*> *newGenome)
+void CGpopulation::modifyPopulation(std::vector <CGenome*> newGenome,size_t pos)
 {
-    assert(newGenome);
+    //assert(newGenome);
 }
 
 

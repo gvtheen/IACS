@@ -1,9 +1,10 @@
 #ifndef CGAPARAMETER_H
 #define CGAPARAMETER_H
-#include<string>
-#include<map>
-#include<vector>
+#include <string>
+#include <map>
+#include <vector>
 #include "GaDeclaration.h"
+
 namespace GAZJUT{
 
 class CGaparameter
@@ -12,15 +13,16 @@ class CGaparameter
 
         CGaparameter();
         virtual ~CGaparameter();
-        CGaparameter(std::vector <GeneVAR>* myVar);
-        CGaparameter(const CGaparameter& other);
-        CGaparameter& operator=(const CGaparameter& other);
+        CGaparameter(std::vector <GAZJUT::GeneVAR>&  myVar);
+        CGaparameter( CGaparameter& other);
+        //operator
+        CGaparameter& operator=( CGaparameter& other);
 
         void   defaultInit();
         void   OutputTofile();
-        int    GenerationNum();
-        int    PopNum();
-        int    CrossNum();
+        size_t    GenerationNum();
+        size_t    PopNum();
+        size_t    CrossNum();
         void   add_Curr_Generation();
         //void   SetPopNum(int);
         double CrossProb();
@@ -28,13 +30,13 @@ class CGaparameter
         double MutaProb();
         //void   SetMutaProb(double);
 
-        std::vector <GeneVAR>* GeneVAR();
-        void                   setGeneVAR(std::vector <GeneVAR>*);
+        std::vector <GeneVAR>& GeneVAR();
+        void                   setGeneVAR(std::vector<GAZJUT::GeneVAR>&);
         void                   checkGeneVAR();
         std::string            GeneFile();
         std::string            InputFile();
         //void   SetGeneFile(string);
-        E_GA_TYPE              SearchType();
+        GAZJUT::E_GA_TYPE      SearchType();
         //void   SetSearchType(E_GA_TYPE);
         E_SELECT_OPERATOR      SelectMode();
 
@@ -54,7 +56,8 @@ class CGaparameter
         std::string& operator[](std::string key_name);
         //const parameter
         //scalling
-        int          Curr_Generation;
+        size_t       Curr_Generation;
+        // scale parameters
         const double ScaleLinearMultiplier     = 1.2;
         const double ScaleSigmaTruncMultiplier = 2.0;
         const double ScalePowerLawFactor       = 1.0005;
@@ -64,13 +67,13 @@ class CGaparameter
 
         const double UnifArithmCrossConstant   = 0.25;
         const double NoUnifArithmCrossConstant = 0.10;
-    protected:
+
         std::map<std::string, std::string>      *m_mapCmdString;
     private:
-        std::vector <GeneVAR>   *m_pGeneVARofPopulation;
-        int                      m_PopNum;
-        int                      m_GenerationNum;
-        int                      m_CrossNum;
+        std::vector<GAZJUT::GeneVAR>     m_GeneVARofPopulation;
+        size_t                   m_PopNum;
+        size_t                   m_GenerationNum;
+        size_t                   m_CrossNum;
         double                   m_CrossProb;
 	    double                   m_MutaProb;
 	    std::string              m_GeneFile;
