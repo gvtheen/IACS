@@ -1,8 +1,10 @@
 #ifndef CIOS_H
 #define CIOS_H
 #include<string>
-#include "Bitset.h"
+#include "../Util/Bitset.h"
 #include "CParameter.h"
+using util::Bitset;
+
 namespace CATAZJUT{
    class CPeriodicFramework;;
 }

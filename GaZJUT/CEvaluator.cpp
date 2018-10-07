@@ -31,6 +31,12 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       // Run evaluator, obtained raw value.
       tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
 
+      // Get dec value from relaxed structure after calculation
+      // Re-set this value to individual Genome.
+      DecValueOfGenome.clear();
+      m_pEvaluator->GetDecGeneAfterCalc(DecValueOfGenome);
+      ((*CurrentPopulation)[i])->updateDecValueGene(DecValueOfGenome);
+
       OrigScore.push_back(tempOrigValue);
       ((*CurrentPopulation)[i])->setOrigValue( OrigScore[i] );
       ((*CurrentPopulation)[i])->setFinishState(runstate);

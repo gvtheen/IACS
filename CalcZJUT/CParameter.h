@@ -18,11 +18,14 @@ class CParameter
     public:
         typedef void (CParameter::*cmdFun)(std::string);
 
-        typedef enum EM_P_01{ENERGY=0x101,
-                              FORCE=0x102} EVALUATOR_CRIT;
-        typedef enum EM_P_02{CLUSTER=0x103,
-                             MOL_CLUSTER=0x104,
-                             MOL_2DMATERIAL=0x105} SIMULATION_MODE;
+        typedef enum EM_P_01{ ENERGY  =0x101,
+                              FORCE   =0x102,
+                              BAND_GAP=0x103} EVALUATOR_CRIT;
+
+        typedef enum EM_P_02{CLUSTER       =0x201,
+                             PERIODIC      =0x202,
+                             MOL_CLUSTER   =0x203,
+                             MOL_2DMATERIAL=0x204} SIMULATION_MODE;
 
         CParameter(char* filename);
         virtual ~CParameter();

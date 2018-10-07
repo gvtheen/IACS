@@ -220,6 +220,8 @@ void CParameter::setEvaluator_Criterion(std::string mtr)
          this->evaluatorCriterion = CParameter::ENERGY;
      else if( mtr=="Force" || std::stoi(mtr)==2 )
          this->evaluatorCriterion = CParameter::FORCE;
+     else if( mtr=="Band_gap" || std::stoi(mtr)==3 )
+         this->evaluatorCriterion = CParameter::BAND_GAP;
      else{
          Log::Error<< mtr << " command is wrong! setEvaluator_Criterion_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));

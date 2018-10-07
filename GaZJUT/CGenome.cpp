@@ -145,6 +145,7 @@ Bitset& CGenome::totalbitGene()
 void CGenome::setTotalbitGene(const Bitset my_totalbitgene)
 {
     this->m_totalgeneofGenome = my_totalbitgene;
+    this->updateTotalGeneToIndividualGene();
 }
 
 //
@@ -155,6 +156,7 @@ std::vector <double>& CGenome::totalrealGene()
 void CGenome::setTotalrealGene(std::vector <double>& my_totalrealgene)
 {
     this->m_totalRealofGenome.assign(my_totalrealgene.begin(),my_totalrealgene.end());
+    this->updateTotalGeneToIndividualGene();
 }
 
 //

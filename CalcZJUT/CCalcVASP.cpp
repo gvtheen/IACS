@@ -101,7 +101,7 @@ void CCalcVASP::init()
          }
      }else{    //pure cluster model
         CCalcCluster* cluster = new CCalcCluster(this->m_Parameter);
-        m_pIO = new CIOPoscar( cluster->periodicFramework());
+        //m_pIO = new CIOPoscar( cluster->periodicFramework());
         this->m_pCalcModeStruct = cluster;
         //m_pIO->input("POSCAR");
      }

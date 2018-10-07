@@ -13,6 +13,10 @@ CCalcModeStruct::~CCalcModeStruct()
 {
     //dtor
 }
+void CCalcModeStruct::init()
+{
+
+}
 CATAZJUT::CPeriodicFramework* CCalcModeStruct::periodicFramework()
 {
     return m_pPeriodicFramework;

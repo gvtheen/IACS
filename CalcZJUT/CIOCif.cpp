@@ -3,8 +3,7 @@
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <string>
-#include "Point-Vector.h"
-#include "GaUtilityFunction.h"
+#include "../Util/Point-Vector.h"
 #include "CIOCif.h"
 
 namespace CALCZJUT{
@@ -23,7 +22,7 @@ void CIOCif::output(std::string& file)
 {
 
 }
-void CIOCif::input(std::string& file="")
+void CIOCif::input(std::string& file)
 {
 
 }

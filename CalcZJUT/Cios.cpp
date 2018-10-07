@@ -14,7 +14,8 @@ Cios::~Cios()
 }
 Bitset Cios::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE)
 {
-    return nullptr;
+    Bitset a;
+    return a;
 }
 void Cios::setConfiguration(CATAZJUT::CPeriodicFramework* mbf)
 {
