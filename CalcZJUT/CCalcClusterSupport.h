@@ -24,6 +24,8 @@ class CCalcClusterSupport:public CCalcModeStruct
         CCalcClusterSupport(CParameter*);
         virtual ~CCalcClusterSupport();
 
+        CCalcModeStruct* clone();
+
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
@@ -34,6 +36,13 @@ class CCalcClusterSupport:public CCalcModeStruct
 
         void createSupport(Bitset &);
         void createMoleAdsorb(Bitset &);
+
+         Bitset SupportBit();
+         Bitset MoleAdsorbBit();
+
+         CATAZJUT::CCrystalPlanes* crystalPlanes();
+         void setCrystalPlanes(CATAZJUT::CCrystalPlanes*);
+
     protected:
 
     private:

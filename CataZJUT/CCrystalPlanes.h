@@ -18,11 +18,11 @@ class CCrystalPlanes
         void CreateCrystalPlane();
         bool CheckIsPlane(CPlane,std::vector<size_t>&,std::vector<bool>&);
 
-        void SetLatticPlane(std::vector<CPlane*>*);
-        std::vector<CPlane*>* LatticePlane();
+        void SetLatticPlane(std::vector<CPlane*>&);
+        std::vector<CPlane*>& LatticePlane();
 
-        Eigen::MatrixXd* PointsOfMat();
-        void SetPointsMat(Eigen::MatrixXd*);
+        Eigen::MatrixXd& PointsOfMat();
+        void SetPointsMat(Eigen::MatrixXd&);
 
         double DistanceCutoff();
           void SetDistanceCutoff(double);
@@ -32,9 +32,9 @@ class CCrystalPlanes
         void RemoveColumn(Eigen::MatrixXd&, size_t);
         bool IsOnLine(Eigen::MatrixXd&);
     private:
-              Eigen::MatrixXd *m_pPointsMat;
-         std::vector<CPlane*> *m_pPlane;
-std::vector<Eigen::MatrixXd*> *m_pPointsInIndividualPlanes;
+              Eigen::MatrixXd  m_PointsMat;
+         std::vector<CPlane*>  m_Plane;
+std::vector<Eigen::MatrixXd*>  m_PointsInIndividualPlanes;
                         double mDistance_Cutoff;
 };
 

@@ -2,7 +2,12 @@
 #define CCALCCLUSTERSTRUCTPOOL_H
 
 #include "CCalcStructBasePool.h"
+#include <vector>
 
+namespace CATAZJUT{
+  class CPeriodicFramework;
+  class CElement;
+}
 
 namespace CALCZJUT{
 

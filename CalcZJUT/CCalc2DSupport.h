@@ -34,6 +34,8 @@ class CCalc2DSupport:public CCalcModeStruct
         CCalc2DSupport(CParameter*);
         virtual ~CCalc2DSupport();
 
+        CCalcModeStruct* clone();
+
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
@@ -41,11 +43,19 @@ class CCalc2DSupport:public CCalcModeStruct
 
         void createSupport(Bitset &);
         void createMoleAdsorb(Bitset &);
+
+        Bitset SupportBit();
+        Bitset MoleAdsorbBit();
         //overload the father class's function
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf);
 
-//        void backUpStructure();
-//        void fromBackupToCurrent();
+//      void backUpStructure();
+//      void fromBackupToCurrent();
+        CATAZJUT::CPlane* supportSurfacePlane();
+        void setSupportSurfacePlane(CATAZJUT::CPlane*);
+
+        LATT_DIRECTION latticeDirection();
+        void setLatticeDirection(LATT_DIRECTION);
 
         void IdentifyvacuumLayerDirection();
         void perceiveSupportSurface();
@@ -59,8 +69,8 @@ class CCalc2DSupport:public CCalcModeStruct
         LATT_DIRECTION           m_latticeDirection;
         CATAZJUT::CPlane        *m_support_surface;
 
-        Bitset        m_BitbackupSupport;
-        Bitset        m_BitbackupAdsorbMolecule;
+                   Bitset        m_BitbackupSupport;
+                   Bitset        m_BitbackupAdsorbMolecule;
 
 };
 

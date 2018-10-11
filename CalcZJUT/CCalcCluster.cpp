@@ -48,6 +48,18 @@ CCalcCluster::~CCalcCluster()
 {
     //dtor
 }
+CCalcModeStruct* CCalcCluster::clone()
+{
+     CCalcCluster* res = new CCalcCluster(this->m_pParameter);
+     res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
+     res->m_IsNeedRandomInit = this->RandomInitState();
+     res->setChemicalFormula(this->chemicalFormula());
+
+     return res;
+}
+
+
+
 void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene, size_t mth_Genome)
 {
 
@@ -137,6 +149,14 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
                }
             }
     }
+}
+std::vector<std::pair<std::string,size_t>>& CCalcCluster::chemicalFormula()
+{
+    return this->m_chemicalFormula;
+}
+void CCalcCluster::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)
+{
+   this->m_chemicalFormula.assign(mth.begin(),mth.end());
 }
 
 

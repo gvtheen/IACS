@@ -150,6 +150,8 @@ class CConfigurationBase
         void setDimensionalType(const CATAZJUT::DEFINED::DimensionalType);
         CATAZJUT::DEFINED::DimensionalType dimensionalType()const;
 
+        void setTolerancefactor(std::pair<double,double> &mht);
+        void setExcludeBond(std::vector<std::pair<std::string*,std::string*>>&);
     protected:
         CConfigurationPrivateData *m_pData;
              CALCZJUT::CParameter *m_pParameter;

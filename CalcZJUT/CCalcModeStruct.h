@@ -20,6 +20,8 @@ class CCalcModeStruct
         CCalcModeStruct(CParameter*);
         virtual ~CCalcModeStruct();
 
+        virtual CCalcModeStruct* clone()=0;
+
         virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
         virtual void getGeneValuefromStruct(std::vector<double>&) =0;
         virtual void GeneVARRange(std::vector<GeneVAR>&)=0;
@@ -28,20 +30,23 @@ class CCalcModeStruct
         virtual void createMoleAdsorb( const Bitset &);
 
         virtual void init();
-        virtual void createStructureAtGene();
-        virtual void removeStructureOfGene();
+//        virtual void createStructureAtGene();
+//        virtual void removeStructureOfGene();
         CATAZJUT::CPeriodicFramework* periodicFramework();
         // Get index periodicFramework in periodicFramework Pool
         CATAZJUT::CPeriodicFramework* periodicFrameworkPoolAt(size_t index);
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
+
+        void setRandomInitState(const bool&);
+        bool RandomInitState();
 
     public:
                           CParameter*          m_pParameter;
                 std::vector<GeneVAR>*          m_pGeneVAR;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-std::vector<CATAZJUT::CPeriodicFramework*>     m_PeriodicFrameworkPool;
         CATAZJUT::CPeriodicFramework*          m_backupPeriodicFramework;
+                                 bool          m_IsNeedRandomInit;
 
 };
 

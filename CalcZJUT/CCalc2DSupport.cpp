@@ -37,7 +37,17 @@ CCalc2DSupport::~CCalc2DSupport()
      if( m_support_surface !=nullptr) delete m_support_surface;
     //dtor
 }
+CCalcModeStruct* CCalc2DSupport::clone()
+{
+    CCalc2DSupport* res= new CCalc2DSupport(this->m_pParameter);
+    res->setPeriodicFramekwork(this->periodicFramework());
+    res->createMoleAdsorb(this->MoleAdsorbBit());
+    res->createSupport(this->SupportBit());
+    res->setLatticeDirection(this->latticeDirection());
+    res->setSupportSurfacePlane(this->supportSurfacePlane());
+    return res;
 
+}
 //attribute operation
 void CCalc2DSupport::createSupport(Bitset& mht)
 {
@@ -51,12 +61,43 @@ void CCalc2DSupport::createMoleAdsorb( const Bitset& mht)
     m_BitbackupAdsorbMolecule = mht;
     m_pAdsorbMolecule = new CCalcMoleculeAdsorbent(this->m_pPeriodicFramework,mht);
 }
+Bitset CCalc2DSupport::SupportBit()
+{
+    return this->m_BitbackupSupport;
+}
+Bitset CCalc2DSupport::MoleAdsorbBit()
+{
+   return this->m_BitbackupAdsorbMolecule;
+}
 void CCalc2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
 {
-    this->m_pPeriodicFramework=mbf;
-    this->m_pAdsorbMolecule->setConfiguration(mbf);
-    this->m_pSupport->setConfiguration(mbf);
+    if(this->m_pPeriodicFramework!=nullptr)
+        delete this->m_pPeriodicFramework;
+    this->m_pPeriodicFramework=new CATAZJUT::CPeriodicFramework(*mbf);
+    this->m_pAdsorbMolecule->setConfiguration(this->m_pPeriodicFramework);
+    this->m_pSupport->setConfiguration(this->m_pPeriodicFramework);
 }
+
+CATAZJUT::CPlane* CCalc2DSupport::supportSurfacePlane()
+{
+    return this->m_support_surface;
+}
+void CCalc2DSupport::setSupportSurfacePlane(CATAZJUT::CPlane* mth)
+{
+   if(this->m_support_surface!=nullptr)
+       delete this->m_support_surface;
+   this->m_support_surface = new CATAZJUT::CPlane(*mth);
+}
+
+CCalc2DSupport::LATT_DIRECTION CCalc2DSupport::latticeDirection()
+{
+   return this->m_latticeDirection;
+}
+void CCalc2DSupport::setLatticeDirection(CCalc2DSupport::LATT_DIRECTION mth)
+{
+   this->m_latticeDirection=mth;
+}
+
 void CCalc2DSupport::createStructureAtGene()
 {
    CCalcModeStruct::createStructureAtGene();
@@ -67,6 +108,8 @@ void CCalc2DSupport::createStructureAtGene()
    m_pSupport->setConfiguration(this->periodicFramework());
    m_pAdsorbMolecule->setConfiguration(this->periodicFramework());
 }
+
+
 void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
     CATAZJUT::Point3 vect;

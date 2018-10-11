@@ -31,10 +31,15 @@ class CCalcCluster:public CCalcModeStruct
         CCalcCluster(CParameter* );
         virtual ~CCalcCluster();
 
+        CCalcModeStruct* clone();
+
         //virtual function from CCalcModeStruct
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
         void GeneVARRange(std::vector<GeneVAR>&);
+
+        std::vector<std::pair<std::string,size_t>>& chemicalFormula();
+        void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
 
     protected:
 
@@ -46,7 +51,7 @@ class CCalcCluster:public CCalcModeStruct
 
     private:
 
-        std::vector<std::pair<std::string,size_t>>   chemicalFormula;
+        std::vector<std::pair<std::string,size_t>>   m_chemicalFormula;
         //CCalcFitnessInterface  *m_pCalcFitness;
 
 };

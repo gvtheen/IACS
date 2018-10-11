@@ -104,24 +104,25 @@ void CCalcClusterStructPool::Initialization(const std::vector<std::string*>& inp
        str=*(inputfiles[i]);
        boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
        if(boost::iequals(vecStr[1],"gjf"))
-          inputIO = new CIOGjf(this->m_CalcStructPool[pos++]->periodicFramework());
+          inputIO = new CIOGjf(this->m_CalcStructPool[pos]->periodicFramework());
        else if(boost::iequals(vecStr[1],"car"))
-          inputIO = new CIOCar(this->m_CalcStructPool[pos++]->periodicFramework());
+          inputIO = new CIOCar(this->m_CalcStructPool[pos]->periodicFramework());
        else if(boost::iequals(vecStr[1],"mol"))
-          inputIO = new CIOMol(this->m_CalcStructPool[pos++]->periodicFramework());
+          inputIO = new CIOMol(this->m_CalcStructPool[pos]->periodicFramework());
        else if(boost::iequals(vecStr[1],"poscar")==0)
-          inputIO = new CIOPoscar(this->m_CalcStructPool[pos++]->periodicFramework());
+          inputIO = new CIOPoscar(this->m_CalcStructPool[pos]->periodicFramework());
        else{
           Log::Error<<vecStr[i] << " file is not supported by cluster model! Initialization_CCalcCluster\n";
           boost::throw_exception(std::runtime_error(vecStr[i]+ " file is not supported by cluster model! Initialization_CCalcCluster!"));
        }
        // read structure and save m_PopuPeriodicFramework[pos++]
        inputIO->input(str);
+       pos++;
    }
-   this->chemicalFormula= m_CalcStructPool[pos++]->periodicFramework()->composition());
+   m_CalcStructPool[pos]->m_= m_CalcStructPool[pos]->periodicFramework()->composition());
 
    for(size_t i=pos;i<this->m_pParameter->GaParameter()->PopNum();i++)
-      RandomBuildFromChemicalFormula(this->m_CalcStructPool[pos++]->periodicFramework());
+       RandomBuildFromChemicalFormula(this->m_CalcStructPool[pos++]->periodicFramework());
 }
 void CCalcClusterStructPool::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct)
 {

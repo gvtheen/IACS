@@ -6,7 +6,7 @@ namespace CALCZJUT{
 CCalcModeStruct::CCalcModeStruct(CParameter* temParameter)
 :m_pParameter(temParameter)
 {
-
+    m_IsNeedRandomInit=true;
 }
 
 CCalcModeStruct::~CCalcModeStruct()
@@ -44,6 +44,14 @@ void CCalcModeStruct::createStructureAtGene()
 {
 
 }
+void CCalcModeStruct::setRandomInitState(const bool& mht)
+{
+    this->m_IsNeedRandomInit=mht;
+}
+bool CCalcModeStruct::RandomInitState()
+{
+    return this->m_IsNeedRandomInit;
+}
 void CCalcModeStruct::removeStructureOfGene()
 {
    for(size_t i=0;i<m_PopuPeriodicFramework.size();i++)
@@ -54,5 +62,8 @@ void CCalcModeStruct::init()
 {
     // nothing to do
 }
+
+
+
 
 }

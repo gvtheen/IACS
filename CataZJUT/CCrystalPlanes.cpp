@@ -8,14 +8,10 @@ CCrystalPlanes::CCrystalPlanes()
 }
 CCrystalPlanes::CCrystalPlanes(Eigen::MatrixXd *tempPoints,double m_Value)
 {
-    int rowN,colN;
-    rowN = tempPoints->rows();
-    colN = tempPoints->cols();
-     m_pPointsMat = new (Eigen::MatrixXd)(rowN,colN);
-    *m_pPointsMat = *tempPoints;
+    m_PointsMat = *tempPoints;
     mDistance_Cutoff = m_Value;
 
-    m_pPlane = nullptr;
+
 }
 CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)
 {
@@ -27,29 +23,25 @@ CCrystalPlanes* CCrystalPlanes::Clone()
 {
     return new CCrystalPlanes(*this);
 }
-void CCrystalPlanes::SetLatticPlane(std::vector<CPlane*> *mpt)
+void CCrystalPlanes::SetLatticPlane(std::vector<CPlane*> &mpt)
 {
-    if(this->m_pPlane!=nullptr)
-        delete this->m_pPlane;
-    this->m_pPlane = new (std::vector<CPlane*>);
-
-    for(size_t i=0;i<mpt->size();i++)
-        this->m_pPlane->push_back(new CPlane(*(mpt->at(i))));
-}
-Eigen::MatrixXd* CCrystalPlanes::PointsOfMat()
-{
-    return this->m_pPointsMat;
-}
-void CCrystalPlanes::SetPointsMat(Eigen::MatrixXd* tmpMatPoint)
-{
-    if(m_pPointsMat == nullptr)
-    {
-        int rowN,colN;
-        rowN=tmpMatPoint->rows();
-        colN=tmpMatPoint->cols();
-        m_pPointsMat = new (Eigen::MatrixXd)(rowN,colN);
+    if(this->m_Plane.size()!=0){
+       for(size_t i=0;i<this->m_Plane.size();i++)
+           delete m_Plane[i];
+       this->m_Plane.clear();
     }
-    *m_pPointsMat = *tmpMatPoint;
+
+    for(size_t i=0;i<mpt.size();i++)
+        this->m_Plane.push_back(new CPlane(*(mpt[i])));
+}
+Eigen::MatrixXd& CCrystalPlanes::PointsOfMat()
+{
+    return this->m_PointsMat;
+}
+void CCrystalPlanes::SetPointsMat(Eigen::MatrixXd& tmpMatPoint)
+{
+
+    m_PointsMat = tmpMatPoint;
 }
 void CCrystalPlanes::SetDistanceCutoff(double mValue)
 {
@@ -59,14 +51,14 @@ double CCrystalPlanes::DistanceCutoff()
 {
     return this->mDistance_Cutoff;
 }
-std::vector<CPlane*>* CCrystalPlanes::LatticePlane()
+std::vector<CPlane*>& CCrystalPlanes::LatticePlane()
 {
-    return this->m_pPlane;
+    return this->m_Plane;
 }
 void CCrystalPlanes::CreateCrystalPlane()
 {
     int rowN;
-    rowN = m_pPointsMat->rows();
+    rowN = m_PointsMat.rows();
     std::vector<bool> matIndex;
     for(int i=0;i<rowN;i++)
         matIndex.push_back(false);
@@ -76,14 +68,14 @@ void CCrystalPlanes::CreateCrystalPlane()
     std::vector<size_t> selectedPoints;
     int Num=0;
 
-    this->m_pPlane = new (std::vector<CPlane*>);
-    this->m_pPointsInIndividualPlanes = new (std::vector<Eigen::MatrixXd*>);
+    //this->m_Plane = new (std::vector<CPlane*>);
+    //this->m_pPointsInIndividualPlanes = new (std::vector<Eigen::MatrixXd*>);
     for(int i=0;i<rowN;i++)
     {
        if(matIndex.at(i)!=true)
        {
           selectedPoints.push_back(i);
-          (*pointsMat).row(Num)=(*m_pPointsMat).row(i);
+          (*pointsMat).row(Num)=m_PointsMat.row(i);
           Num++;
        }
        if( Num == 3 ){
@@ -104,10 +96,10 @@ void CCrystalPlanes::CreateCrystalPlane()
                int start = pointsMat->rows();
                for(size_t j=0;j<selectedPoints.size();j++){
                   matIndex.at(selectedPoints[j])= true;
-                  tempMat->row(start+j) = (*m_pPointsMat).row(selectedPoints[j]);
+                  tempMat->row(start+j) = m_PointsMat.row(selectedPoints[j]);
                }
-               m_pPointsInIndividualPlanes->push_back(tempMat);
-               m_pPlane->push_back(newPlane);
+               m_PointsInIndividualPlanes.push_back(tempMat);
+               m_Plane.push_back(newPlane);
                //clear the content of selectedPoints.
                selectedPoints.clear();
            }else
@@ -130,7 +122,7 @@ bool CCrystalPlanes::IsOnLine(Eigen::MatrixXd& mMat)
 }
 bool CCrystalPlanes::CheckIsPlane(CPlane tempPlane,std::vector<size_t> &pIindex,std::vector<bool>& matIndex)
 {
-     int rowN = m_pPointsMat->rows();
+     int rowN = m_PointsMat.rows();
      Point3 temP;
      bool res=true;
      double temp_value;
@@ -140,7 +132,7 @@ bool CCrystalPlanes::CheckIsPlane(CPlane tempPlane,std::vector<size_t> &pIindex,
           if(matIndex.at(i)==true)
              continue;
 
-               temP = m_pPointsMat->row(i);
+               temP = m_PointsMat.row(i);
          temp_value = tempPlane.Distance(temP);
          if(temp_value > 0.5 || std::fabs(temp_value) > this->mDistance_Cutoff )
          {
@@ -180,21 +172,19 @@ void CCrystalPlanes::RemoveColumn(Eigen::MatrixXd& matrix, size_t colToRemove)
 }
 CCrystalPlanes::~CCrystalPlanes()
 {
-        if(m_pPointsMat!=nullptr)
-            delete m_pPointsMat;
-        if(m_pPlane!=nullptr)
+//        if(m_PointsMat.rows()!=0)
+//            m_PointsMat.;
+        if(m_Plane.size()!=0)
         {
-            for(size_t i=0;i<m_pPlane->size();i++)
-                delete m_pPlane->at(i);
-            m_pPlane->clear();
-            delete m_pPlane;
+            for(size_t i=0;i<m_Plane.size();i++)
+                delete m_Plane[i];
+            m_Plane.clear();
         }
-        if(m_pPointsInIndividualPlanes!=nullptr)
+        if(m_PointsInIndividualPlanes.size()!=0)
         {
-            for(size_t i=0;i<m_pPointsInIndividualPlanes->size();i++)
-                delete m_pPointsInIndividualPlanes->at(i);
-            m_pPointsInIndividualPlanes->clear();
-            delete m_pPointsInIndividualPlanes;
+            for(size_t i=0;i<m_PointsInIndividualPlanes.size();i++)
+                delete m_PointsInIndividualPlanes[i];
+            m_PointsInIndividualPlanes.clear();
         }
 }
 

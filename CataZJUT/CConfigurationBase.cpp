@@ -714,7 +714,14 @@ void CConfigurationBase::moveAtom(CAtom* atom, Point3 vect)
 {
     atom->SetPosition(atom->position()+vect);
 }
-
+void CConfigurationBase::setTolerancefactor(std::pair<double,double> &mht)
+{
+    this->m_pBondEvaluator->setTolerancefactor(mht);
+}
+void CConfigurationBase::setExcludeBond(std::vector<std::pair<std::string*,std::string*>>&mht)
+{
+    this->m_pBondEvaluator->setExcludeBond(mht);
+}
 
 
 
