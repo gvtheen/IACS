@@ -9,6 +9,7 @@ CEvaluator::CEvaluator()
 CEvaluator::CEvaluator(CALCZJUT::CCalcFitnessInterface* myEvaluator)
 {
     this->m_pEvaluator = myEvaluator->clone();
+    pop_run_state.resize(m_Parameter->GaParameter()->PopNum(),false);
 }
 CEvaluator::~CEvaluator()
 {

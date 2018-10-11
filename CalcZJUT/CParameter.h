@@ -44,10 +44,11 @@ class CParameter
         // for supported catalyst
         std::string supportStructFile;
         std::string adsorbentStructFile;
-        std::string adso_supp_Struct;
+        std::vector<std::string*> adso_supp_Input_File;
         // for pure cluster
         std::string cluster_Formula;
         std::vector<std::string*> cluster_Input_File;
+
 
         std::string output_struct_format;
 

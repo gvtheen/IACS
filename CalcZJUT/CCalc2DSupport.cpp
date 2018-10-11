@@ -57,29 +57,6 @@ void CCalc2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
     this->m_pAdsorbMolecule->setConfiguration(mbf);
     this->m_pSupport->setConfiguration(mbf);
 }
-//void CCalc2DSupport::backUpStructure()
-//{
-//   assert(m_pPeriodicFramework);
-//   assert(m_pSupport);
-//   assert(m_pAdsorbMolecule);
-//
-//   m_backupPeriodicFramework = new (CATAZJUT::CPeriodicFramework)(*m_pPeriodicFramework);
-//   m_BitbackupSupport = m_pSupport->bitSet();
-//   m_BitbackupAdsorbMolecule = m_pAdsorbMolecule->bitSet();
-//}
-//void CCalc2DSupport::fromBackupToCurrent()
-//{
-//   if(m_pPeriodicFramework->coordinateType()==CATAZJUT::DEFINED::Cartesian){
-//       m_pPeriodicFramework->coordinates()->clear();
-//       foreach(const CATAZJUT::CAtom* atom,m_backupPeriodicFramework->atoms())
-//            m_pPeriodicFramework->coordinates()->setPosition(atom->index(),atom->position());
-//
-//   }else if(m_pPeriodicFramework->coordinateType()==CATAZJUT::DEFINED::Fraction){
-//       m_pPeriodicFramework->Fractioncoordinates()->clear();
-//       foreach(const CATAZJUT::CAtom* atom,m_backupPeriodicFramework->atoms())
-//           m_pPeriodicFramework->Fractioncoordinates()->setPosition(atom->index(),atom->position());
-//   }
-//}
 void CCalc2DSupport::createStructureAtGene()
 {
    CCalcModeStruct::createStructureAtGene();

@@ -22,7 +22,7 @@ void CIOCif::output(std::string& file)
 {
 
 }
-void CIOCif::input(std::string& file)
+void CIOCif::input(std::string file)
 {
 
 }

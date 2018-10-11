@@ -31,7 +31,8 @@ class CCalcModeStruct
         virtual void createStructureAtGene();
         virtual void removeStructureOfGene();
         CATAZJUT::CPeriodicFramework* periodicFramework();
-        CATAZJUT::CPeriodicFramework* periodicFramework(size_t index_int);
+        // Get index periodicFramework in periodicFramework Pool
+        CATAZJUT::CPeriodicFramework* periodicFrameworkPoolAt(size_t index);
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
 
     public:
@@ -39,7 +40,7 @@ class CCalcModeStruct
                 std::vector<GeneVAR>*          m_pGeneVAR;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-std::vector<CATAZJUT::CPeriodicFramework*>     m_PopuPeriodicFramework;
+std::vector<CATAZJUT::CPeriodicFramework*>     m_PeriodicFrameworkPool;
         CATAZJUT::CPeriodicFramework*          m_backupPeriodicFramework;
 
 };

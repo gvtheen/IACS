@@ -12,6 +12,7 @@
 #include "CIOPoscar.h"
 #include "CIOGjf.h"
 #include "CIOCif.h"
+#include "CIOCellFile.h"
 #include "../Util/Point-Vector.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../Util/log.hpp"
@@ -25,7 +26,7 @@ namespace CALCZJUT{
 CCalcFitnessInterface::CCalcFitnessInterface(CParameter* mpara)
 :m_Parameter(mpara)
 {
-    pop_run_state.resize(m_Parameter->GaParameter()->PopNum(),false);
+
 }
 
 CCalcFitnessInterface::~CCalcFitnessInterface()
@@ -34,18 +35,19 @@ CCalcFitnessInterface::~CCalcFitnessInterface()
 
 void CCalcFitnessInterface::init()
 {
-     if(m_Parameter->simulationMode !=CParameter::CLUSTER)
+     if(m_Parameter->simulationMode ==CParameter::MOL_2DMATERIAL || m_Parameter->simulationMode ==MOL_CLUSTER )
      {
-        if(m_Parameter->simulationMode ==CParameter::MOL_2DMATERIAL){
+         if(m_Parameter->simulationMode ==CParameter::MOL_2DMATERIAL){
              this->m_pCalcModeStruct=new CCalc2DSupport(this->m_Parameter);
-        }else{
+         }else{
              this->m_pCalcModeStruct=new CCalcClusterSupport(this->m_Parameter);
-        }
+         }
 
-        if(m_Parameter->adso_supp_Struct != ""){
+         if(m_Parameter->adso_supp_Struct != ""){
+            // Only one initialized structure is required.
            //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
            //
-           Cios* tempIO = this->getIO(m_Parameter->adso_supp_Struct,m_pCalcModeStruct->periodicFramework());
+           Cios* tempIO = std::move(getIO(m_Parameter->adso_supp_Struct,m_pCalcModeStruct->periodicFramework()));
            tempIO->input(m_Parameter->adso_supp_Struct);
            delete tempIO;
            //construct chemical bond
@@ -105,12 +107,12 @@ void CCalcFitnessInterface::GetDecGeneAfterCalc(std::vector<double>& tmpVect)
 {
     return this->m_pCalcModeStruct->getGeneValuefromStruct(tmpVect);
 }
-double CCalcFitnessInterface::CalcuRawFit()
+double CCalcFitnessInterface::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
 {
     return 0;
 }
 
-void CCalcFitnessInterface::ConvOrigToRawScore()
+void CCalcFitnessInterface::ConvOrigToRawScore(std::vector<double>& othr)
 {
 
 }

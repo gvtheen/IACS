@@ -3,13 +3,13 @@
 #include<vector>
 #include<iostream>
 #include<string>
-#include "../Util/Bitset.h"
+
 
 namespace CATAZJUT{
   class CPeriodicFramework;
 }
 
-using util::Bitset;
+
 namespace CALCZJUT{
 
 class CCalcModeStruct;
@@ -45,7 +45,7 @@ class CCalcFitnessInterface
 	               CCalcModeStruct  *m_pCalcModeStruct;
 	                          Cios  *m_pIO;
 	                    CParameter  *m_Parameter;
-	                    Bitset       pop_run_state;
+
 };
 
 

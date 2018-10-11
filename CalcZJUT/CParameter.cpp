@@ -27,11 +27,11 @@ CParameter::CParameter(char* file)
     m_mapCmdFunc["[Adsorbent_Support_Structure]"]=&CParameter::setAdsorbent_Support_Structure;
     // for cluster
     m_mapCmdFunc["[Cluster_Formula]"]=&CParameter::setCluster_Formula;
-    m_mapCmdFunc["[Cluster_Input_File]"]=&CParameter::setCluster_Input_File;
-
+    m_mapCmdFunc["[Cluster_Structure]"]=&CParameter::setCluster_Input_File;
+    // for bond Tolerance
     m_mapCmdFunc["[Bond_Tolerance_Factor]"]=&CParameter::setBond_Tolerance_Factor;
     m_mapCmdFunc["[Exclude_Bond]"]=&CParameter::setExclude_Bond;
-
+    // for GA
     m_mapCmdFunc["[Generation_Number]"]=&CParameter::setGenNum;
     m_mapCmdFunc["[Population_Size]"]=&CParameter::setPopSize;
     m_mapCmdFunc["[Cross_Probability]"]=&CParameter::setPc;
@@ -62,7 +62,7 @@ void CParameter::input()
           in= new std::ifstream(m_pfile->c_str(),std::ifstream::in);
           in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
 
-          util::Log::Output<<"*********** Read input file of "<<m_pfile->c_str()<<"***********"<< std::endl;
+          Log::Output<<"*********** Read input file of "<<m_pfile->c_str()<<"***********"<< std::endl;
 
           while(!in->eof()){
             std::getline(*in,str,'\n');
@@ -72,11 +72,11 @@ void CParameter::input()
             for(size_t i=0;i<cmd_Str.size();i++){
                 boost::algorithm::trim(cmd_Str[i]);
                 if(cmd_Str[i]!="" && i%2==0){
-                     util::Log::Output<< ">>>" <<cmd_Str[i]<< std::endl;
+                     Log::Output<< ">>>" <<cmd_Str[i]<< std::endl;
                      boost::algorithm::split(keyValue,cmd_Str[i],boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
 
                      if(keyValue.size()!=2){
-                        util::Log::Error<<cmd_Str[i] <<" command is wrong!" <<std::endl;
+                        Log::Error<<cmd_Str[i] <<" command is wrong!" <<std::endl;
                         boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! Check the file: Error_information.txt."));
                      }
 
@@ -85,17 +85,17 @@ void CParameter::input()
                      if(m_mapCmdFunc.find(keyValue[0]) != m_mapCmdFunc.end()){
                          (this->*m_mapCmdFunc[keyValue[0]])(keyValue[1]);
                      }else{
-                         util::Log::Error<< cmd_Str[i] <<" command is wrong!" <<std::endl;
+                         Log::Error<< cmd_Str[i] <<" command is wrong!" <<std::endl;
                          boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! Check the file: Error_information.txt."));
                      }
                  }
              }
          }
       }catch(const std::ifstream::failure& e){
-          util::Log::Error<< e.what() <<"Input_CParameter\n";
+          Log::Error<< e.what() <<"Input_CParameter\n";
           boost::throw_exception(std::runtime_error(std::string(e.what()) + "Check the file: Error_information.txt."));
       }
-      util::Log::Output<<"*********** End read "<<"***********"<< std::endl;
+      Log::Output<<"*********** End read "<<"***********"<< std::endl;
 }
 bool CParameter::checkIsValidParameters()
 {
@@ -230,7 +230,7 @@ void CParameter::setEvaluator_Criterion(std::string mtr)
 void CParameter::setMutation_Mode(std::string mtr)
 {
      if(mtr=="UNIFORM_M" || std::stoi(mtr)==1 )
-       (*m_pGAParameter)["[Mutation_Mode]"]="UNIFORM_M";
+        (*m_pGAParameter)["[Mutation_Mode]"]="UNIFORM_M";
      else if(mtr=="BOUNDARY" || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Mutation_Mode]"]="BOUNDARY";
      else if(mtr=="NOUNIFORM" || std::stoi(mtr)==3)
@@ -327,7 +327,13 @@ void CParameter::setAdsorbent_Structure(std::string str)
 }
 void CParameter::setAdsorbent_Support_Structure(std::string str)
 {
-    this->adso_supp_Struct=str;
+    std::vector<std::string> file_vect;
+    boost::algorithm::trim(str);
+
+    boost::algorithm::split(file_vect,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+    for(size_t i=0;i<file_vect.size();i++)
+       this->adso_supp_Input_File.push_back(new std::string(file_vect[i]));
+
 }
 void CParameter::setCluster_Formula(std::string str)
 {

@@ -19,7 +19,7 @@ class CIOCif:public Cios
         virtual ~CIOCif();
 
         void output(const std::string& file);
-        void  input(std::string& file="");
+        void  input(std::string file="");
         Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode);
     protected:
 
