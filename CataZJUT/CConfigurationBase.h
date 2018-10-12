@@ -62,7 +62,7 @@ class CConfigurationBase
         virtual ~CConfigurationBase();
 
         //chemical name
-        std::vector<std::pair<std::string,size_t>>* composition();
+        std::vector<std::pair<std::string,size_t>>& composition();
         std::string formula();
 
         //interface function  from other objects
@@ -188,6 +188,8 @@ class CConfigurationBase
         CATAZJUT::DEFINED::CoordinateType    m_CoordinateType;
         // type of dimensional
         CATAZJUT::DEFINED::DimensionalType   m_DimensionalType;
+
+        std::vector<std::pair<std::string,size_t>> m_Composition;
 
         Bitset constraintBits;   //0:no constraint; 1: constraint
 

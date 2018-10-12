@@ -73,15 +73,10 @@ void CCalcCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
    double max_radius=0;
    Vector4 tempVect;
 
-   tempVect=util::SphereEquationFromPoints(m_PopuPeriodicFramework[i]->coordinates()->coordinates());
+   tempVect=util::SphereEquationFromPoints(this->m_pPeriodicFramework->coordinates()->coordinates());
    max_radius=tempVect(3,0);
    max_radius = max_radius + 0.50;
-   size_t num = this->periodicFramework()->size();
-   if(currentGeneVARible.size()!=0)
-      currentGeneVARible.clear();
-
-   for(size_t i=0;i<3*num;i++)
-       currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
+   currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
 }
 void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
 {
@@ -152,6 +147,9 @@ void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
 }
 std::vector<std::pair<std::string,size_t>>& CCalcCluster::chemicalFormula()
 {
+    if(this->m_chemicalFormula.size()==0)
+        this->m_chemicalFormula = this->m_pPeriodicFramework->composition();
+
     return this->m_chemicalFormula;
 }
 void CCalcCluster::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)

@@ -120,24 +120,26 @@ CConfigurationBase::~CConfigurationBase()
     delete m_pData;
 }
 
-std::vector<std::pair<std::string,size_t>>* CConfigurationBase::composition()
+std::vector<std::pair<std::string,size_t>>& CConfigurationBase::composition()
 {
+    if(this->m_Composition.size()!=0)
+        return this->m_Composition;
+
     std::map<unsigned char,size_t>* comp = new (std::map<unsigned char,size_t>);
     foreach(const CAtom* atom,atoms())
         (*comp)[atom->AtomNumber()]++;
     //default, map is sorted by the key;
-    std::vector<std::pair<std::string,size_t>>* res = new (std::vector<std::pair<std::string,size_t>>);
 
     for(std::map<unsigned char,size_t>::iterator it=comp->begin();it!=comp->end();it++)
     {
         std::pair<std::string,size_t>  mPair;
         mPair.first  = (new CElement(it->first))->symbol();
         mPair.second = it->second;
-        res->push_back(mPair);
+        this->m_Composition.push_back(mPair);
     }
     delete comp;
 
-    return res;
+    return this->m_Composition;
 
 }
 std::string CConfigurationBase::formula()

@@ -1,8 +1,10 @@
 #ifndef CCALCCLUSTERSTRUCTPOOL_H
 #define CCALCCLUSTERSTRUCTPOOL_H
-
-#include "CCalcStructBasePool.h"
 #include <vector>
+#include "CCalcStructBasePool.h"
+#include "../GaZJUT/CGaDeclaration.h"
+
+using GAZJUT::GeneVAR;
 
 namespace CATAZJUT{
   class CPeriodicFramework;
@@ -18,6 +20,7 @@ class CCalcClusterStructPool:public CCalcStructureBasePool
         virtual ~CCalcClusterStructPool();
 
         void init();
+        void GeneVARRange(std::vector<GeneVAR>&);
 
         void Initialization(const std::string& chemicalformulaStr);          // initialize from chemical formula
         void Initialization(const char* chemicalformulaStr);                 // initialize from chemical formula

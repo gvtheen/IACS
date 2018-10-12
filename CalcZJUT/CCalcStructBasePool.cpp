@@ -23,6 +23,16 @@ CCalcModeStruct* CCalcStructureBasePool::operator[](size index)
     }
     return this->m_CalcStructPool[index];
 }
+void CCalcStructureBasePool::GeneVARRange(std::vector<GeneVAR>& mth)
+{
+
+}
+void CCalcStructureBasePool::init()
+{
+
+}
+
+
 
 
 }

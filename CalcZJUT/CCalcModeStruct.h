@@ -40,12 +40,17 @@ class CCalcModeStruct
         void setRandomInitState(const bool&);
         bool RandomInitState();
 
+        virtual std::vector<std::pair<std::string,size_t>>& chemicalFormula();
+        virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
+
     public:
                           CParameter*          m_pParameter;
                 std::vector<GeneVAR>*          m_pGeneVAR;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
         CATAZJUT::CPeriodicFramework*          m_backupPeriodicFramework;
+
+ std::vector<std::pair<std::string,size_t>>    m_chemicalFormula;
                                  bool          m_IsNeedRandomInit;
 
 };

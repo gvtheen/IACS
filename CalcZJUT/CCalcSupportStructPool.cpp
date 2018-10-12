@@ -27,6 +27,7 @@
 #include "CIOPoscar.h"
 #include "CCalcSupportStructPool.h"
 
+using util::Log;
 
 namespace CALCZJUT{
 
@@ -57,8 +58,8 @@ void CCalcSupportStructPool::init()
                if(i >= m_CalcStructPool.size())
                   break;
 
-               this->getIO(m_pParameter->adso_supp_Input_File[i],m_CalcStructPool[i]->periodicFramework())
-               this->m_IO->input(m_pParameter->adso_supp_Input_File[i]);
+                this->getIO(m_pParameter->adso_supp_Input_File[i],m_CalcStructPool[i]->periodicFramework())
+                this->m_IO->input(m_pParameter->adso_supp_Input_File[i]);
                 m_CalcStructPool[i]->periodicFramework()->perceiveBonds();
                 m_CalcStructPool[i]->periodicFramework()->perceiveFragments();
                 m1 = m_CalcStructPool[i]->periodicFramework()->fragment(0);
@@ -77,6 +78,12 @@ void CCalcSupportStructPool::init()
                }
                m_CalcStructPool[i]->setRandomInitState(false);
            }
+           for(size_t i=m_pParameter->adso_supp_Input_File.size();i<m_CalcStructPool.size();i++){
+               delete m_CalcStructPool[i];
+               m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
+               // get support and adsorption molecular, then re-set new structure.
+               m_CalcStructPool[i]->setRandomInitState(true);
+           }
       }else{ // treat cluster-support
             //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
            //
@@ -91,6 +98,14 @@ void CCalcSupportStructPool::init()
            //set molecular adsorbent bits
            m_CalcStructPool[0]->createMoleAdsorb(Bit_adsorbent);
            m_CalcStructPool[0]->setRandomInitState(false);
+
+           for(size_t i=1;i<m_CalcStructPool.size();i++){
+               delete m_CalcStructPool[i];
+               m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
+               // get support and adsorption molecular, then re-set new structure.
+               m_CalcStructPool[i]->setRandomInitState(true);
+           }
+
      }
 }
 void CCalcSupportStructPool::getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
@@ -115,5 +130,11 @@ void CCalcSupportStructPool::getIO(std::string &file_name,CATAZJUT::CPeriodicFra
 
     return nullptr;
 }
+void CCalcSupportStructPool::GeneVARRange(std::vector<GeneVAR>& mht)
+{
+     this->m_CalcStructPool[0]->GeneVARRange(mht);
+}
+
+
 
 }//namespace

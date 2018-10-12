@@ -62,7 +62,14 @@ void CCalcModeStruct::init()
 {
     // nothing to do
 }
+std::vector<std::pair<std::string,size_t>>& CCalcModeStruct::chemicalFormula()
+{
 
+}
+void CCalcModeStruct::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)
+{
+
+}
 
 
 

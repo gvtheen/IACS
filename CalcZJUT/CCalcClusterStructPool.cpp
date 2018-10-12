@@ -35,8 +35,12 @@ namespace CALCZJUT{
 CCalcClusterStructPool::CCalcClusterStructPool(CParameter* othr)
 :CCalcStructureBasePool(othr)
 {
-    for(size_t i=0;i<this->m_Parameter->GaParameter()->PopNum();i++)
+    for(size_t i=0;i<this->m_Parameter->GaParameter()->PopNum();i++){
         this->m_CalcStructPool.push_back(new CCalcCluster(this->m_Parameter));
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
+    }
+
 }
 
 CCalcClusterStructPool::~CCalcClusterStructPool()
@@ -58,6 +62,21 @@ void CCalcClusterStructPool::init()
        boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. init_CCalcCluster!!\n"));//ERROR TREATMENT;
     }
 }
+void CCalcClusterStructPool::GeneVARRange(std::vector<GeneVAR>&  mht)
+{
+   double maxRadius=0.0;
+   std::vector<GeneVAR> resTemp;
+   for(size_t i=0;i<this->m_CalcStructPool.size();i++){
+        this->m_CalcStructPool[i]->GeneVARRange(resTemp);
+        if(maxRadius>resTemp[0]->max)
+            maxRadius = resTemp[0]->max;
+   }
+   maxRadius = maxRadius + 1.0;
+   size_t num=this->m_CalcStructPool[0].m_pPeriodicFramework->size();
+
+   for(size_t i=0;i<3*num;i++)
+      mht.push_back({-1*maxRadius,maxRadius,0.001});
+}
 void CCalcClusterStructPool::Initialization(const std::string& mth)
 {
        // initialize from chemical
@@ -72,6 +91,8 @@ void CCalcClusterStructPool::Initialization(const std::string& mth)
     boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
 
     std::pair<std::string,size_t> ChemicalStr;
+    std::vector<std::pair<std::string,size_t>> tempChemFormula;
+
     for(size_t i=0;i<vecStr.size();i++){
         ChemicalStr.first  = boost::algorithm::trim_copy_if(vecStr[i], boost::algorithm::is_digit());
         //check whether the label is OK.
@@ -84,10 +105,11 @@ void CCalcClusterStructPool::Initialization(const std::string& mth)
             ChemicalStr.second = 1;
         else
             ChemicalStr.second = std::stoi(str);
-        this->chemicalFormula.push_back(ChemicalStr);
+        tempChemFormula.push_back(ChemicalStr);
     }
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++)
-        RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework());
+        RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework(),tempChemFormula);
+    tempChemFormula.clear();
 }
 void CCalcClusterStructPool::Initialization(const char* mth)
 {      // initialize from chemical formula
@@ -117,20 +139,25 @@ void CCalcClusterStructPool::Initialization(const std::vector<std::string*>& inp
        }
        // read structure and save m_PopuPeriodicFramework[pos++]
        inputIO->input(str);
+
+       m_CalcStructPool[pos]->setChemicalFormula( m_CalcStructPool[pos]->periodicFramework()->composition() );
        pos++;
    }
-   m_CalcStructPool[pos]->m_= m_CalcStructPool[pos]->periodicFramework()->composition());
 
-   for(size_t i=pos;i<this->m_pParameter->GaParameter()->PopNum();i++)
-       RandomBuildFromChemicalFormula(this->m_CalcStructPool[pos++]->periodicFramework());
+   for(size_t i=pos;i<this->m_pParameter->GaParameter()->PopNum();i++){
+      this->m_CalcStructPool[i]->setChemicalFormula(this->m_CalcStructPool[0]->chemicalFormula());
+      RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework(),
+                                     this->m_CalcStructPool[i]->chemicalFormula());
+      }
 }
-void CCalcClusterStructPool::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct)
+void CCalcClusterStructPool::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct,
+                                                            std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
      std::vector<CATAZJUT::CElement*> res;
      size_t atom_Sum=0;
-     for(size_t i=0;i<chemicalFormula.size();i++){
-        res.push_back(new CATAZJUT::CElement(chemicalFormula[i].first));
-        atom_Sum = atom_Sum + chemicalFormula[i].second;
+     for(size_t i=0;i<chemFormula.size();i++){
+        res.push_back(new CATAZJUT::CElement(chemFormula[i].first));
+        atom_Sum = atom_Sum + chemFormula[i].second;
      }
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
@@ -161,7 +188,8 @@ size_t CCalcClusterStructPool::ClusterType(std::vector<CATAZJUT::CElement*>& mht
     return 0;
 }
 // for metal clusters
-void CCalcClusterStructPool::metalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
+void CCalcClusterStructPool::metalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+                                                 std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     util::Vector3 polar_coord, basic_coord;
     util::Point3 coordinate;
@@ -170,9 +198,9 @@ void CCalcClusterStructPool::metalClusterPredict(CATAZJUT::CPeriodicFramework* p
     double covalent_Radius=0.0;
 
     size_t atom_Sum=0;
-    for(size_t i=0;i<this->chemicalFormula.size();i++){
-        covalent_Radius = covalent_Radius + (new CATAZJUT::CElement(this->chemicalFormula[i].first))->covalentRadius();
-        atom_Sum = atom_Sum + this->chemicalFormula[i].second;
+    for(size_t i=0;i<this->chemFormula.size();i++){
+        covalent_Radius = covalent_Radius + (new CATAZJUT::CElement(this->chemFormula[i].first))->covalentRadius();
+        atom_Sum = atom_Sum + this->chemFormula[i].second;
     }
     // clear all atoms and all bonds;
     predict_struct->clear();
@@ -182,8 +210,8 @@ void CCalcClusterStructPool::metalClusterPredict(CATAZJUT::CPeriodicFramework* p
     // determine:  radius, theta, Phi
     basic_coord<< bondrange*std::pow(atom_Sum,1.0/3),180.0,360.0;
     util::CRandomgenerator* myRandomgenerator = new util::CRandomgenerator();
-    for(size_t i=0;i<chemicalFormula.size();i++)
-        for(size_t j=0;j<chemicalFormula[i].second;j++){
+    for(size_t i=0;i<chemFormula.size();i++)
+        for(size_t j=0;j<chemFormula[i].second;j++){
                     // using polar coordinate to predict it
             polar_coord =basic_coord.cwiseProduct(myRandomgenerator->randomVector01(i*j));
                    // transfer polar coordinate to cartesian coordinate.
@@ -192,19 +220,20 @@ void CCalcClusterStructPool::metalClusterPredict(CATAZJUT::CPeriodicFramework* p
             cosPhi = std::cos(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             sinPhi = std::sin(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
-            predict_struct->addAtom(this->chemicalFormula[i].first,coordinate);
+            predict_struct->addAtom(this->chemFormula[i].first,coordinate);
         }
     //predict_struct->perceiveBonds(); // it is not necessary to perform it.
     this->eliminateFragment(predict_struct);
     this->eliminateCloseContacts(predict_struct);
 }
 // nonmetal compounds
-void CCalcClusterStructPool::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
+void CCalcClusterStructPool::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+                                                    std::vector<std::pair<std::string,size_t>>& chemFormula))
 {
     std::vector<std::pair<CATAZJUT::CElement*,size_t>> chemicalelement;
-    for(size_t i=0;i<chemicalFormula.size();i++)
-      chemicalelement.push_back(std::make_pair(new CATAZJUT::CElement(chemicalFormula[i].first),\
-                                               chemicalFormula[i].second));
+    for(size_t i=0;i<chemFormula.size();i++)
+      chemicalelement.push_back(std::make_pair(new CATAZJUT::CElement(chemFormula[i].first),\
+                                               chemFormula[i].second));
     size_t PBlockAtomNum=0;
     for(size_t i=0;i<chemicalelement.size();i++)
         if(chemicalelement[i].first->maxCoordinationNum()>1)

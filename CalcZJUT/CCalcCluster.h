@@ -46,12 +46,9 @@ class CCalcCluster:public CCalcModeStruct
         void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
         void eliminateFragment(CATAZJUT::CPeriodicFramework*);
 
-
-
-
     private:
 
-        std::vector<std::pair<std::string,size_t>>   m_chemicalFormula;
+
         //CCalcFitnessInterface  *m_pCalcFitness;
 
 };

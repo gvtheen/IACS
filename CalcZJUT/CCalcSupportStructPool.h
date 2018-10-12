@@ -17,6 +17,9 @@ class CCalcSupportStructPool:public CCalcStructureBasePool
         virtual ~CCalcSupportStructPool();
 
         void init();
+        void GeneVARRange(std::vector<GeneVAR>&);
+
+
     protected:
         void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
     private:

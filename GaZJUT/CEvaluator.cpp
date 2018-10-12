@@ -1,6 +1,11 @@
 #include "CEvaluator.h"
 #include "../CalcZJUT/CCalcFitnessInterface.h"
-#include "../CalcZJUT/CCalcModeStruct.h"
+#include "../CalcZJUT/CCalcStructBasePool.h"
+
+namespace CALCZJUT{
+   class CCalcStructBasePool;
+}
+
 namespace GAZJUT{
 
 CEvaluator::CEvaluator()
@@ -19,6 +24,8 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    bool runstate=false;
    double tempOrigValue;
    size_t pop_num = CurrentPopulation->popNum();
+
+   if()
 
    std::vector<double> OrigScore;
    std::vector<double> DecValueOfGenome;
