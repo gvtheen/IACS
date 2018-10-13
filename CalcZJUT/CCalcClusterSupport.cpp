@@ -59,11 +59,11 @@ void CCalcClusterSupport::setGeneValueToStruct(const std::vector<double>& realVa
 {
 
 }
-std::vector<double>* CCalcClusterSupport::getGeneValuefromStruct()const
+void CCalcClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
 
 }
-std::vector<GeneVAR>* CCalcClusterSupport::GeneVARRange()
+void CCalcClusterSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 {
 
 }

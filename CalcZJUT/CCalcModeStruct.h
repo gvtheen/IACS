@@ -30,11 +30,8 @@ class CCalcModeStruct
         virtual void createMoleAdsorb( const Bitset &);
 
         virtual void init();
-//        virtual void createStructureAtGene();
-//        virtual void removeStructureOfGene();
+
         CATAZJUT::CPeriodicFramework* periodicFramework();
-        // Get index periodicFramework in periodicFramework Pool
-        CATAZJUT::CPeriodicFramework* periodicFrameworkPoolAt(size_t index);
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
 
         void setRandomInitState(const bool&);

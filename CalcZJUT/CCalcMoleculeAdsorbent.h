@@ -7,7 +7,7 @@ Noting:
 #include <vector>
 #include <boost/range/iterator_range.hpp>
 #include "../Util/Point-Vector.h"
-#include "CConfigurationBase.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../Util/Bitset.h"
 
 namespace CATAZJUT{
@@ -15,7 +15,7 @@ namespace CATAZJUT{
  class CAtom;
 }
 
-using CATAZJUT::Point3;
+using util::Point3;
 using util::Bitset;
 
 namespace CALCZJUT{

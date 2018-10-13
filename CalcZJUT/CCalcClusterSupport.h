@@ -8,9 +8,12 @@
 
 using GAZJUT::GeneVAR;
 using util::Bitset;
+
+// import crystal plane object from namespace CATAZJUT.
 namespace CATAZJUT{
    class CCrystalPlanes;
 }
+
 namespace CALCZJUT{
 
 class CCalcSupportBase;
@@ -37,8 +40,8 @@ class CCalcClusterSupport:public CCalcModeStruct
         void createSupport(Bitset &);
         void createMoleAdsorb(Bitset &);
 
-         Bitset SupportBit();
-         Bitset MoleAdsorbBit();
+        Bitset SupportBit();
+        Bitset MoleAdsorbBit();
 
          CATAZJUT::CCrystalPlanes* crystalPlanes();
          void setCrystalPlanes(CATAZJUT::CCrystalPlanes*);

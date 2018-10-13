@@ -353,6 +353,14 @@ GAZJUT::CGaparameter* CParameter::GaParameter()
 {
     return m_pGAParameter;
 }
+size_t CParameter::currentGenerationNum()
+{
+    return this->m_pGAParameter->GenerationNum();
+}
+size_t CParameter::popNum()
+{
+    return this->m_pGAParameter->PopNum();
+}
 CParameter::~CParameter()
 {
     if(m_pfile!=nullptr)

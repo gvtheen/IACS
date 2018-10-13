@@ -1,6 +1,7 @@
 #include "CEvaluator.h"
 #include "../CalcZJUT/CCalcFitnessInterface.h"
 #include "../CalcZJUT/CCalcStructBasePool.h"
+#include "../CalcZJUT/CParameter.h"
 
 namespace CALCZJUT{
    class CCalcStructBasePool;
@@ -11,10 +12,15 @@ namespace GAZJUT{
 CEvaluator::CEvaluator()
 {
 }
-CEvaluator::CEvaluator(CALCZJUT::CCalcFitnessInterface* myEvaluator)
+CEvaluator::CEvaluator(CALCZJUT::CCalcFitnessInterface  *myEvaluator,
+                       CALCZJUT::CCalcStructureBasePool *myStructPool)
 {
-    this->m_pEvaluator = myEvaluator->clone();
-    pop_run_state.resize(m_Parameter->GaParameter()->PopNum(),false);
+    // sample evaluator
+    this->m_pEvaluator     = myEvaluator;
+    //sample structural pool
+    this->m_pStructurePool = myStructPool;
+    // sample evaluator monitor!
+    pop_run_state.resize(m_Parameter->popNum(),false);
 }
 CEvaluator::~CEvaluator()
 {
@@ -24,8 +30,6 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    bool runstate=false;
    double tempOrigValue;
    size_t pop_num = CurrentPopulation->popNum();
-
-   if()
 
    std::vector<double> OrigScore;
    std::vector<double> DecValueOfGenome;
@@ -57,11 +61,11 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
 }
 void CEvaluator::setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcFitness)
 {
-   this->m_pEvaluator=CalcFitness;
+      this->m_pEvaluator=CalcFitness;
 }
 CALCZJUT::CCalcFitnessInterface* CEvaluator::CalcFitnessInterface()
 {
-   return this->m_pEvaluator;
+      return this->m_pEvaluator;
 }
 
 

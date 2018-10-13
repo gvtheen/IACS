@@ -19,6 +19,7 @@ namespace CATAZJUT{
   class CAtom;
   class CElement;
 }
+
 namespace CALCZJUT{
 
 class CCalcFitnessInterface;
@@ -49,7 +50,7 @@ class CCalcCluster:public CCalcModeStruct
     private:
 
 
-        //CCalcFitnessInterface  *m_pCalcFitness;
+        //NO new members
 
 };
 

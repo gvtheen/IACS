@@ -4,20 +4,21 @@
 #include "CCalc2DSupport.h"
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CCalcMoleculeAdsorbent.h"
-#include "CPeriodicFramework.h"
-#include "GaDeclaration.h"
-#include "CCartesianCoordinates.h"
-#include "CFractionCoordinates.h"
+#include "../GaZJUT/GaDeclaration.h"
+#include "../CataZJUT/CCartesianCoordinates.h"
+#include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CUnitCell.h"
 #include "CCalcSupportBase.h"
 #include "../Util/foreach.h"
-#include "CPlane.h"
-#include "CBondTolerance.h"
-#include "GaUtilityFunction.h"
+#include "../CataZJUT/CPlane.h"
+#include "../CataZJUT/CBondTolerance.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include  "../Util/Point-Vector.h"
 
 using util::Log;
+using util::Point3;
+using util::Vector3;
 
 namespace CALCZJUT{
 
@@ -49,17 +50,17 @@ CCalcModeStruct* CCalc2DSupport::clone()
 
 }
 //attribute operation
-void CCalc2DSupport::createSupport(Bitset& mht)
+void CCalc2DSupport::createSupport(const Bitset& mht)
 {
     assert(m_pPeriodicFramework);
     m_BitbackupSupport = mht;
-    m_pSupport= new CCalcSupportBase(this->m_pPeriodicFramework,mht);
+    m_pSupport= new CCalcSupportBase(this->m_pPeriodicFramework,m_BitbackupSupport);
 }
 void CCalc2DSupport::createMoleAdsorb( const Bitset& mht)
 {
     assert(m_pPeriodicFramework);
     m_BitbackupAdsorbMolecule = mht;
-    m_pAdsorbMolecule = new CCalcMoleculeAdsorbent(this->m_pPeriodicFramework,mht);
+    m_pAdsorbMolecule = new CCalcMoleculeAdsorbent(this->m_pPeriodicFramework,m_BitbackupAdsorbMolecule);
 }
 Bitset CCalc2DSupport::SupportBit()
 {
@@ -98,26 +99,17 @@ void CCalc2DSupport::setLatticeDirection(CCalc2DSupport::LATT_DIRECTION mth)
    this->m_latticeDirection=mth;
 }
 
-void CCalc2DSupport::createStructureAtGene()
-{
-   CCalcModeStruct::createStructureAtGene();
-   CATAZJUT::CPeriodicFramework* newStructure= new (CATAZJUT::CPeriodicFramework)(*m_backupPeriodicFramework);
-   m_PopuPeriodicFramework.push_back(newStructure);
-   m_pPeriodicFramework = m_PopuPeriodicFramework[m_PopuPeriodicFramework.size()-1];
-
-   m_pSupport->setConfiguration(this->periodicFramework());
-   m_pAdsorbMolecule->setConfiguration(this->periodicFramework());
-}
-
-
 void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
-    CATAZJUT::Point3 vect;
-    CATAZJUT::Point3 target_p;
+    Point3 vect,target_p;
     double a,b;
     //identify the surface on the support
+    if(this->RandomInitState()==false){
+        this->setRandomInitState(true);
+        goto RETURN_Random_Label;
+    }
     if( m_support_surface ==nullptr)
-        this->perceiveSupportSurface()
+        this->perceiveSupportSurface();
 
     if(m_latticeDirection == CCalc2DSupport::C_AXIS){
 
@@ -133,7 +125,7 @@ void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOf
         //rotate along axis and angle
         target_p<<realValueOfgene[3],realValueOfgene[4],realValueOfgene[5];
         m_pAdsorbMolecule->rotate(target_p,realValueOfgene[6]);
-    }else if(m_latticeDirection == CCalc2DSupport::B_AXIS{
+    }else if(m_latticeDirection == CCalc2DSupport::B_AXIS){
         a=realValueOfgene[1];     //in the coordinate system of lattice
         b=realValueOfgene[2];
         target_p<<a,0,b;
@@ -146,7 +138,7 @@ void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOf
         //rotate along axis and angle
         target_p<<realValueOfgene[3],realValueOfgene[4],realValueOfgene[5];
         m_pAdsorbMolecule->rotate(target_p,realValueOfgene[6]);
-    }else if(m_latticeDirection == CCalc2DSupport::A_AXIS{
+    }else if(m_latticeDirection == CCalc2DSupport::A_AXIS){
         a=realValueOfgene[1];     //in the coordinate system of lattice
         b=realValueOfgene[2];
         target_p<<0,a,b;
@@ -161,37 +153,41 @@ void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOf
         m_pAdsorbMolecule->rotate(target_p,realValueOfgene[6]);
 
     }else{
-       Log::Error<<("Lattice Direction is error! setGeneValueToStruct_CCalc2DSupport");
+       Log::Error<<"Lattice Direction is error! setGeneValueToStruct_CCalc2DSupport";
        boost::throw_exception(std::runtime_error("Lattice Direction is error!! Check the file: Error_information.txt."));
     }
 
      // eliminate the closecontact in new structure
     this->eliminateCloseContacts();
+
+RETURN_Random_Label:
+    ;
+    //nothing;
 }
 void CCalc2DSupport::eliminateCloseContacts(double distanceCutOff)
 {
-    CATAZJUT::Vector3 vect;
+    Vector3 vect;
     double eps=0.01;
     bool modifiedbol=true;
     while(modifiedbol)
     {
        modifiedbol=false;
-       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms()){
+       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms())
           foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
             if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
                 vect = atom_m->position() - atom_s->position();
                 vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
                 this->m_pAdsorbMolecule->moveBy(vect);
                 modifiedbol=true;
             }
-          }
-       }
+        }
     }
 }
 void CCalc2DSupport::getGeneValuefromStruct(std::vector<double>& geneRealValue)
 {
    geneRealValue.clear();
-   return nullptr;
+
 }
 void CCalc2DSupport::GeneVARRange(std::vector<GeneVAR>& GeneVARibleVect)
 {
@@ -217,8 +213,8 @@ void CCalc2DSupport::GeneVARRange(std::vector<GeneVAR>& GeneVARibleVect)
         GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
         GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
     }else{
-         ERROR_OUTPUT("It has no vacuum layer!","GeneVARRange","CCalc2DSupport");
-         boost::throw_exception(std::runtime_error("It has no vacuum layer!! Check the file: Error_information.txt."));
+         Log::Error<<"It has no vacuum layer! GeneVARRange_CCalc2DSupport!\n";
+         boost::throw_exception(std::runtime_error("It has no vacuum layer!! GeneVARRange_CCalc2DSupport.\n"));
     }
     //rotation axis
     GeneVARibleVect.push_back({-1,1,0.01});
@@ -237,7 +233,7 @@ void CCalc2DSupport::IdentifyvacuumLayerDirection()  //-1: none, 0:a,  1:b  2:c
 
     double dis;
     bool breakBol=false;
-    CATAZJUT::Vector3 disVect;
+    Vector3 disVect;
     for(size_t i=0;i<3;i++){
        breakBol=false;
        foreach(const CATAZJUT::CAtom* atom_1,m_pSupport->atoms()){
@@ -301,8 +297,8 @@ void CCalc2DSupport::perceiveSupportSurface()
         if(matom.size()>4)
             break;
         else if(PlaneCutoff >1.0){
-            ERROR_OUTPUT(" 2D support has serious error!","perceiveSupportSurface","CCalc2DSupport");
-            boost::throw_exception(std::runtime_error("2D support has serious error! Check the file: Error_information.txt."));
+            Log::Error<<" 2D support has serious error! perceiveSupportSurface_CCalc2DSupport!";
+            boost::throw_exception(std::runtime_error("2D support has serious error! perceiveSupportSurface_CCalc2DSupport!"));
         }else
             PlaneCutoff=PlaneCutoff + 0.1;
     }

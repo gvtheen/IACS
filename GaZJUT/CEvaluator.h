@@ -14,6 +14,8 @@ using util::Bitset;
 namespace CALCZJUT{
   class CCalcFitnessInterface;
   class CCalcModeStruct;
+  class CCalcStructureBasePool;
+  class CParameter;
 }
 namespace GAZJUT{
 
@@ -21,7 +23,8 @@ class CEvaluator:public CGaOperatorBase
 {
 	public:
 		CEvaluator();
-		CEvaluator(CALCZJUT::CCalcFitnessInterface*);
+		CEvaluator(CALCZJUT::CCalcFitnessInterface*,
+                   CALCZJUT::CCalcStructureBasePool*);
 		~CEvaluator();
 
 		void clone();
@@ -30,8 +33,11 @@ class CEvaluator:public CGaOperatorBase
 
         void setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcModeStruct);
         CALCZJUT::CCalcFitnessInterface* CalcFitnessInterface();
+
 	protected:
 	    CALCZJUT::CCalcFitnessInterface      *m_pEvaluator;
+	    CALCZJUT::CCalcStructureBasePool     *m_pStructurePool;
+	                //CALCZJUT::CParameter     *m_pParameter;
 	                             Bitset       pop_run_state;
 };
 

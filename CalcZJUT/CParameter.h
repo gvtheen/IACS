@@ -32,6 +32,8 @@ class CParameter
 
         void input();
         GAZJUT::CGaparameter* GaParameter();
+        size_t currentGenerationNum();
+        size_t popNum();
 
         //Parameter of general setting
         std::string sysName;

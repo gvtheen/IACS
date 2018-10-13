@@ -1,5 +1,5 @@
 #include "CCalcModeStruct.h"
-#include "CPeriodicFramework.h"
+#include "../CataZJUT/CPeriodicFramework.h"
 
 namespace CALCZJUT{
 
@@ -20,13 +20,6 @@ void CCalcModeStruct::init()
 CATAZJUT::CPeriodicFramework* CCalcModeStruct::periodicFramework()
 {
     return m_pPeriodicFramework;
-}
-CATAZJUT::CPeriodicFramework* CCalcModeStruct::periodicFramework(size_t index_int)
-{
-    if( index_int > this->m_PopuPeriodicFramework.size()-1 && index_int<0 )
-        return nullptr;
-
-    return m_PopuPeriodicFramework[index_int];
 }
 void CCalcModeStruct::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
 {

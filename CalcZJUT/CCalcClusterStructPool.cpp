@@ -58,7 +58,7 @@ void CCalcClusterStructPool::init()
     }else if(this->m_pParameter->cluster_Formula!=""){
         this->Initialization(m_pParameter->cluster_Formula);
     }else{
-       Log::Error<< " Chemical formula and structural files is required. init_CCalcCluster!\n";
+       Log::Error<< " Chemical formula or initially structural files is required. init_CCalcCluster!\n";
        boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. init_CCalcCluster!!\n"));//ERROR TREATMENT;
     }
 }
@@ -296,7 +296,8 @@ void CCalcClusterStructPool::eliminateCloseContacts(CATAZJUT::CPeriodicFramework
        center_P = curr_struct->center();
 
        foreach(CATAZJUT::CAtom* atom_s, curr_struct->atoms())
-          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
             if( curr_struct->distance(atom_m,atom_s) < distanceCutOff ){
                 if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm() ){
                     vect = atom_m->position() - atom_s->position();
@@ -309,6 +310,7 @@ void CCalcClusterStructPool::eliminateCloseContacts(CATAZJUT::CPeriodicFramework
                 }
                 modifiedbol=true;
             }
+        }
     }
 }
 void CCalcClusterStructPool::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)

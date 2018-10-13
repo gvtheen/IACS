@@ -3,6 +3,7 @@
 #include <string>
 #include <strings.h>
 #include <cstring>
+#include <exception>
 #include <math.h>
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CCalcCluster.h"
@@ -46,7 +47,7 @@ CCalcCluster::CCalcCluster(CParameter* mPara)
 
 CCalcCluster::~CCalcCluster()
 {
-    //dtor
+    delete this->m_pPeriodicFramework;
 }
 CCalcModeStruct* CCalcCluster::clone()
 {
@@ -58,15 +59,40 @@ CCalcModeStruct* CCalcCluster::clone()
      return res;
 }
 
-
-
-void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene, size_t mth_Genome)
+void CCalcCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
+     if( realValueOfgene.size()%3 != 0 ){
+        Log::Error<<"The size() of realValueofGene is error! CCalcCluster::setGeneValueToStruct!\n";
+        boost::throw_exception(std::runtime_error("The size() of realValueofGene is error! CCalcCluster::setGeneValueToStruct!"));
+     }
+      size_t index=0;
+      Point3 tempPoint;
+      if(this->m_pParameter->currentGenerationNum()>0){
+          try{
+             foreach(CATAZJUT::CAtom* atom_s, this->m_pPeriodicFramework->atoms()){
+                tempPoint<<realValueOfgene[index],realValueOfgene[index+1],realValueOfgene[index+2];
+                atom_s->SetPosition(tempPoint);
+                index += 3;
+                if( index >= realValueOfgene.size() ) break;
+            }
+          }catch(std::exception const &e){
+             Log::Error<<e.what();
+             boost::throw_exception(std::runtime_error(e.what()));
+          }
+      }
 
 }
-void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue, size_t mth_Genome)
+void CCalcCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
-
+    if(currentGeneRealValue.size()!=0)
+       currentGeneRealValue.clear();
+    Point3 tempPoint;
+    foreach(CATAZJUT::CAtom* atom_s, this->m_pPeriodicFramework->atoms()){
+       tempPoint = atom_s->position();
+       currentGeneRealValue.push_back(tempPoint(0,0));
+       currentGeneRealValue.push_back(tempPoint(1,0));
+       currentGeneRealValue.push_back(tempPoint(2,0));
+    }
 }
 void CCalcCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 {
@@ -91,8 +117,12 @@ void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_str
        center_P = curr_struct->center();
 
        foreach(CATAZJUT::CAtom* atom_s, curr_struct->atoms())
-          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
             if( curr_struct->distance(atom_m,atom_s) < distanceCutOff ){
+                /*
+                  Let this atom move far away from center atom.
+                */
                 if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm() ){
                     vect = atom_m->position() - atom_s->position();
                     vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
@@ -104,6 +134,8 @@ void CCalcCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_str
                 }
                 modifiedbol=true;
             }
+          }
+
     }
 }
 void CCalcCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)

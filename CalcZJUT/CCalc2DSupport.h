@@ -41,8 +41,8 @@ class CCalc2DSupport:public CCalcModeStruct
         void getGeneValuefromStruct(std::vector<double>&);
         void GeneVARRange(std::vector<GeneVAR>&);
 
-        void createSupport(Bitset &);
-        void createMoleAdsorb(Bitset &);
+        void createSupport(const Bitset &);
+        void createMoleAdsorb(const Bitset &);
 
         Bitset SupportBit();
         Bitset MoleAdsorbBit();

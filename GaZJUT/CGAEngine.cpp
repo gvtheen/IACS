@@ -15,6 +15,9 @@
 #include "../CalcZJUT/CCalcGaussian.h"
 #include "../CalcZJUT/CCalcDMol.h"
 #include "../CalcZJUT/CCalcLammps.h"
+#include "../CalcZJUT/CCalcStructBasePool.h"
+#include "../CalcZJUT/CCalcClusterStructPool.h"
+#include "../CalcZJUT/CCalcSupportStructPool.h"
 
 //
 namespace GAZJUT{
@@ -29,6 +32,7 @@ CGAEngine::~CGAEngine()
 {
     delete m_pFitnessCalculator;
     delete m_pCurrentPopulation;
+    delete this->m_pStructurePool;
     for(size_t i=0;i<m_GeneticOperator.size();i++)
           delete m_GeneticOperator[i];
     m_GeneticOperator.clear();
@@ -50,7 +54,26 @@ void CGAEngine::init()
    else if((*m_pGaparameter)["Evaluator"]=="LAMMPS")
        m_pFitnessCalculator = new CALCZJUT::CCalcLammps(this->m_pParameter);
 
-   m_pFitnessCalculator->init();
+   switch ((int)m_pParameter->simulationMode)
+   {
+       case CParameter::CLUSTER:
+           m_pStructurePool = new CCalcClusterStructPool(this->m_pParameter);
+       case CParameter::PERIODIC:
+           break;
+       case CParameter::MOL_2DMATERIAL:
+       case CParameter::MOL_CLUSTER:
+           m_pStructurePool = new CCalcSupportStructPool(this->m_pParameter);
+           break;
+       default:
+           break;
+   }
+   /*
+     Initialize structural pool( read structural file or random identify it)
+     Obtain the gene-variable range for the construction of Population object
+   */
+   this->m_pStructurePool->init();
+   //
+   this->m_pFitnessCalculator->init();
    // until now, all parameters in object of Gaparameter were set.
    //
    m_pCurrentPopulation = new CGpopulation(m_pGaparameter);
