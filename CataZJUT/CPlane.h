@@ -26,7 +26,7 @@ class CPlane
         Eigen::Vector3d  NormalLine();
         void SetNormalLine(Eigen::Vector3d temp);
 
-        Circle3D       CircleIncludingPoints();
+        Circle3D        CircleIncludingPoints();
         void SetCircleOfIncludingPoints(Circle3D);
         Point3          Projection(Point3); //
         Eigen::MatrixXd* Projection(Eigen::MatrixXd*);

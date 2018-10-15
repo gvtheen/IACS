@@ -26,7 +26,7 @@ class CSphere
 
         Point3  toPolarCoordinate(const Point3&);
 
-        Point3  geneCartesianCoordAt(const Point3& posPolarPoint);
+        Point3  CartesianCoordAtGeneOf(const Point3& posPolarPoint);
         virtual ~CSphere();
 
     protected:

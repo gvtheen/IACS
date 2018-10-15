@@ -31,7 +31,7 @@ class CCalc2DSupport:public CCalcModeStruct
                             C_AXIS=0x30AD,
                           NONE_DIR=0x30AE}LATT_DIRECTION;
 
-        CCalc2DSupport(CParameter*);
+        CCalc2DSupport(CParameter*,CATAZJUT::CPeriodicFramework**);
         virtual ~CCalc2DSupport();
 
         CCalcModeStruct* clone();

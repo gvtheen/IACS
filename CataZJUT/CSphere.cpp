@@ -24,6 +24,10 @@ CSphere::~CSphere()
 {
     //dtor
 }
+/*
+    identify the sphere equation in the given discrete points ( cluster )
+    by annealing method
+*/
 void CSphere::CreateSphere()
 {
    double ans  =1e12,eps=1e-12,R,step;
@@ -43,6 +47,9 @@ void CSphere::CreateSphere()
    }
    m_Equation<<P_pos[0],P_pos[1],P_pos[2],R;
 }
+/*
+    sub method in annealing method
+*/
 size_t CSphere::maxDist(Point3 p1)
 {
     double res=0,temp;
@@ -81,12 +88,23 @@ Point3 CSphere::SphereCenter() const
     temp<<m_Equation[0],m_Equation[1],m_Equation[2];
     return temp;
 }
+/*
+ convert cartesian coordinate to polar coordinate.
+ return one point ( r, phi, thea )  angle unit:  Radians
+
+ original point in polar coordinate system is center of sphere.
+    >>Point3 newCartCoord = CartCoord - SphereCenter();
+
+*/
 Point3 CSphere::toPolarCoordinate( const Point3& CartCoord)  // res= r,phi,thea;  unit:  Radians
 {
     Point3 newCartCoord = CartCoord - SphereCenter();
+
     double r = newCartCoord.norm();
     Point3 res;
-    double x=newCartCoord[0],y=newCartCoord[1],z=newCartCoord[2];
+
+    double x=newCartCoord[0], y=newCartCoord[1], z=newCartCoord[2];
+
     if (r==0)
     {
         res<<0,0,0;
@@ -102,20 +120,27 @@ Point3 CSphere::toPolarCoordinate( const Point3& CartCoord)  // res= r,phi,thea;
     if(y>=0)
       res[1]= std::acos(x/std::sqrt(x*x+y*y));
     else
-      res[1]= (360-CATAZJUT::constants::RadiansToDegrees*std::acos(x/std::sqrt(x*x+y*y)))*\
+      res[1]= (360 - CATAZJUT::constants::RadiansToDegrees*std::acos(x/std::sqrt(x*x+y*y)))*\
               CATAZJUT::constants::DegreesToRadians;
     res[2]=CATAZJUT::constants::RadiansToDegrees*std::acos(z/r);
     return res;
 }
 /*
-  gene polarcoordinate on the point ( r,phi,thea  ) with the range of deta_radian;
+  Gene polar coordinate on the point ( r,phi,thea  ) with the range of deta_radian;
+   r : the distance between adsorbent molecule and surface of sphere.
+  phi: [0,2*PI]
+ thea: [0,PI]
+
+ The function is to convert the polar coordinate gene to cartesian coordinate.
 */
-Point3 CSphere::geneCartesianCoordAt(const Point3& posPolarPoint)
+Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
 {
     double maxDist=0;
     std::vector<size_t> res_Point;
     Point3 CurrentpolarPoint;
+    // get all pointer from cluster configuration
     CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
+
     for(size_t i=0;i<currentCart->size();i++)
     {
         CurrentpolarPoint = toPolarCoordinate(currentCart->position(i));
@@ -123,7 +148,7 @@ Point3 CSphere::geneCartesianCoordAt(const Point3& posPolarPoint)
         {
             res_Point.push_back(i);
             if(CurrentpolarPoint[0]>maxDist)
-                maxDist=CurrentpolarPoint[0];
+                maxDist = CurrentpolarPoint[0];
         }
     }
     std::vector<size_t>::iterator it;
@@ -145,17 +170,17 @@ Point3 CSphere::geneCartesianCoordAt(const Point3& posPolarPoint)
        Point3 projectPointOnPlane = newPlane->Projection(SphereCenterP);
        Point3 temp=projectPointOnPlane-SphereCenterP;
        delete newPlane;
-       return SphereCenterP + temp*temp.norm()/posPolarPoint[0];
+       return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else if (res_Point.size()==2){
        Point3 SphereCenterP=SphereCenter();
        Point3 temp=CATAZJUT::Geometry::midpoint(currentCart->position(res_Point[0]),currentCart->position(res_Point[1]));
        temp=temp-SphereCenterP;
-       return SphereCenterP + temp*temp.norm()/posPolarPoint[0];
+       return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else{
        Point3 SphereCenterP=SphereCenter();
        Point3 temp = SphereCenterP - currentCart->position(res_Point[0]);
        temp = temp-SphereCenterP;
-       return SphereCenterP + temp*temp.norm()/posPolarPoint[0];
+       return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }
 }
 bool CSphere::checkPointIs(const Point3& PolartempP,const Point3& posPolarPoint)
@@ -168,7 +193,9 @@ bool CSphere::checkPointIs(const Point3& PolartempP,const Point3& posPolarPoint)
 //    r=posPolarPoint[0];
      phi = posPolarPoint[1];
     thea = posPolarPoint[2];
+
     bool res1=false,res2=false;
+
     if( (phi+deta_radian)<=2*PI && (phi-deta_radian) >=0 )
     {
         if(std::fabs(phi-PolartempP[1])<deta_radian)

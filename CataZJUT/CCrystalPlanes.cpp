@@ -1,5 +1,10 @@
-#include "CCrystalPlanes.h"
 #include<cmath>
+#include "../GACatalyst.h"
+#include "CCrystalPlanes.h"
+#include "../Util/log.hpp"
+
+using util::Log;
+
 namespace CATAZJUT{
 
 CCrystalPlanes::CCrystalPlanes()
@@ -10,8 +15,6 @@ CCrystalPlanes::CCrystalPlanes(Eigen::MatrixXd *tempPoints,double m_Value)
 {
     m_PointsMat = *tempPoints;
     mDistance_Cutoff = m_Value;
-
-
 }
 CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)
 {
@@ -54,6 +57,18 @@ double CCrystalPlanes::DistanceCutoff()
 std::vector<CPlane*>& CCrystalPlanes::LatticePlane()
 {
     return this->m_Plane;
+}
+CPlane* CCrystalPlanes::operator[](size_t index)
+{
+    if( index >= crystalPlaneNum()){
+       Log::Error<<"Crystal plane index is out of range! CCrystalPlanes::operator[]!\n";
+       boost::throw_exception(std::runtime_error("Crystal plane index is out of range! CCrystalPlanes::operator[]!"));
+    }
+    return this->m_Plane[index];
+}
+size_t CCrystalPlanes::crystalPlaneNum()
+{
+    return this->m_Plane.size();
 }
 void CCrystalPlanes::CreateCrystalPlane()
 {
@@ -129,7 +144,7 @@ bool CCrystalPlanes::CheckIsPlane(CPlane tempPlane,std::vector<size_t> &pIindex,
      std::vector<size_t> AddPInthePlane;
      for(int i=0;i<rowN;i++)
      {
-          if(matIndex.at(i)==true)
+         if(matIndex.at(i)==true)
              continue;
 
                temP = m_PointsMat.row(i);
@@ -146,6 +161,15 @@ bool CCrystalPlanes::CheckIsPlane(CPlane tempPlane,std::vector<size_t> &pIindex,
         pIindex.insert(pIindex.end(),AddPInthePlane.begin(),AddPInthePlane.end());
 
      return res;
+}
+Point3 CCrystalPlanes::CartesianCoordinateAtGene(size_t crystal_Plane_index,double height,
+                                                 double R_radio,double thea_Radian)
+{
+     if(crystal_Plane_index>=this->m_Plane.size()){
+         Log::Error<<"Crystal plane index is out of range! CCrystalPlanes::cartesianCoordinateAtGene!\n";
+         boost::throw_exception(std::runtime_error("Crystal plane index is out of range! CCrystalPlanes::cartesianCoordinateAtGene!"));
+     }
+     return m_Plane[crystal_Plane_index]->PointInCircleFromGene(height,R_radio,thea_Radian);
 }
 void CCrystalPlanes::RemoveRow(Eigen::MatrixXd& matrix, size_t rowToRemove)
 {

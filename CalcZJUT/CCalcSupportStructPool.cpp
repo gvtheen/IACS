@@ -36,12 +36,13 @@ CCalcSupportStructPool::CCalcSupportStructPool(CParameter* oth)
 {
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
         if(m_pParameter->simulationMode ==CParameter::MOL_2DMATERIAL)
-            this->m_CalcStructPool.push_back(new CCalc2DSupport(this->m_pParameter));
+            this->m_CalcStructPool.push_back(new CCalc2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
          else
-            this->m_CalcStructPool.push_back(new CCalcClusterSupport(this->m_pParameter));
+            this->m_CalcStructPool.push_back(new CCalcClusterSupport(this->m_pParameter,&copy_pPeriodicFramework));
          m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
          m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
     }
+
 }
 
 CCalcSupportStructPool::~CCalcSupportStructPool()
@@ -53,8 +54,7 @@ void CCalcSupportStructPool::init()
        if(this->m_pParameter->adso_supp_Input_File.size()!= 0){
            //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
            CATAZJUT::CFragment *m1,*m2;
-           for(size_t i=0;i<m_pParameter->adso_supp_Input_File.size();i++)
-           {
+           for(size_t i=0;i<m_pParameter->adso_supp_Input_File.size();i++){
                if(i >= m_CalcStructPool.size())
                   break;
 
@@ -77,13 +77,13 @@ void CCalcSupportStructPool::init()
                   m_CalcStructPool[i]->createMoleAdsorb(m1->bitSet());
                }
                m_CalcStructPool[i]->setRandomInitState(false);
-           }
-           for(size_t i=m_pParameter->adso_supp_Input_File.size();i<m_CalcStructPool.size();i++){
+          }
+          for(size_t i=m_pParameter->adso_supp_Input_File.size();i<m_CalcStructPool.size();i++){
                delete m_CalcStructPool[i];
                m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
                // get support and adsorption molecular, then re-set new structure.
                m_CalcStructPool[i]->setRandomInitState(true);
-           }
+          }
       }else{ // treat cluster-support
             //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
            //
@@ -105,8 +105,8 @@ void CCalcSupportStructPool::init()
                // get support and adsorption molecular, then re-set new structure.
                m_CalcStructPool[i]->setRandomInitState(true);
            }
-
      }
+     this->copy_pPeriodicFramework = m_CalcStructPool[0]->periodicFramework()->clone();
 }
 void CCalcSupportStructPool::getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
 {

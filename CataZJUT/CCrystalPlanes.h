@@ -2,8 +2,15 @@
 #define CCREATEPLANE_H
 #include <Eigen/Dense>
 #include <vector>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
 #include "CPlane.h"
+/*
+   This class main function is to identify crystal plane of the known cluster.
+
+
+*/
+using util::Point3;
+
 namespace CATAZJUT{
 
 class CCrystalPlanes
@@ -24,13 +31,20 @@ class CCrystalPlanes
         Eigen::MatrixXd& PointsOfMat();
         void SetPointsMat(Eigen::MatrixXd&);
 
+        size_t crystalPlaneNum();
+
+        Point3 CartesianCoordinateAtGene(size_t crystal_Plane_No,double height,double R_radio,double thea);
+
         double DistanceCutoff();
           void SetDistanceCutoff(double);
+
+        CPlane* operator[](size_t index);
 
     protected:
         void RemoveRow(Eigen::MatrixXd&, size_t);
         void RemoveColumn(Eigen::MatrixXd&, size_t);
         bool IsOnLine(Eigen::MatrixXd&);
+
     private:
               Eigen::MatrixXd  m_PointsMat;
          std::vector<CPlane*>  m_Plane;

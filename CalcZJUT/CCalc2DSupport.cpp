@@ -23,11 +23,11 @@ using util::Vector3;
 namespace CALCZJUT{
 
 
-CCalc2DSupport::CCalc2DSupport(CParameter* mPara)
+CCalc2DSupport::CCalc2DSupport(CParameter* mPara,CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
 :CCalcModeStruct(mPara)
 {
     m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
-    m_backupPeriodicFramework = m_pPeriodicFramework;
+    m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
     m_latticeDirection = CCalc2DSupport::NONE_DIR;
 }
 
@@ -40,7 +40,7 @@ CCalc2DSupport::~CCalc2DSupport()
 }
 CCalcModeStruct* CCalc2DSupport::clone()
 {
-    CCalc2DSupport* res= new CCalc2DSupport(this->m_pParameter);
+    CCalc2DSupport* res= new CCalc2DSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
     res->setPeriodicFramekwork(this->periodicFramework());
     res->createMoleAdsorb(this->MoleAdsorbBit());
     res->createSupport(this->SupportBit());
@@ -107,6 +107,18 @@ void CCalc2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOf
     if(this->RandomInitState()==false){
         this->setRandomInitState(true);
         goto RETURN_Random_Label;
+    }
+
+    /*
+        check backup configuration;
+        import it to the currentPointer of configuration;
+    */
+    if( *m_ppBackupPeriodicFramework == nullptr ){
+       Log::Error<<"Backup pointer of the configuration is null!  setGeneValueToStruct_CCalc2DSupport";
+       boost::throw_exception(std::runtime_error("Backup pointer of the configuration is null.setGeneValueToStruct_CCalc2DSuppor"));
+    }else{
+       delete this->m_pPeriodicFramework;
+       this->m_pPeriodicFramework = (*m_ppBackupPeriodicFramework)->clone();
     }
     if( m_support_surface ==nullptr)
         this->perceiveSupportSurface();

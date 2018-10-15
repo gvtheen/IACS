@@ -1,7 +1,7 @@
 #ifndef CCALCCLUSTERSUPPORT_H
 #define CCALCCLUSTERSUPPORT_H
+
 #include <Eigen/Dense>
-#include "../Util/Point-Vector.h"
 #include "CCalcModeStruct.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Bitset.h"
@@ -17,14 +17,13 @@ namespace CATAZJUT{
 namespace CALCZJUT{
 
 class CCalcSupportBase;
-class CMoleculeAdsorbent;
 class CCalcMoleculeAdsorbent;
 class CParameter;
 
 class CCalcClusterSupport:public CCalcModeStruct
 {
     public:
-        CCalcClusterSupport(CParameter*);
+        CCalcClusterSupport(CParameter*,CATAZJUT::CPeriodicFramework**);
         virtual ~CCalcClusterSupport();
 
         CCalcModeStruct* clone();
@@ -34,26 +33,26 @@ class CCalcClusterSupport:public CCalcModeStruct
         void getGeneValuefromStruct(std::vector<double>&);
         void GeneVARRange(std::vector<GeneVAR>&);
 
-        void backUpStructure();
-        void fromBackupToCurrent();
+        void createSupport(const Bitset &);
+        void createMoleAdsorb(const Bitset &);
 
-        void createSupport(Bitset &);
-        void createMoleAdsorb(Bitset &);
+        void perceiveCrystalPlane();
 
         Bitset SupportBit();
         Bitset MoleAdsorbBit();
 
-         CATAZJUT::CCrystalPlanes* crystalPlanes();
-         void setCrystalPlanes(CATAZJUT::CCrystalPlanes*);
+        CATAZJUT::CCrystalPlanes* crystalPlanes();
+        void setCrystalPlanes(CATAZJUT::CCrystalPlanes*);
 
     protected:
 
     private:
           CCalcSupportBase*      m_pSupport;
-        CMoleculeAdsorbent*      m_pAdsorbMolecule;
+    CCalcMoleculeAdsorbent*      m_pAdsorbMolecule;
   CATAZJUT::CCrystalPlanes*      m_pCrystalPlanes;
                      Bitset      m_BitbackupSupport;
                      Bitset      m_BitbackupAdsorbMolecule;
+                       bool      m_IsCrystalPlanePerceived;
 
 
 

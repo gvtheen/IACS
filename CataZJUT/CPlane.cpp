@@ -165,15 +165,15 @@ double CPlane::FindDisMax(Eigen::MatrixXd ScatPointCoord,Point3 cirPoint,int& in
     }
     return res;
 }
-Point3 CPlane::PointInCircleFromGene(double Height,double Angle_degrees,double Radius_ratio) // Gene = Angle_degrees
+Point3 CPlane::PointInCircleFromGene(double Height,double Radius_ratio,double Angle_Radian) // Gene = Angle_degrees
 {
     CPlane *newPlane = std::move(PlaneWithDistance(Height));
 
     Eigen::MatrixXd* ProjPointsInNewPlane = std::move(newPlane->Projection(this->m_pPointsToPlane));
     newPlane->CreateCircleIncludingPoints(*ProjPointsInNewPlane);
 
-    Vector3 Angle_Vect;
-    double Angle_Radian = Angle_degrees*CATAZJUT::constants::DegreesToRadians;
+//    Vector3 Angle_Vect;
+//    double Angle_Radian = Angle_degrees*CATAZJUT::constants::DegreesToRadians;
 
     Angle_Vect<<1.0,std::cos(Angle_Radian),std::sin(Angle_Radian);
 

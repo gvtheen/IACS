@@ -23,6 +23,7 @@ class CCalcSupportStructPool:public CCalcStructureBasePool
     protected:
         void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
     private:
+        CATAZJUT::CPeriodicFramework*  copy_pPeriodicFramework;
 };
 
 

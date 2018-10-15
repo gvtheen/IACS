@@ -32,6 +32,10 @@ CPeriodicFramework::~CPeriodicFramework()
 
     delete m_pUnitCell;
 }
+CPeriodicFramework* CPeriodicFramework::clone()
+{
+    return new CPeriodicFramework(*this);
+}
 CUnitCell* CPeriodicFramework::unitcell()
 {
     return this->m_pUnitCell;

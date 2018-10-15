@@ -24,6 +24,8 @@ class CPeriodicFramework:public CConfigurationBase
         virtual ~CPeriodicFramework();
         CPeriodicFramework(CPeriodicFramework&);
         CPeriodicFramework(CConfigurationBase&);
+
+        CPeriodicFramework* clone();
         virtual CFractionCoordinates* Fractioncoordinates();
         CUnitCell* unitcell();
     protected:

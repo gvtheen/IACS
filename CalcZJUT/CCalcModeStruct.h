@@ -45,7 +45,7 @@ class CCalcModeStruct
                 std::vector<GeneVAR>*          m_pGeneVAR;
 
         CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-        CATAZJUT::CPeriodicFramework*          m_backupPeriodicFramework;
+        CATAZJUT::CPeriodicFramework**         m_ppBackupPeriodicFramework;
 
  std::vector<std::pair<std::string,size_t>>    m_chemicalFormula;
                                  bool          m_IsNeedRandomInit;
