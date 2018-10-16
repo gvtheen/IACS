@@ -1,25 +1,27 @@
 #ifndef CSPHERE_H
 #define CSPHERE_H
 #include <Eigen/Dense>
+#include <vector>
 #include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
+
+using util::Log;
 using util::Point3;
 
 namespace CATAZJUT{
-
-class CConfigurationBase;
 
 class CSphere
 {
     public:
         CSphere();
-        CSphere(CConfigurationBase*);
+        CSphere(const std::vector<Point3>&);
         CSphere(CSphere&);
 
         CSphere* Clone();
         void     CreateSphere();
 
-        void setConfiguration(CConfigurationBase*);
-        CConfigurationBase* configuration()const;
+//        void setConfiguration(CConfigurationBase*);
+//        CConfigurationBase* configuration()const;
         double  Radius() const;
         Point3  SphereCenter() const;
         Eigen::Vector4d Equation()const;
@@ -29,11 +31,13 @@ class CSphere
         Point3  CartesianCoordAtGeneOf(const Point3& posPolarPoint);
         virtual ~CSphere();
 
+        void output();
     protected:
         size_t maxDist(Point3);
         bool checkPointIs(const Point3&,const Point3&);
     private:
-        CConfigurationBase *m_pConfiguration;
+
+        std::vector<Point3>  m_PointsMat;
         //sphere (x-x0)**2 + (y-y0)**2 + (z-z0)**2 =R0**2;
         // x0=m_Equation[0]; y0=m_Equation[1];z0=m_Equation[2];R=m_Equation[3]
         Eigen::Vector4d m_Equation;

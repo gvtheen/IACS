@@ -206,7 +206,7 @@ void CCalc2DSupport::GeneVARRange(std::vector<GeneVAR>& GeneVARibleVect)
     //clear vector!
     GeneVARibleVect.clear();
     //distance of adsorbent on 2d support
-    GeneVARibleVect.push_back({1.0,2.5,0.01});
+    GeneVARibleVect.push_back({1.5,3.0,0.01});
     // a axes displacing
     if(m_latticeDirection==CCalc2DSupport::NONE_DIR)
         IdentifyvacuumLayerDirection();

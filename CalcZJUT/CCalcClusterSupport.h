@@ -12,6 +12,7 @@ using util::Bitset;
 // import crystal plane object from namespace CATAZJUT.
 namespace CATAZJUT{
    class CCrystalPlanes;
+   class CSphere;
 }
 
 namespace CALCZJUT{
@@ -23,6 +24,10 @@ class CParameter;
 class CCalcClusterSupport:public CCalcModeStruct
 {
     public:
+        typedef enum EA_001286{
+                     POLYHEDRON = 0x98126,
+                         SPHERE = 0x98127}CLUSTER_MODEL_TYPE;
+
         CCalcClusterSupport(CParameter*,CATAZJUT::CPeriodicFramework**);
         virtual ~CCalcClusterSupport();
 
@@ -36,7 +41,7 @@ class CCalcClusterSupport:public CCalcModeStruct
         void createSupport(const Bitset &);
         void createMoleAdsorb(const Bitset &);
 
-        void perceiveCrystalPlane();
+        void perceiveClusterModel();
 
         Bitset SupportBit();
         Bitset MoleAdsorbBit();
@@ -45,14 +50,19 @@ class CCalcClusterSupport:public CCalcModeStruct
         void setCrystalPlanes(CATAZJUT::CCrystalPlanes*);
 
     protected:
-
+        void eliminateCloseContacts(double distanceCutOff=1.0);
     private:
           CCalcSupportBase*      m_pSupport;
     CCalcMoleculeAdsorbent*      m_pAdsorbMolecule;
+
   CATAZJUT::CCrystalPlanes*      m_pCrystalPlanes;
+         CATAZJUT::CSphere*      m_pSphere;
+                     // define the index of support and adsorbmolecule in whole configuration.
                      Bitset      m_BitbackupSupport;
                      Bitset      m_BitbackupAdsorbMolecule;
-                       bool      m_IsCrystalPlanePerceived;
+                     // define the model of current cluster
+         CLUSTER_MODEL_TYPE      m_ClusterModelType;
+                       bool      m_ClusterModelPerceived;
 
 
 

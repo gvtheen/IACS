@@ -72,9 +72,13 @@ void CCalcMoleculeAdsorbent::moveBy(double x,double y,double z)
     vect<<x,y,z;
     moveBy(vect);
 }
-void CCalcMoleculeAdsorbent::rotate(const Point3& vect, const double& angle)
+void CCalcMoleculeAdsorbent::rotate(const Point3& vect, const double& angle_Radian)
 {
-   double angle_Radian = angle * CATAZJUT::constants::DegreesToRadians;
+   //double angle_Radian = angle * CATAZJUT::constants::DegreesToRadians;
+
+   Point3 displaceVector = -1*gravityCentre();
+   this->moveBy(displaceVector);
+
    Eigen::Matrix<double, 3, 1> axisVector(vect.x(), vect.y(), vect.z());
    Eigen::Transform<double, 3, 3> transform(Eigen::AngleAxis<double>(angle_Radian, axisVector));
    Point3 p1;
@@ -82,6 +86,8 @@ void CCalcMoleculeAdsorbent::rotate(const Point3& vect, const double& angle)
        p1=transform*(atom->position());
        atom->SetPosition(p1);
    }
+
+   this->moveBy(-1*displaceVector);
 
 }
 Point3 CCalcMoleculeAdsorbent::gravityCentre()

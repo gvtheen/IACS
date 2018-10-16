@@ -11,13 +11,12 @@ CSphere::CSphere()
 {
     //ctor
 }
-CSphere::CSphere(CConfigurationBase* configure)
+CSphere::CSphere(const std::vector<Point3>& currentPoints)
 {
-    this->m_pConfiguration=configure;
+    this->m_PointsMat = currentPoints;
 }
 CSphere::CSphere(CSphere& mht)
 {
-    this->m_pConfiguration=mht.configuration();
     this->m_Equation = mht.Equation();
 }
 CSphere::~CSphere()
@@ -31,7 +30,9 @@ CSphere::~CSphere()
 void CSphere::CreateSphere()
 {
    double ans  =1e12,eps=1e-12,R,step;
-   CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
+   //CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
+
+   Point3 P_temp;
    Point3 P_pos;
    P_pos<<0,0,0;
    size_t pos;
@@ -39,10 +40,11 @@ void CSphere::CreateSphere()
    while(step>eps)
    {
        pos = maxDist(P_pos);
-       R = CATAZJUT::Geometry::distance(P_pos,currentCart->position(pos));
+
+       R = CATAZJUT::Geometry::distance(P_pos,m_PointsMat[pos]);
        if(step<ans)
           ans=step;
-       P_pos = P_pos + step*(P_pos - currentCart->position(pos))/R;
+       P_pos = P_pos + step*(P_pos - P_temp)/R;
        step=step*0.98;
    }
    m_Equation<<P_pos[0],P_pos[1],P_pos[2],R;
@@ -54,10 +56,9 @@ size_t CSphere::maxDist(Point3 p1)
 {
     double res=0,temp;
     size_t res_index;
-    CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
-    for(size_t i=0;i<currentCart->size();i++)
+    for(size_t i=0;i<m_PointsMat.size();i++)
     {
-        temp=CATAZJUT::Geometry::distance(p1,currentCart->position(i));
+        temp=CATAZJUT::Geometry::distance(p1,m_PointsMat[i]);
         if(res>temp)
         {
             res_index=i;
@@ -70,14 +71,14 @@ Eigen::Vector4d CSphere::Equation()const
 {
     return this->m_Equation;
 }
-void CSphere::setConfiguration(CConfigurationBase* configure)
-{
-    this->m_pConfiguration=configure;
-}
-CConfigurationBase* CSphere::configuration()const
-{
-    return this->m_pConfiguration;
-}
+//void CSphere::setConfiguration(CConfigurationBase* configure)
+//{
+//    this->m_pConfiguration=configure;
+//}
+//CConfigurationBase* CSphere::configuration()const
+//{
+//    return this->m_pConfiguration;
+//}
 double CSphere::Radius() const
 {
     return m_Equation[3];
@@ -122,7 +123,7 @@ Point3 CSphere::toPolarCoordinate( const Point3& CartCoord)  // res= r,phi,thea;
     else
       res[1]= (360 - CATAZJUT::constants::RadiansToDegrees*std::acos(x/std::sqrt(x*x+y*y)))*\
               CATAZJUT::constants::DegreesToRadians;
-    res[2]=CATAZJUT::constants::RadiansToDegrees*std::acos(z/r);
+    res[2]=std::acos(z/r);
     return res;
 }
 /*
@@ -139,11 +140,10 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
     std::vector<size_t> res_Point;
     Point3 CurrentpolarPoint;
     // get all pointer from cluster configuration
-    CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
 
-    for(size_t i=0;i<currentCart->size();i++)
+    for(size_t i=0;i<m_PointsMat.size();i++)
     {
-        CurrentpolarPoint = toPolarCoordinate(currentCart->position(i));
+        CurrentpolarPoint = toPolarCoordinate(m_PointsMat[i]);
         if(checkPointIs(CurrentpolarPoint,posPolarPoint)==true)
         {
             res_Point.push_back(i);
@@ -155,7 +155,7 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
     double deta_dist = 0.5;
     for(it=res_Point.begin();it!=res_Point.end();)
     {
-        CurrentpolarPoint = toPolarCoordinate(currentCart->position(*it));
+        CurrentpolarPoint = toPolarCoordinate(m_PointsMat[*it]);
         if(CurrentpolarPoint[0]< maxDist -deta_dist )
           it =  res_Point.erase(it);
         else
@@ -164,7 +164,7 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
     if(res_Point.size()>=3){
        Eigen::MatrixXd matPoint(res_Point.size(),3);
        for(size_t i=0;i<res_Point.size();i++)
-           matPoint.row(i)=currentCart->position(res_Point[i]);
+           matPoint.row(i)=m_PointsMat[res_Point[i]];
        CPlane *newPlane = new CPlane(matPoint);
        Point3 SphereCenterP=SphereCenter();
        Point3 projectPointOnPlane = newPlane->Projection(SphereCenterP);
@@ -173,12 +173,12 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else if (res_Point.size()==2){
        Point3 SphereCenterP=SphereCenter();
-       Point3 temp=CATAZJUT::Geometry::midpoint(currentCart->position(res_Point[0]),currentCart->position(res_Point[1]));
+       Point3 temp = CATAZJUT::Geometry::midpoint(m_PointsMat[res_Point[0]],m_PointsMat[res_Point[1]]);
        temp=temp-SphereCenterP;
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else{
        Point3 SphereCenterP=SphereCenter();
-       Point3 temp = SphereCenterP - currentCart->position(res_Point[0]);
+       Point3 temp = SphereCenterP - m_PointsMat[res_Point[0]];
        temp = temp-SphereCenterP;
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }
@@ -223,7 +223,13 @@ bool CSphere::checkPointIs(const Point3& PolartempP,const Point3& posPolarPoint)
     }
     return res1 && res2;
 }
-
+void CSphere::output()
+{
+    Log::Output<<"****Sphere model equation of current cluster****\n";
+    Log::Output<<">>( x - "<<this->m_Equation[0]<<" )**2 + ( y - " <<this->m_Equation[1]<<" )**2 + ( z - " ;
+    Log::Output<<this->m_Equation[2]<< " )**2 = " << m_Equation[3]*m_Equation[3] << std::endl;
+    Log::Output<<"****End model equation****\n";
+}
 
 
 

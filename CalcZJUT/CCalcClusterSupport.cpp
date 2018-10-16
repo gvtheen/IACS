@@ -1,10 +1,31 @@
+/******************************************************************************
+**
+** Copyright (C) 2019-2031 Dr.Guilin Zhuang <glzhuang@zjut.edu.cn>
+** All rights reserved.
+**
+**
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+******************************************************************************/
 #include "CCalcClusterSupport.h"
 #include "CCalcSupportBase.h"
 #include "CCalcMoleculeAdsorbent.h"
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CCrystalPlanes.h"
-#include "../CataZJUT/CCrystalPlanes.h"
+#include "../CataZJUT/CSphere.h"
 #include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/Constant.h"
 #include "../Util/Bitset.h"
 #include "../Util/foreach.h"
 #include "../Util/Point-Vector.h"
@@ -12,6 +33,8 @@
 using util::Bitset;
 using util::Log;
 using util::Matrix;
+using util::Vector3;
+using CATAZJUT::constants::Pi;
 
 namespace CALCZJUT{
 
@@ -23,7 +46,7 @@ CCalcClusterSupport::CCalcClusterSupport(CParameter* mPara,CATAZJUT::CPeriodicFr
     m_pSupport = nullptr;
     m_pAdsorbMolecule = nullptr;
     m_pCrystalPlanes = nullptr;
-    m_IsCrystalPlanePerceived = false;
+    m_ClusterModelPerceived = false;
 }
 CCalcModeStruct* CCalcClusterSupport::clone()
 {
@@ -66,7 +89,33 @@ void CCalcClusterSupport::setCrystalPlanes(CATAZJUT::CCrystalPlanes* mth)
 }
 void CCalcClusterSupport::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
+   Point3 resCoordinate;
+   if(m_ClusterModelType==CCalcClusterSupport::POLYHEDRON){
+     //get coordinate of gravity center of adsorbing molecule.
+     resCoordinate = this->m_pCrystalPlanes->CartesianCoordinateAtGene((int)realValueOfgene[0],realValueOfgene[1],
+                                                                       realValueOfgene[2],realValueOfgene[3]);
+     // let adsorbing molecule move to new position
+     this->m_pAdsorbMolecule->moveBy(resCoordinate);
+     // rotation some angel along specific axis
+     resCoordinate<<realValueOfgene[4],realValueOfgene[5],realValueOfgene[6];
+     this->m_pAdsorbMolecule->rotate(resCoordinate,realValueOfgene[7]);
+     // check whether close contacts is avaiable.
+     this->eliminateCloseContacts();
+   }else{  //CCalcClusterSupport::SPHERE
+     //get coordinate of gravity center of adsorbing molecule.
+     resCoordinate<<realValueOfgene[0],realValueOfgene[1],realValueOfgene[2];
+     resCoordinate = this->m_pSphere->CartesianCoordAtGeneOf(resCoordinate);
 
+     // let adsorbing molecule move to new position
+     this->m_pAdsorbMolecule->moveBy(resCoordinate);
+
+     // rotation some angel along specific axis
+     resCoordinate<<realValueOfgene[3],realValueOfgene[4],realValueOfgene[5];
+     this->m_pAdsorbMolecule->rotate(resCoordinate,realValueOfgene[6]);
+
+     // check whether close contacts is avaiable.
+     this->eliminateCloseContacts();
+   }
 }
 void CCalcClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
@@ -75,38 +124,91 @@ void CCalcClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGen
 void CCalcClusterSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 {
    if(currentGeneVARible.size()!=0)
-       currentGeneVARible.clear();
+       currentGeneVARible.clear();  // clear all data of in currentGeneVARible
 
-   if( !this->m_IsCrystalPlanePerceived )
-        perceiveCrystalPlane();
+   if( !this->m_ClusterModelPerceived )
+        perceiveClusterModel();
+
+   if(m_ClusterModelType==CCalcClusterSupport::POLYHEDRON){
     // index of crystal planes in the cluster.                    1st gene descriptor.
     // max is m_pCrystalPlanes->crystalPlaneNum() - 1; substracting 1 is necessary!
-    currentGeneVARible.push_back({0,m_pCrystalPlanes->crystalPlaneNum()-1,0.5});
+        currentGeneVARible.push_back({0,m_pCrystalPlanes->crystalPlaneNum()-1.0,0.5});
 
-    // Height the adsorbing molecule on the index crystal plane.  2nd gene descriptor.
+        // Height the adsorbing molecule on the index crystal plane.  2nd gene descriptor.
+        currentGeneVARible.push_back({1.5,3.0,0.01});
+        // ratio
+        currentGeneVARible.push_back({0.0,1.0,0.01});
+        // angle
+        currentGeneVARible.push_back({0.0,2*Pi,0.01});
 
-    // ratio
+        //rotation axis
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        //rotation angle
+        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+   }else{  //CCalcClusterSupport::SPHERE
+        // 1st gene:  height: the adsorbing molecule on the index crystal plane.
+        currentGeneVARible.push_back({1.5,3.0,0.01});
+        // 2nd gene:    phi: [0,2*PI]
+        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        // 3rd gene thea: [0,PI]
+        currentGeneVARible.push_back({0.0,Pi,0.01});
 
-    // angle
+        // following four genes:  rotation axis and angle of adsorbing molecule over the sphere.
 
+        //rotation axis
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        //rotation angle
+        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+   }
 
 }
-void CCalcClusterSupport::perceiveCrystalPlane()
+void CCalcClusterSupport::perceiveClusterModel()
 {
-    Eigen::MatrixXd *atom_Coordinate =  new (Eigen::MatrixXd)(m_pSupport->atomCount(),3);
-    size_t index=0;
-    Point3 tempP;
-    foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms()){
-        tempP = atom_s->position();
-        for(size_t i=0;i<3;i++){
-            (*atom_Coordinate)(index,i) =tempP[i];
-        }
-        index++;
+    if(m_ClusterModelType==CCalcClusterSupport::POLYHEDRON){
+        Eigen::MatrixXd *atom_Coordinate =  new (Eigen::MatrixXd)(m_pSupport->atomCount(),3);
+        size_t index=0;
+        Point3 tempP;
+        foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms()){
+          tempP = atom_s->position();
+          for(size_t i=0;i<3;i++){
+             (*atom_Coordinate)(index,i) =tempP[i];
+           }
+          index++;
+         }
+          this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(atom_Coordinate);
+          this->m_pCrystalPlanes->CreateCrystalPlane();
+    }else{  //CCalcClusterSupport::SPHERE
+        std::vector<Point3> coordinatePoints;
+        foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms())
+           coordinatePoints.push_back(atom_s->position());
+        this->m_pSphere = new CATAZJUT::CSphere(coordinatePoints);
+        this->m_pSphere->CreateSphere();
     }
-    this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(atom_Coordinate);
-    this->m_pCrystalPlanes->CreateCrystalPlane();
-    this->m_IsCrystalPlanePerceived = true;
-}
 
+}
+void CCalcClusterSupport::eliminateCloseContacts(double distanceCutOff)
+{
+    Vector3 vect;
+    double eps=0.01;
+    bool modifiedbol=true;
+    while(modifiedbol)
+    {
+       modifiedbol=false;
+       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
+            if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
+                vect = atom_m->position() - atom_s->position();
+                vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
+                this->m_pAdsorbMolecule->moveBy(vect);
+                modifiedbol=true;
+            }
+        }
+    }
+}
 
 }
