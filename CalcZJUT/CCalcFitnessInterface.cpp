@@ -37,10 +37,7 @@ void CCalcFitnessInterface::init()
 {
 
 }
-void CCalcFitnessInterface::GetDecGeneAfterCalc(std::vector<double>& tmpVect)
-{
-    return this->m_pCalcModeStruct->getGeneValuefromStruct(tmpVect);
-}
+
 double CCalcFitnessInterface::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
 {
     return 0;

@@ -40,6 +40,10 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       DecValueOfGenome.clear();
       // get dec. Value of ith Genome.
       ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
+
+      //sett i th structure to evaluator
+      m_pEvaluator->setCalcModeStruct(m_pStructurePool[i]);
+
       // Run evaluator, obtained raw value.
       tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
 
@@ -47,7 +51,10 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       // Re-set this value to individual Genome.
       DecValueOfGenome.clear();
       m_pEvaluator->GetDecGeneAfterCalc(DecValueOfGenome);
-      ((*CurrentPopulation)[i])->updateDecValueGene(DecValueOfGenome);
+
+      //if some updating gene was gotten, set them to population
+      if(DecValueOfGenome.size()!=0)
+         ((*CurrentPopulation)[i])->updateDecValueGene(DecValueOfGenome);
 
       OrigScore.push_back(tempOrigValue);
       ((*CurrentPopulation)[i])->setOrigValue( OrigScore[i] );

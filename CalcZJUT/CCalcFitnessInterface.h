@@ -28,8 +28,6 @@ class CCalcFitnessInterface
 		 virtual double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
          virtual void   ConvOrigToRawScore(std::vector<double>&);
 
-         void GetDecGeneAfterCalc(std::vector<double>&);
-
          void setCalcModeStruct(CCalcModeStruct* Temp_calcModeStruct);
          CCalcModeStruct* calcModeStruct();
 

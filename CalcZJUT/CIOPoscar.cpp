@@ -3,7 +3,8 @@
 #include<fstream>
 #include <boost/algorithm/string.hpp>
 #include<string>
-#include "Point-Vector.h"
+#include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
 #include "GaUtilityFunction.h"
 #include "CIOPoscar.h"
 #include "CUnitCell.h"
@@ -12,7 +13,7 @@
 #include "CCartesianCoordinates.h"
 #include "CFractionCoordinates.h"
 #include "CConfigurationPrivateData.h"
-using GAZJUT::ERROR_OUTPUT;
+using util::Log;
 using CATAZJUT::Vector3;
 using CATAZJUT::Point3;
 using CATAZJUT::CFractionCoordinates;
@@ -56,7 +57,7 @@ void CIOPoscar::input(std::string file)
 
      if(access(file.c_str(),F_OK) != 0 )
       {
-           ERROR_OUTPUT("POSCAR file is no exist!","input","CIOPoscar");
+           log::Error<<"POSCAR file is no exist! input_CIOPoscar!\n";
            boost::throw_exception(std::runtime_error("POSCAR file is no exist! Check the file: Error_information.txt."));
       }
       std::ifstream *in;
@@ -74,14 +75,15 @@ void CIOPoscar::input(std::string file)
           m_pPeriodicFramework->unitcell()->setscalingFactor(std::stod(str));
           // lattice vector
           Vector3 tmpvect;
+          std::vector<std::string> vecStr;
           for(size_t i=0;i<3;i++)
           {
-              std::vector<std::string> vecStr;
               std::getline(*in,str,'\n');
               boost::algorithm::trim(str);
               boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
               tmpvect<<std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]);
               m_pPeriodicFramework->unitcell()->setVec(i,tmpvect);
+              vecStr.clear();
           }
           //setting dimensional type.
           m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Periodic);
@@ -95,14 +97,14 @@ void CIOPoscar::input(std::string file)
           std::vector<size_t>  AtomicNum;
           std::getline(*in,str,'\n');
           boost::algorithm::trim(str);
-          std::vector<std::string> vecStr;
+
           boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
           for(size_t i=0;i<vecStr.size();i++)
              AtomicNum.push_back(std::stoi(vecStr[i]));
 
           if(AtomicName.size()!=AtomicNum.size())
           {
-               ERROR_OUTPUT("Atomic setting of POSCAR is error!","input", "CIOPoscar");
+               Log::Error<<"Atomic setting of POSCAR is error! input_CIOPoscar!\n";
                boost::throw_exception(std::runtime_error("Atomic setting is error! Check the file: Error_information.txt."));
           }
           // coordinate mode:  cartesian fraction
@@ -136,8 +138,11 @@ void CIOPoscar::input(std::string file)
                       m_pPeriodicFramework->addAtom(AtomicName[index],tmpvect);
                  }
 
-              }else
-                 ERROR_OUTPUT("Coordinate POSCAR is error!","input", "CIOPoscar");
+              }else{
+                 Log::Error<<"Coordinate in POSCAR file is error! input_CIOPoscar!\n";
+                 boost::throw_exception(std::runtime_error("Coordinate in POSCAR file is error! input_CIOPoscar!\n"));
+              }
+
           }
       }catch(const std::ifstream::failure& e){
           ERROR_OUTPUT(e.what(),"Input","CIOPoscar");
@@ -172,7 +177,7 @@ void CIOPoscar::output(std::string& file)
 
     if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
-        ERROR_OUTPUT("Dimensional Type is error!","CIOPoscar::output");
+        log<<"Dimensional Type is error!","CIOPoscar::output");
         boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: Error_information.txt."));
     }
     std::ofstream out(file,std::ios::app);

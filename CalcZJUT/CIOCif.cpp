@@ -18,7 +18,7 @@ CIOCif::~CIOCif()
 {
     //dtor
 }
-void CIOCif::output(std::string& file)
+void CIOCif::output(const std::string& file)
 {
 
 }

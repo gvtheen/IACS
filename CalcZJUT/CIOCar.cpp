@@ -3,20 +3,18 @@
 #include <iostream>
 #include "unistd.h"
 #include <boost/algorithm/string.hpp>
-#include "GaUtilityFunction.h"
-#include "CUnitCell.h"
+#include "../GaZJUT/GaUtilityFunction.h"
+#include "../CataZJUT/CUnitCell.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/foreach.h"
 #include "../Util/log.hpp"
 #include "CIOCar.h"
-#include "CAtom.h"
-#include "CUnitCell.h"
-#include "CElement.h"
-#include "CPeriodicFramework.h"
-#include "CElement.h"
+#include "../CataZJUT/CAtom.h"
+#include "../CataZJUT/CElement.h"
+#include "../CataZJUT/CPeriodicFramework.h"
 
 using util::Vector3;
-
+using util::Log;
 namespace CALCZJUT{
 
 CIOCar::CIOCar(CATAZJUT::CPeriodicFramework* mpa)
@@ -29,7 +27,7 @@ CIOCar::~CIOCar()
 {
     //dtor
 }
-void CIOCar::output(std::string& file)
+void CIOCar::output(const std::string& file)
 {
     std::ofstream out(file,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
@@ -65,7 +63,7 @@ void CIOCar::input(std::string  file)
      bool isPBC = false;
      if(access(file.c_str(),F_OK) != 0 )
       {
-           ERROR_OUTPUT(file + " file is no exist!","input","CIOCar");
+           Log::Error<<file <<" file is no exist! input_CIOCar!\n";
            boost::throw_exception(std::runtime_error(file + "  file is no exist! Check the file: Error_information.txt."));
       }
       std::ifstream *in;
@@ -81,7 +79,7 @@ void CIOCar::input(std::string  file)
           boost::algorithm::trim(str);
           boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
           if(vecStr.size()!=2 || vecStr[0]!="PBC"){
-            util::Log::OutputToFile<<"ERROR: " << file<<" file has NO PBC setting! input_CIOCar"<<std::endl;
+            Log::Error<< file<<" file has NO PBC setting! input_CIOCar"<<std::endl;
             boost::throw_exception(std::runtime_error(file + " file has NO PBC setting! Check the file: Error_information.txt."));
           }else{
              boost::algorithm::trim(vecStr[1]);
@@ -90,7 +88,7 @@ void CIOCar::input(std::string  file)
              else if(vecStr[1]=="OFF")
                 isPBC = false;
              else{
-                util::Log::OutputToFile<<"ERROR: "<<file <<" file has NO PBC setting!_input_CIOCar!"<<std::endl;
+                Log::Error<<file <<" file has NO PBC setting!_input_CIOCar!"<<std::endl;
                 boost::throw_exception(std::runtime_error(file + " file has NO PBC setting! Check the file: Error_information.txt."));
              }
            }
@@ -106,7 +104,7 @@ void CIOCar::input(std::string  file)
                  m_pPeriodicFramework->unitcell()->fromCellPara(std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]),\
                                                                std::stod(vecStr[4]),std::stod(vecStr[5]),std::stod(vecStr[6]),vecStr[7][1]);
               }else{
-                 util::Log::OutputToFile<<"ERROR: "<<file<< " PBC setting is error! input_CIOCar!"<<std::endl;
+                 Log::Error<<file<< " PBC setting is error! input_CIOCar!"<<std::endl;
                  boost::throw_exception(std::runtime_error(file + " PBC setting is error! Check the file: Error_information.txt."));
               }
            }else
@@ -124,8 +122,8 @@ void CIOCar::input(std::string  file)
                m_pPeriodicFramework->addAtom(vecStr[7],tmpvect);
            }
       }catch(const std::ifstream::failure& e){
-          util::Log::OutputToFile<<"ERROR: "<<e.what()<<" Input_CIOCar!"<<std::endl;
-          exit(-1);
+          Log::Error<<e.what()<<" Input_CIOCar!"<<std::endl;
+          boost::throw_exception(std::runtime_error(e.what()));
       }
       in->close();
 }

@@ -125,8 +125,8 @@ void CCalcSupportStructPool::getIO(std::string &file_name,CATAZJUT::CPeriodicFra
         this->m_IO = new CIOCif(currentPeriodicFramework);
     else if(vectstr[1]=="cell")
         this->m_IO = new CIOCellFile(currentPeriodicFramework);
-    else
-        ;
+    else if(vectstr[1]=="xyz")
+        this->m_IO = new CIOXyz(currentPeriodicFramework);
 
     return nullptr;
 }
