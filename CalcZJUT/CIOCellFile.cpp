@@ -20,7 +20,7 @@ using util::Log;
 namespace CALCZJUT{
 
 CIOCellFile::CIOCellFile(CATAZJUT::CPeriodicFramework* mpa)
-:Cios(mpa)
+:CIOBase(mpa)
 {
     //ctor
 }

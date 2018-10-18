@@ -12,9 +12,9 @@ The main function of class is that FitnessValuator conducts calculation to
 using util::Bitset;
 
 namespace CALCZJUT{
-  class CCalcFitnessInterface;
-  class CCalcModeStruct;
-  class CCalcStructureBasePool;
+  class CExeFitnessInterface;
+  class CModelBase;
+  class CStructPoolBase;
   class CParameter;
 }
 namespace GAZJUT{
@@ -23,20 +23,20 @@ class CEvaluator:public CGaOperatorBase
 {
 	public:
 		CEvaluator();
-		CEvaluator(CALCZJUT::CCalcFitnessInterface*,
-                   CALCZJUT::CCalcStructureBasePool*);
+		CEvaluator(CALCZJUT::CExeFitnessInterface*,
+                   CALCZJUT::CStructPoolBase*);
 		~CEvaluator();
 
 		void clone();
 		void init();
 		void run( CGpopulation* );
 
-        void setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcModeStruct);
-        CALCZJUT::CCalcFitnessInterface* CalcFitnessInterface();
+        void setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcModeStruct);
+        CALCZJUT::CExeFitnessInterface* CalcFitnessInterface();
 
 	protected:
-	    CALCZJUT::CCalcFitnessInterface      *m_pEvaluator;
-	    CALCZJUT::CCalcStructureBasePool     *m_pStructurePool;
+	    CALCZJUT::CExeFitnessInterface      *m_pEvaluator;
+	    CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;
 	                             Bitset       pop_run_state;
 };

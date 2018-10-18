@@ -21,7 +21,7 @@ using CATAZJUT::CCartesianCoordinates;
 namespace CALCZJUT{
 
 CIOPoscar::CIOPoscar(CATAZJUT::CPeriodicFramework* mth)
-:Cios(mth)
+:CIOBase(mth)
 {
 
 }

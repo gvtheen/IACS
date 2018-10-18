@@ -1,14 +1,14 @@
 #ifndef CIOCELLFILE_H
 #define CIOCELLFILE_H
 #include <string>
-#include "Cios.h"
+#include "CIOBase.h"
 
 namespace CATAZJUT{
    class CPeriodicFramework;;
 }
 namespace CALCZJUT{
 
-class CIOCellFile:public Cios
+class CIOCellFile:public CIOBase
 {
     public:
         CIOCellFile(CATAZJUT::CPeriodicFramework*);

@@ -3,7 +3,7 @@
 
 #include<vector>
 #include<string>
-#include "Cios.h"
+#include "CIOBase.h"
 #include "../Util/Bitset.h"
 
 using util::Bitset;
@@ -14,7 +14,7 @@ namespace CATAZJUT{
 
 namespace CALCZJUT{
 
-class CIOGjf:public Cios
+class CIOGjf:public CIOBase
 {
     public:
         CIOGjf(CATAZJUT::CPeriodicFramework*);

@@ -18,7 +18,7 @@ using util::Log;
 namespace CALCZJUT{
 
 CIOCar::CIOCar(CATAZJUT::CPeriodicFramework* mpa)
-:Cios(mpa)
+:CIOBase(mpa)
 {
     //ctor
 }

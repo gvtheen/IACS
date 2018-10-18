@@ -1,7 +1,7 @@
 #ifndef CIOPOSCAR_H
 #define CIOPOSCAR_H
 //#include "CatalystUniverseDefine.h"
-#include "Cios.h"
+#include "CIOBase.h"
 #include "Bitset.h"
 
 namespace CATAZJUT{
@@ -9,9 +9,9 @@ namespace CATAZJUT{
 }
 
 namespace CALCZJUT{
-class Cios;
+class CIOBase;
 
-class CIOPoscar:public Cios
+class CIOPoscar:public CIOBase
 {
     public:
         CIOPoscar(CATAZJUT::CPeriodicFramework*);

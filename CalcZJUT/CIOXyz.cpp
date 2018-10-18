@@ -19,7 +19,7 @@ using util::Bitset;
 namespace CALCZJUT{
 
 CIOXyz::CIOXyz(CATAZJUT::CPeriodicFramework* mth)
-:Cios(mth)
+:CIOBase(mth)
 {
     //ctor
 }

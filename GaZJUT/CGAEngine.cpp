@@ -6,18 +6,18 @@
 #include "CMutator.h"
 #include "CEvaluator.h"
 #include "CGaOperatorBase.h"
-#include "CCalcFitnessInterface.h"
+#include "CExeFitnessInterface.h"
 #include "CGaparameter.h"
 #include "../CalcZJUT/CParameter.h"
 #include "CGpopulation.h"
 //
-#include "../CalcZJUT/CCalcVASP.h"
-#include "../CalcZJUT/CCalcGaussian.h"
-#include "../CalcZJUT/CCalcDMol.h"
-#include "../CalcZJUT/CCalcLammps.h"
+#include "../CalcZJUT/CExeVASP.h"
+#include "../CalcZJUT/CExeGaussian.h"
+#include "../CalcZJUT/CExeDMol.h"
+#include "../CalcZJUT/CExeLammps.h"
 #include "../CalcZJUT/CCalcStructBasePool.h"
-#include "../CalcZJUT/CCalcClusterStructPool.h"
-#include "../CalcZJUT/CCalcSupportStructPool.h"
+#include "../CalcZJUT/CStructPoolCluster.h"
+#include "../CalcZJUT/CStructPoolSupported.h"
 
 //
 namespace GAZJUT{
@@ -46,23 +46,23 @@ CGAEngine::~CGAEngine()
 void CGAEngine::init()
 {
    if((*m_pGaparameter)["Evaluator"]=="VASP")
-       m_pFitnessCalculator = new CALCZJUT::CCalcVASP(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CExeVASP(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="DMOL")
-       m_pFitnessCalculator = new CALCZJUT::CCalcDMol(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CExeDMol(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="GAUSSIAN")
-       m_pFitnessCalculator = new CALCZJUT::CCalcGaussian(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CExeGaussian(this->m_pParameter);
    else if((*m_pGaparameter)["Evaluator"]=="LAMMPS")
-       m_pFitnessCalculator = new CALCZJUT::CCalcLammps(this->m_pParameter);
+       m_pFitnessCalculator = new CALCZJUT::CExeLammps(this->m_pParameter);
 
    switch ((int)m_pParameter->simulationMode)
    {
        case CParameter::CLUSTER:
-           m_pStructurePool = new CCalcClusterStructPool(this->m_pParameter);
+           m_pStructurePool = new CStructPoolCluster(this->m_pParameter);
        case CParameter::PERIODIC:
            break;
        case CParameter::MOL_2DMATERIAL:
        case CParameter::MOL_CLUSTER:
-           m_pStructurePool = new CCalcSupportStructPool(this->m_pParameter);
+           m_pStructurePool = new CStructPoolSupported(this->m_pParameter);
            break;
        default:
            break;

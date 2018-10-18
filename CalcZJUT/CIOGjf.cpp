@@ -20,7 +20,7 @@ using CATAZJUT::Point3i;
 namespace CALCZJUT{
 
 CIOGjf::CIOGjf(CCATAZJUT::CPeriodicFramework* mpa)
-:Cios(mpa)
+:CIOBase(mpa)
 {
     //ctor
 }

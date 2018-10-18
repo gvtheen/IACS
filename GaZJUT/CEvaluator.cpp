@@ -1,5 +1,5 @@
 #include "CEvaluator.h"
-#include "../CalcZJUT/CCalcFitnessInterface.h"
+#include "../CalcZJUT/CExeFitnessInterface.h"
 #include "../CalcZJUT/CCalcStructBasePool.h"
 #include "../CalcZJUT/CParameter.h"
 
@@ -12,8 +12,8 @@ namespace GAZJUT{
 CEvaluator::CEvaluator()
 {
 }
-CEvaluator::CEvaluator(CALCZJUT::CCalcFitnessInterface  *myEvaluator,
-                       CALCZJUT::CCalcStructureBasePool *myStructPool)
+CEvaluator::CEvaluator(CALCZJUT::CExeFitnessInterface  *myEvaluator,
+                       CALCZJUT::CStructPoolBase *myStructPool)
 {
     // sample evaluator
     this->m_pEvaluator     = myEvaluator;
@@ -66,11 +66,11 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    for(size_t i=0;i<pop_num;i++)
       ((*CurrentPopulation)[i])->setRawScore(OrigScore[i]);
 }
-void CEvaluator::setCalcFitnessInterface(CALCZJUT::CCalcFitnessInterface* CalcFitness)
+void CEvaluator::setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcFitness)
 {
       this->m_pEvaluator=CalcFitness;
 }
-CALCZJUT::CCalcFitnessInterface* CEvaluator::CalcFitnessInterface()
+CALCZJUT::CExeFitnessInterface* CEvaluator::CalcFitnessInterface()
 {
       return this->m_pEvaluator;
 }

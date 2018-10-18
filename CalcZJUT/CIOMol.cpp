@@ -21,7 +21,7 @@ namespace CALCZJUT{
 
 
 CIOMol::CIOMol(CATAZJUT::CConfigurationBase* mpa)
-:Cios(mpa)
+:CIOBase(mpa)
 {
     //ctor
 }

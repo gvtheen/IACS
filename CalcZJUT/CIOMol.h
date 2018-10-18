@@ -1,15 +1,15 @@
 #ifndef CIOMOL_H
 #define CIOMOL_H
 #include <string>
-#include "Cios.h"
+#include "CIOBase.h"
 namespace CATAZJUT{
    class CPeriodicFramework;
 }
 
 namespace CALCZJUT{
-class Cios;
+class CIOBase;
 
-class CIOMol:public Cios
+class CIOMol:public CIOBase
 {
     public:
         CIOMol(CATAZJUT::CPeriodicFramework*);

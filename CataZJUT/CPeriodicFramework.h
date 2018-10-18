@@ -3,9 +3,9 @@
 #include "CConfigurationBase.h"
 
 namespace CALCZJUT{
-  class CCalc2DSupport;
+  class CModel2DSupport;
   class CIOCar;
-  class CCalcVASP;
+  class CExeVASP;
   class CParameter;
  }
 namespace CATAZJUT{
@@ -38,10 +38,10 @@ class CPeriodicFramework:public CConfigurationBase
         friend class CCartesianCoordinates;
         friend class CConfigurationPrivateData;
 
-        friend class CCalc2DSupport;
+        friend class CModel2DSupport;
         friend class CIOPoscar;
         friend class CIOCellFile;
-        friend class CCalcVASP;
+        friend class CExeVASP;
 
     private:
         CUnitCell *m_pUnitCell;

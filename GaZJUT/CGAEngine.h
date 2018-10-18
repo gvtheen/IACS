@@ -6,7 +6,7 @@
 #include "GaUtilityFunction.h"
 
 namespace CALCZJUT{
-    class CCalcFitnessInterface;
+    class CExeFitnessInterface;
     class CParameter;
     class CCalcStructBasePool;
 }
@@ -37,7 +37,7 @@ class CGAEngine
 	protected:
 	    std::vector<CGaOperatorBase*>  m_GeneticOperator;
         CGpopulation                  *m_pCurrentPopulation;
-CALCZJUT::CCalcFitnessInterface       *m_pFitnessCalculator;
+CALCZJUT::CExeFitnessInterface       *m_pFitnessCalculator;
 CALCZJUT::CCalcStructBasePool         *m_pStructurePool;
 	    CGaparameter                  *m_pGaparameter;
 	    CALCZJUT::CParameter          *m_pParameter;

@@ -28,14 +28,14 @@ namespace CALCZJUT{
       class CIOGjf;
       class CIOMol;
       class CIOCellFile;
-      class CCalcSupportBase;
-      class CCalcClusterSupport;
-      class CCalcVASP;
-      class CCalcDMol;
-      class CCalcGaussian;
-      class CCalcLammps;
-      class CCalc2DSupport;
-      class CCalcFitnessInterface;
+      class CModelSupport;
+      class CModelClusterSupport;
+      class CExeVASP;
+      class CExeDMol;
+      class CExeGaussian;
+      class CExeLammps;
+      class CModel2DSupport;
+      class CExeFitnessInterface;
 }
 namespace CATAZJUT{
 
@@ -164,21 +164,21 @@ class CConfigurationBase
         friend class CFragment;
         friend class CPeriodicFramework;
 
-        friend class CALCZJUT::CCalcClusterSupport;
+        friend class CALCZJUT::CModelClusterSupport;
         //output
 
         friend class CALCZJUT::CIOPoscar;
         friend class CALCZJUT::CIOGjf;
         friend class CALCZJUT::CIOMol;
         friend class CALCZJUT::CIOCellFile;
-        friend class CALCZJUT::CCalcSupportBase;
-        friend class CALCZJUT::CCalc2DSupport;
+        friend class CALCZJUT::CModelSupport;
+        friend class CALCZJUT::CModel2DSupport;
 
-        friend class CALCZJUT::CCalcVASP;
-        friend class CALCZJUT::CCalcDMol;
-        friend class CALCZJUT::CCalcGaussian;
-        friend class CALCZJUT::CCalcLammps;
-        friend class CALCZJUT::CCalcFitnessInterface;
+        friend class CALCZJUT::CExeVASP;
+        friend class CALCZJUT::CExeDMol;
+        friend class CALCZJUT::CExeGaussian;
+        friend class CALCZJUT::CExeLammps;
+        friend class CALCZJUT::CExeFitnessInterface;
 
         mutable CCartesianCoordinates       *m_pCartesian;
         std::vector<CElement>                m_Element;          // contain the chemical property of all atoms

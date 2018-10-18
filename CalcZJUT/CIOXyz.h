@@ -2,7 +2,7 @@
 #define CIOXYZ_H
 
 #include <string>
-#include "Cios.h"
+#include "CIOBase.h"
 #include "../Util/Bitset.h"
 
 using util::Bitset;
@@ -13,7 +13,7 @@ namespace CATAZJUT{
 
 namespace CALCZJUT{
 
-class CIOXyz:public Cios
+class CIOXyz:public CIOBase
 {
     public:
         CIOXyz(CATAZJUT::CPeriodicFramework*);
