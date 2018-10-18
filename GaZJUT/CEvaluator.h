@@ -3,6 +3,7 @@
 #include "CGpopulation.h"
 #include "CGaOperatorBase.h"
 #include "../Util/Bitset.h"
+#include "GaDeclaration.h"
 /*
 The main function of class is that FitnessValuator conducts calculation to
  get originalValue and RawScore.
@@ -36,7 +37,7 @@ class CEvaluator:public CGaOperatorBase
 
 	protected:
 	    CALCZJUT::CExeFitnessInterface      *m_pEvaluator;
-	    CALCZJUT::CStructPoolBase     *m_pStructurePool;
+	          CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;
 	                             Bitset       pop_run_state;
 };

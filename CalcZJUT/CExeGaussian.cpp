@@ -14,6 +14,7 @@
 #include "CModelClusterSupport.h"
 #include "CExeGaussian.h"
 #include "../CataZJUT/CFragment.h"
+#include "../CataZJUT/CElement.h"
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "../Util/Point-Vector.h"
 #include "../GaZJUT/CGaparameter.h"
@@ -21,6 +22,7 @@
 #include "../CataZJUT/CBondTolerance.h"
 
 using util::Log;
+using util::Vector3;
 
 namespace CALCZJUT{
 
@@ -38,73 +40,10 @@ CExeGaussian::~CExeGaussian()
 }
 void CExeGaussian::init()
 {
-     if(m_Parameter->simulationMode ==CParameter::MOL_CLUSTER)
-     {
-         this->m_pCalcModeStruct=new CModelClusterSupport(this->m_Parameter);
-
-         m_pIO = new CIOPoscar( m_pCalcModeStruct->periodicFramework());
-
-         if(m_Parameter->adso_supp_Struct != ""){
-           //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
-           //
-           CIOBase* tempIO = this->getIO(m_Parameter->adso_supp_Struct,m_pCalcModeStruct->periodicFramework());
-           tempIO->input(m_Parameter->adso_supp_Struct);
-           delete tempIO;
-           //construct chemical bond
-           m_pCalcModeStruct->periodicFramework()->perceiveBonds();
-           //construct chemical fragments to identify support and adsorbent
-           m_pCalcModeStruct->periodicFramework()->perceiveFragments();
-           //
-           //if(m2dSupport->periodicFramework()->fragments().size())
-           CATAZJUT::CFragment *m1,*m2;
-           m1 = m_pCalcModeStruct->periodicFramework()->fragment(0);
-           m2 = m_pCalcModeStruct->periodicFramework()->fragment(1);
-           if(m1== nullptr || m2 ==nullptr){
-               Log::Error<<"Support and adsorbent setting of input file are error! input_CExeVASP\n";
-               boost::throw_exception(std::runtime_error("Support and adsorbent setting are error! Check the file: Error_information.txt."));
-           }
-           if(m1->atomCount() > m2->atomCount())
-           {
-                m_pCalcModeStruct->createSupport(m1->bitSet());
-                m_pCalcModeStruct->createMoleAdsorb(m2->bitSet());
-           }else{
-                m_pCalcModeStruct->createSupport(m2->bitSet());
-                m_pCalcModeStruct->createMoleAdsorb(m1->bitSet());
-           }
-         }else{
-            //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
-           //
-           CIOBase* tempIO = this->getIO(m_Parameter->supportStructFile,m_pCalcModeStruct->periodicFramework());
-           tempIO->input(m_Parameter->supportStructFile);
-           delete tempIO;
-
-           CIOBase* tempIO_1 = this->getIO(m_Parameter->adsorbentStructFile,m_pCalcModeStruct->periodicFramework());
-           Bitset Bit_adsorbent = tempIO_1->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
-           delete tempIO_1;
-           // get opposite bit for support
-           m_pCalcModeStruct->createSupport(~Bit_adsorbent);
-           //set molecular adsorbent bits
-           m_pCalcModeStruct->createMoleAdsorb(Bit_adsorbent);
-         }
-     }else if (m_Parameter->simulationMode ==CParameter::CLUSTER){    //pure cluster model
-        CModelCluster* cluster = new CModelCluster(this->m_Parameter);
-        m_pIO = new CIOPoscar( cluster->periodicFramework());
-        this->m_pCalcModeStruct = cluster;
-        m_pIO->input("POSCAR");
-     }
-
-    //initialize gene varible
-    //
-    m_Parameter->GaParameter()->setGeneVAR( m_pCalcModeStruct->GeneVARRange());
-
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setExcludeBond(m_Parameter->excludeBond);
-
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setTolerancefactor(m_Parameter->bondToleranceFactor);
-
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="gjf";   //default value;
 }
-double CExeGaussian::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
+double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
          pid_t pid;
      double res;
@@ -113,13 +52,9 @@ double CExeGaussian::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& 
 
      Log::Info<<" Run Gaussian calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      //construct new object of CPeriodicFramework class
-     if( pop_index < m_Parameter->GaParameter()->PopNum() )
-     {
-        m_pCalcModeStruct->createStructureAtGene();
-     }
      //transfer gene value to POSCAR file
-     m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
-     m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
+     m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
+     m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
      m_pIO->output(*m_pInputFile+".gjf"); //.mol file
      //
      //Check whether input files is OK?
@@ -157,18 +92,16 @@ double CExeGaussian::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& 
      tempIO->output(out_filename);
      delete tempIO;
 
-     // monitor whether all of tasks is completed, especically for parallel running
-     pop_run_state[pop_index]=1;
-     if( pop_run_state.flip().none()==true ) // all of gene is complete.
-     {
-         m_pCalcModeStruct->removeStructureOfGene();
-         pop_run_state.reset();  //set to 0;
-     }
+
      return res;
 }
-void CExeGaussian::ConvOrigToRawScore(std::vector<double>* temporgValue)
+void CExeGaussian::ConvOrigToRawScore(std::vector<double>& temporgValue)
 {
-
+    std::vector<double> tmpValue;
+    tmpValue.assign(temporgValue.begin(),temporgValue.end());
+    std::vector<double> ::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a < b;});
+    for(size_t i=0;i<tmpValue.size();i++)
+         temporgValue[i] = *maxEnergy - tmpValue[i];
 }
 void CExeGaussian::CheckInputFile()
 {
@@ -181,14 +114,120 @@ void CExeGaussian::CheckInputFile()
 }
 bool CExeGaussian::IsNormalComplete()
 {
+      std::string NormalLabel("Normal termination of Gaussian");
 
+      bool res=false;
+      std::vector<std::string> strVec;
+      boost::algorithm::split(strVec,*m_pInputFile,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
+      std::string file = strVec[0] + ".log";
+
+      if(access(file.c_str(),F_OK) != 0 )
+      {
+           Log::Error<<file<<" file is no exist! CExeGaussian::IsNormalComplete\n";
+           return res;
+      }
+      std::ifstream *in;
+      try{
+          in= new std::ifstream("OUTCAR",std::ifstream::in);
+          in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+          std::string str;
+          while(!in->eof())
+          {
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(boost::algorithm::contains(str, NormalLabel)>0)
+             {
+                 res = true;
+                 break;
+             }
+          }
+      }catch(const std::ifstream::failure& e){
+          Log::Error<<e.what()<<" CExeGaussian::IsNormalComplete\n";
+          return res;
+      }
+      in->close();
+      return res;
 }
 double CExeGaussian::readFinalEnergy()
 {
+      std::string NormalLabel("Normal termination of Gaussian");
+      std::vector<std::string> strVec;
+      boost::algorithm::split(strVec,*m_pInputFile,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
+      std::string file = strVec[0] + ".log";
 
+      std::vector<double> energy_Vect;
+      std::ifstream *in;
+      try{
+          in= new std::ifstream(file.c_str(),std::ifstream::in);
+          in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+          std::string str;
+          std::vector<std::string> strVec;
+          while(!in->eof())
+          {
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(boost::algorithm::contains(str, "SCF Done")>0)
+             {
+                  boost::algorithm::split(strVec,str,boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
+                  boost::algorithm::trim(strVec[1]);
+                  boost::algorithm::split(strVec,strVec[1],boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+                  energy_Vect.push_back(std::stod(strVec[0]));
+             }
+             if(boost::algorithm::contains(str, NormalLabel)>0)
+                  break;
+          }
+      }catch(const std::ifstream::failure& e){
+          Log::Error<<e.what()<<"  see CExeGaussian::readFinalEnergy\n";
+      }
+      in->close();
+      double temEnergy = energy_Vect[energy_Vect.size()-1];
+      energy_Vect.clear();
+      return temEnergy;
 }
 void CExeGaussian::getRelaxedGeometryCoord()
 {
+      std::vector<std::string> strVec;
+      boost::algorithm::split(strVec,*m_pInputFile,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
+      std::string file = strVec[0] + ".log";
+
+      std::ifstream *in;
+      Vector3 poptionVect;
+      CATAZJUT::CElement* tempEle=nullptr;
+      try{
+          in= new std::ifstream(file.c_str(),std::ios::ate);
+          in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+          std::string str;
+          std::vector<std::string> strVec;
+          while(!in->eof()){
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(boost::algorithm::contains(str, "Optimization completed")>0)
+                  break;
+          }
+          while(!in->eof()){
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(boost::algorithm::contains(str, "Standard orientation")>0){
+                 std::getline(*in,str,'\n');
+                 std::getline(*in,str,'\n');
+                 std::getline(*in,str,'\n');
+                 std::getline(*in,str,'\n');
+                 m_pCalcModeStruct->m_pPeriodicFramework->clear();
+                 while(!in->eof()){
+                     std::getline(*in,str,'\n');
+                     boost::algorithm::trim(str);
+                     boost::algorithm::split(strVec,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+                     poptionVect<<std::stod(strVec[3]),std::stod(strVec[4]),std::stod(strVec[5]);
+                     tempEle = new CATAZJUT::CElement(std::stoi(strVec[1]));
+                     m_pCalcModeStruct->m_pPeriodicFramework->addAtom(tempEle->symbol(),poptionVect);
+                     delete tempEle;
+                 }
+             }
+          }
+      }catch(const std::ifstream::failure& e){
+          Log::Error<<e.what()<<"  see CExeGaussian::readFinalEnergy\n";
+      }
+      in->close();
 
 }
 

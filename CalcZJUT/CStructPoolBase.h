@@ -1,6 +1,8 @@
 #ifndef CCALCSTRUCTUREBASEPOOL_H
 #define CCALCSTRUCTUREBASEPOOL_H
 #include <vector>
+#include "../GaZJUT/GaDeclaration.h"
+using GAZJUT::GeneVAR;
 
 namespace CALCZJUT{
 
@@ -16,7 +18,7 @@ class CStructPoolBase
 
         virtual void init();
         virtual void GeneVARRange(std::vector<GeneVAR>&);
-        CModelBase* operator[](size index);
+        CModelBase* operator[](size_t index);
 
 
     public:

@@ -1,16 +1,18 @@
 #include "CEvaluator.h"
 #include "../CalcZJUT/CExeFitnessInterface.h"
-#include "../CalcZJUT/CCalcStructBasePool.h"
+#include "../CalcZJUT/CStructPoolBase.h"
+#include "../CalcZJUT/CModelBase.h"
 #include "../CalcZJUT/CParameter.h"
 
 namespace CALCZJUT{
-   class CCalcStructBasePool;
+   class CStructPoolBase;
 }
 
 namespace GAZJUT{
 
 CEvaluator::CEvaluator()
 {
+
 }
 CEvaluator::CEvaluator(CALCZJUT::CExeFitnessInterface  *myEvaluator,
                        CALCZJUT::CStructPoolBase *myStructPool)
@@ -20,7 +22,7 @@ CEvaluator::CEvaluator(CALCZJUT::CExeFitnessInterface  *myEvaluator,
     //sample structural pool
     this->m_pStructurePool = myStructPool;
     // sample evaluator monitor!
-    pop_run_state.resize(m_Parameter->popNum(),false);
+    pop_run_state.resize(m_pStructurePool->m_pParameter->popNum(),false);
 }
 CEvaluator::~CEvaluator()
 {
@@ -42,7 +44,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
 
       //sett i th structure to evaluator
-      m_pEvaluator->setCalcModeStruct(m_pStructurePool[i]);
+      m_pEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
 
       // Run evaluator, obtained raw value.
       tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
@@ -50,8 +52,9 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       // Get dec value from relaxed structure after calculation
       // Re-set this value to individual Genome.
       DecValueOfGenome.clear();
-      m_pEvaluator->GetDecGeneAfterCalc(DecValueOfGenome);
+      (*m_pStructurePool)[i]->getGeneValuefromStruct(DecValueOfGenome);
 
+      this->pop_run_state.set(i,true);
       //if some updating gene was gotten, set them to population
       if(DecValueOfGenome.size()!=0)
          ((*CurrentPopulation)[i])->updateDecValueGene(DecValueOfGenome);

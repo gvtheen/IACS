@@ -47,74 +47,10 @@ void CExeDMol::init()
        Log::Debug<<" Initialize CExeDMol object!" <<std::endl;
      #endif // DEBUG
 
-     if(m_Parameter->simulationMode !=CParameter::CLUSTER)
-     {
-        if(m_Parameter->simulationMode ==CParameter::MOL_2DMATERIAL){
-             this->m_pCalcModeStruct=new CModel2DSupport(this->m_Parameter);
-        }else{
-             this->m_pCalcModeStruct=new CModelClusterSupport(this->m_Parameter);
-        }
-
-        m_pIO = new CIOCar( m_pCalcModeStruct->periodicFramework());
-
-        if(m_Parameter->adso_supp_Struct != ""){
-           //read coordinate of mixed adso_supp_Struct
-           CIOBase* tempIO = this->getIO(m_Parameter->supportStructFile,m_pCalcModeStruct->periodicFramework());
-           tempIO->input(m_Parameter->supportStructFile);
-           delete tempIO;
-
-           CIOBase* tempIO_1 = this->getIO(m_Parameter->adsorbentStructFile,m_pCalcModeStruct->periodicFramework());
-           Bitset Bit_adsorbent = tempIO_1->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
-           delete tempIO_1;
-           //construct chemical bond
-           m_pCalcModeStruct->periodicFramework()->perceiveBonds();
-           //construct chemical fragments to identify support and adsorbent
-           m_pCalcModeStruct->periodicFramework()->perceiveFragments();
-           //
-           //if(m2dSupport->periodicFramework()->fragments().size())
-           CATAZJUT::CFragment *m1,*m2;
-           m1 = m_pCalcModeStruct->periodicFramework()->fragment(0);
-           m2 = m_pCalcModeStruct->periodicFramework()->fragment(1);
-           if(m1== nullptr || m2 ==nullptr){
-               Log::Error<<"Support and adsorbent setting of input file are error! input_CExeVASP"<<std::endl;
-               boost::throw_exception(std::runtime_error("Support and adsorbent setting are error! Check the file: Error_information.txt."));
-           }
-           if(m1->atomCount() > m2->atomCount())
-           {
-                m_pCalcModeStruct->createSupport(m1->bitSet());
-                m_pCalcModeStruct->createMoleAdsorb(m2->bitSet());
-           }else{
-                m_pCalcModeStruct->createSupport(m2->bitSet());
-                m_pCalcModeStruct->createMoleAdsorb(m1->bitSet());
-           }
-         }else{ // treat cluster-support
-           m_pIO->input(m_Parameter->supportStructFile);
-
-           Bitset Bit_adsorbent = m_pIO->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
-           // get opposite bit for support
-           m_pCalcModeStruct->createSupport(~Bit_adsorbent);
-           //set molecular adsorbent bits
-           m_pCalcModeStruct->createMoleAdsorb(Bit_adsorbent);
-         }
-     }else{    //pure cluster model
-        CModelCluster* cluster = new CModelCluster(this->m_Parameter);
-        m_pIO = new CIOCar( cluster->periodicFramework());
-        this->m_pCalcModeStruct = cluster;
-        m_pIO->input("POSCAR");
-     }
-
-    //initialize gene varible
-    //
-    m_Parameter->GaParameter()->setGeneVAR( m_pCalcModeStruct->GeneVARRange());
-
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setExcludeBond(m_Parameter->excludeBond);
-
-    m_pCalcModeStruct->periodicFramework()->m_pBondEvaluator->setTolerancefactor(m_Parameter->bondToleranceFactor);
-
     if(m_Parameter->output_struct_format=="")
-       m_Parameter->output_struct_format="mol";   //default value;
+       m_Parameter->output_struct_format="car";   //default value;
 }
-double CExeDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
+double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
      pid_t pid;
      double res;
@@ -123,14 +59,10 @@ double CExeDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_
      Log::Info<<" Run DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
 
      //construct new object of CPeriodicFramework class
-     if( pop_index < m_Parameter->GaParameter()->PopNum() )
-     {
-        m_pCalcModeStruct->createStructureAtGene();
-     }
      //transfer gene value to structure file
-     m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
+     m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      //
-     m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
+     m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
      //write structure in the car file
      m_pIO->output(*(m_pInputFile[0])+".car"); //.car file
      //
@@ -170,22 +102,15 @@ double CExeDMol::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_
      tempIO->output(out_filename);
      delete tempIO;
 
-     // monitor whether all of tasks is completed, especically for parallel running
-     pop_run_state[pop_index]=1;
-     if( pop_run_state.flip().none()==true ) // all of gene is complete.
-     {
-         m_pCalcModeStruct->removeStructureOfGene();
-         pop_run_state.reset();  //set to 0;
-     }
      return res;
 }
-void CExeDMol::ConvOrigToRawScore(std::vector<double>* OrigRawScore)
+void CExeDMol::ConvOrigToRawScore(std::vector<double>& temporgValue)
 {
     std::vector<double> tmpValue;
-    tmpValue.assign(OrigRawScore->begin(),OrigRawScore->end());
-    std::vector<double>::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a<b;});
+    tmpValue.assign(temporgValue.begin(),temporgValue.end());
+    std::vector<double> ::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a < b;});
     for(size_t i=0;i<tmpValue.size();i++)
-         OrigRawScore->at(i)=*maxEnergy - tmpValue[i];
+         temporgValue[i] = *maxEnergy - tmpValue[i];
 }
 void CExeDMol::CheckInputFile()
 {

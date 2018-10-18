@@ -23,6 +23,8 @@ class CIOCif:public CIOBase
         Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode);
     protected:
 
+    private:
+
 };
 
 

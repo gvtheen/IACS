@@ -41,8 +41,8 @@ class CExeFitnessInterface
 	protected:
 	     // cluster, molecule/cluster, molecule/2D_support
 	               CModelBase  *m_pCalcModeStruct;
-	                          CIOBase  *m_pIO;
-	                    CParameter  *m_Parameter;
+                      CIOBase  *m_pIO;
+                   CParameter  *m_Parameter;
 
 };
 

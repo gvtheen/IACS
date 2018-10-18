@@ -47,19 +47,18 @@ CExeVASP::~CExeVASP()
 }
 void CExeVASP::init()
 {
-
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="poscar";   //default value;
 }
-void CExeVASP::ConvOrigToRawScore(std::vector<double>* temporgValue)
+void CExeVASP::ConvOrigToRawScore(std::vector<double>& temporgValue)
 {
     std::vector<double> tmpValue;
-    tmpValue.assign(temporgValue->begin(),temporgValue->end());
+    tmpValue.assign(temporgValue.begin(),temporgValue.end());
     std::vector<double> ::iterator maxEnergy = std::max_element(tmpValue.begin(),tmpValue.end(),[](double a,double b){return a < b;});
     for(size_t i=0;i<tmpValue.size();i++)
-         temporgValue->at(i) = *maxEnergy - tmpValue[i];
+         temporgValue[i] = *maxEnergy - tmpValue[i];
 }
-double CExeVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
+double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
      pid_t pid;
      double res;
@@ -68,14 +67,10 @@ double CExeVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_
 
      Log::Info<<" Run VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      //construct new object of CPeriodicFramework class
-     if( pop_index < m_Parameter->GaParameter()->PopNum() )
-     {
-        m_pCalcModeStruct->createStructureAtGene();
-     }
      //transfer gene value to POSCAR file
     // if( currGeneration != 0 )
-     m_pCalcModeStruct->setGeneValueToStruct(*RealValueOfGenome);
-     m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework(pop_index));
+     m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
+     m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
      m_pIO->output("POSCAR");
      //
      //Check whether input files is OK?
@@ -114,13 +109,6 @@ double CExeVASP::CalcuRawFit(std::vector<double>* RealValueOfGenome,size_t& pop_
      tempIO->output(out_filename);
      delete tempIO;
 
-     // monitor whether all of tasks is completed, especically for parallel running
-     pop_run_state[pop_index]=1;
-     if( pop_run_state.flip().none()==true ) // all of gene is complete.
-     {
-         m_pCalcModeStruct->removeStructureOfGene();
-         pop_run_state.reset();  //set to 0;
-     }
      return res;
 }
 void CExeVASP::CheckInputFile()
