@@ -23,28 +23,28 @@
 #include<string>
 #include<iostream>
 #include "unistd.h"
-#include "Point-Vector.h"
 #include "CIOGjf.h"
 #include "../GaZJUT/GaUtilityFunction.h"
-#include "CPeriodicFramework.h"
-#include "CCartesianCoordinates.h"
-#include "CFractionCoordinates.h"
-#include "CConfigurationPrivateData.h"
-#include "CConfigurationBase.h"
-#include "Point-Vector.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CCartesianCoordinates.h"
+#include "../CataZJUT/CFractionCoordinates.h"
+#include "../CataZJUT/CConfigurationPrivateData.h"
+#include "../CataZJUT/CConfigurationBase.h"
+#include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
 
-using GAZJUT::ERROR_OUTPUT;
-using CATAZJUT::Point3;
-using CATAZJUT::Point3i;
+using util::Log;
+using util::Point3;
+using util::Point3i;
 
 namespace CALCZJUT{
 
-CIOGjf::CIOGjf(CCATAZJUT::CPeriodicFramework* mpa)
+CIOGjf::CIOGjf(CATAZJUT::CPeriodicFramework* mpa)
 :CIOBase(mpa)
 {
     //ctor
 }
-void CIOGjf::output(std::string& file)
+void CIOGjf::output(const std::string& file)
 {
 
 }
@@ -52,8 +52,8 @@ void CIOGjf::input(std::string file)
 {
      if(access(file.c_str(),F_OK) != 0 )
       {
-         ERROR_OUTPUT("gjf file is no exist!","input","CIOGjf");
-         boost::throw_exception(std::runtime_error("gjf file is no exist! Check the file: Error_information.txt."));
+         Log::Error<<"gjf file is no exist! input_CIOGjf!\n";
+         boost::throw_exception(std::runtime_error("gjf file is no exist! input_CIOGjf!"));
       }
       std::ifstream *in;
       std::string str;
@@ -128,8 +128,8 @@ void CIOGjf::input(std::string file)
                   coordinate<<std::stod(vecStr[2]),std::stod(vecStr[4]),std::stod(vecStr[6]);
                   m_pPeriodicFramework->addAtom(vecStr[0],connection,coordinate);
                 }else{
-                  ERROR_OUTPUT("gjf file has wrong format!","input","CIOGjf");
-                  boost::throw_exception(std::runtime_error("gjf file has wrong format! Check the file: Error_information.txt."));
+                  Log::Error<<"gjf file has wrong format! input_CIOGjf!\n";
+                  boost::throw_exception(std::runtime_error("gjf file has wrong format! input_CIOGjf!\n"));
                 }
             }
          }else if(vecStr.size()==4){
@@ -149,8 +149,8 @@ void CIOGjf::input(std::string file)
                   coord<<std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]);
                   m_pPeriodicFramework->addAtom(vecStr[0],coord);
                 }else{
-                  ERROR_OUTPUT("gjf file has wrong format!","input","CIOGjf");
-                  boost::throw_exception(std::runtime_error("gjf file has wrong format! Check the file: Error_information.txt."));
+                  Log::Error<<"gjf file has wrong format! input_CIOGjf!\n";
+                  boost::throw_exception(std::runtime_error("gjf file has wrong format! input_CIOGjf!\n"));
                 }
             }
          }else if(vecStr.size()==5){
@@ -174,18 +174,18 @@ void CIOGjf::input(std::string file)
                   m_Constranit.push_back(std::stoi(vecStr[1]));
                   m_pPeriodicFramework->addAtom(vecStr[0],coord);
                 }else{
-                  ERROR_OUTPUT("gjf file has wrong format!","input","CIOGjf");
-                  boost::throw_exception(std::runtime_error("gjf file has wrong format! Check the file: Error_information.txt."));
+                  Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
+                  boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
                 }
             }
          }else{
-            ERROR_OUTPUT("gjf file has wrong format!","input","CIOGjf");
-            boost::throw_exception(std::runtime_error("gjf file has wrong format! Check the file: Error_information.txt."));
+            Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
+            boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
          }
 
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT("gjf file has wrong format!","input","CIOGjf");
-          boost::throw_exception(std::runtime_error("gjf file has wrong format! Check the file: Error_information.txt."));
+          Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
+          boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
       }
       in->close();
 }

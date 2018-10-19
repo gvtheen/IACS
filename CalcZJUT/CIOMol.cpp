@@ -24,51 +24,54 @@
 #include <string>
 #include "unistd.h"
 #include "stdlib.h"
-#include "CConfigurationBase.h"
+#include "../CataZJUT/CPeriodicFramework.h"
 #include "CIOMol.h"
 #include "foreach.h"
-#include "CAtom.h"
-#include "CBond.h"
-#include "CConfigurationPrivateData.h"
-#include "GaUtilityFunction.h"
+#include "../CataZJUT/CAtom.h"
+#include "../CataZJUT/CBond.h"
+#include "../CataZJUT/CConfigurationPrivateData.h"
+#include "../GaZJUT/GaUtilityFunction.h"
+#include "../Util/log.hpp"
+
+using util::Log;
+
 namespace CATAZJUT{
    class CAtom;
    class CBond;
 }
-using GAZJUT::ERROR_OUTPUT;
 
 namespace CALCZJUT{
 
 
-CIOMol::CIOMol(CATAZJUT::CConfigurationBase* mpa)
+CIOMol::CIOMol(CATAZJUT::CPeriodicFramework* mpa)
 :CIOBase(mpa)
 {
     //ctor
 }
-void CIOMol::output(std::string& file_Name)
+void CIOMol::output(const std::string& fileName)
 {
-    if( m_pConfigurationBase->m_DimensionalType != CATAZJUT::DEFINED::Molecule )
+    if( this->m_pPeriodicFramework->m_DimensionalType != CATAZJUT::DEFINED::Molecule )
     {
-        ERROR_OUTPUT("Dimensional Type is error!","CIOMol::output");
-        boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: Error_information.txt."));
+        Log::Error<<"Dimensional Type is error! CIOMol::output!\n";
+        boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOMol::output!\n"));
     }
-    file_Name = file_Name + ".mol";
+    std::string file_Name = fileName + ".mol";
     std::ofstream out(file_Name,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
     if(out.is_open())
     {
-        out<<m_pConfigurationBase->formula()<<std::endl;      //name
+        out<<m_pPeriodicFramework->formula()<<std::endl;      //name
         out<<"GACatalyst program ( the author: Gvtheen )"<<std::endl;
         out<<std::endl;
-        out<<m_pConfigurationBase->atomCount()<<"  "<<m_pConfigurationBase->atomCount() \
+        out<<m_pPeriodicFramework->atomCount()<<"  "<<m_pPeriodicFramework->atomCount() \
            <<"  0  0  0  0  0  0  0  0999 V2000"<<std::endl;
-        foreach(CATAZJUT::CAtom* atom,m_pConfigurationBase->atoms())
+        foreach(CATAZJUT::CAtom* atom,m_pPeriodicFramework->atoms())
         {
            out<<atom->position().transpose()<<" "<<atom->Symbol()<<" " \
               <<"  0  0  0  0  0  0  0  0  0  0  0  0"<<std::endl;
         }
-        foreach(CATAZJUT::CBond* bond,m_pConfigurationBase->bonds())
+        foreach(CATAZJUT::CBond* bond,m_pPeriodicFramework->bonds())
         {
            out<<bond->atom1()<<"  "<<bond->atom2()<<"  2  0 "<<std::endl;
         }
@@ -92,8 +95,8 @@ void  CIOMol::input(std::string filename)
 {
      if(access(filename.c_str(),F_OK) != 0 )
       {
-           ERROR_OUTPUT(filename + " file is no exist!","input","CIOMol");
-           boost::throw_exception(std::runtime_error(filename +" file is no exist! Check the file: Error_information.txt."));
+           Log::Error<<filename <<" file is no exist! input_CIOMol!\n";
+           boost::throw_exception(std::runtime_error(filename +" file is no exist! input_CIOMol!\n"));
       }
       std::ifstream *in;
       std::string str;
@@ -103,7 +106,7 @@ void  CIOMol::input(std::string filename)
 
           std::getline(*in,str,'\n');
           boost::algorithm::trim(str);
-          m_pConfigurationBase->m_pData->name = str;    //name of compound
+          m_pPeriodicFramework->m_pData->name = str;    //name of compound
 
           std::getline(*in,str,'\n');   //comment line
           std::getline(*in,str,'\n');   // blank line
@@ -120,11 +123,10 @@ void  CIOMol::input(std::string filename)
               boost::algorithm::trim(str);
               boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
               boost::algorithm::trim(vecStr[3]);
-              m_pConfigurationBase->addAtom(vecStr[3],std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]));
+              m_pPeriodicFramework->addAtom(vecStr[3],std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]));
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"input","CIOMol");
-          exit(-1);
+          Log::Error<<e.what() <<"input_CIOMol!\n";
       }
       in->close();
 }

@@ -27,13 +27,14 @@
 #include "../Util/foreach.h"
 #include "../Util/log.hpp"
 #include "../GaZJUT/GaUtilityFunction.h"
-#include "CAtom.h"
-#include "GaUtilityFunction.h"
-#include "CPeriodicFramework.h"
+#include "../CataZJUT/CAtom.h"
+#include "../CataZJUT/CElement.h"
+#include "../GaZJUT/GaUtilityFunction.h"
+#include "../CataZJUT/CPeriodicFramework.h"
 #include "CIOCellFile.h"
-#include "CUnitCell.h"
-#include "CFractionCoordinates.h"
-#include "Point-Vector.h"
+#include "../CataZJUT/CUnitCell.h"
+#include "../CataZJUT/CFractionCoordinates.h"
+#include "../Util/Point-Vector.h"
 
 using util::Log;
 
@@ -44,14 +45,14 @@ CIOCellFile::CIOCellFile(CATAZJUT::CPeriodicFramework* mpa)
 {
     //ctor
 }
-void CIOCellFile::output(std::string& filename)
+void CIOCellFile::output(const std::string& file_name)
 {
    if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
-        Log::OutputToFile<<"ERROR: " <<"Dimensional Type is error! CIOCellFile_output"<< std::endl;
+        Log::Error<<"Dimensional Type is error! CIOCellFile_output"<< std::endl;
         boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: output file."));
     }
-    filename = filename + ".cell";
+    std::string filename = file_name + ".cell";
     std::ofstream out(filename,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
@@ -65,7 +66,7 @@ void CIOCellFile::output(std::string& filename)
     out<<std::endl;
     //Fractional coordinate
     out<<"%BLOCK POSITIONS_FRAC"<<std::endl;
-    foreach(CAtom* atom, m_pPeriodicFramework->atoms())
+    foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms())
     {
       out<<atom->Symbol()<<" "<<m_pPeriodicFramework->Fractioncoordinates()->position(atom->index()).transpose()<<std::endl;
     }
@@ -87,18 +88,17 @@ void CIOCellFile::output(std::string& filename)
     out<<"%ENDBLOCK EXTERNAL_EFIELD"<<std::endl;
 
     out<<std::endl;
-    std::vector<std::pair<std::string,size_t>>* tmp = m_pPeriodicFramework->composition();
+    std::vector<std::pair<std::string,size_t>> tmp = m_pPeriodicFramework->composition();
     std::vector<std::pair<std::string,size_t>>::iterator iter;
     out<<"%BLOCK SPECIES_MASS"<<std::endl;
-    for(iter = tmp->begin();iter!= tmp->end(); iter++)
-    {
-       out<<iter->first<<"   "<< (new CElement(iter->first))->exactMass() <<std::endl;
-    }
+    for(iter = tmp.begin();iter!= tmp.end(); iter++)
+       out<<iter->first<<"   "<< (new CATAZJUT::CElement(iter->first))->exactMass() <<std::endl;
+
     out<<"%ENDBLOCK SPECIES_MASS"<<std::endl;
     out<<std::endl;
 
     out<<"%BLOCK SPECIES_POT"<<std::endl;
-    for(iter = tmp->begin();iter!= tmp->end(); iter++)
+    for(iter = tmp.begin();iter!= tmp.end(); iter++)
     {
         out<<iter->first<<"  "<<iter->first<<"_00PBE.usp" <<std::endl;
     }
@@ -106,7 +106,7 @@ void CIOCellFile::output(std::string& filename)
     out<<std::endl;
 
     out<<"%BLOCK SPECIES_LCAO_STATES"<<std::endl;
-    for(iter = tmp->begin();iter!= tmp->end(); iter++)
+    for(iter = tmp.begin();iter!= tmp.end(); iter++)
           out<<iter->first<<"   "<<iter->second<<std::endl;
     out<<"%ENDBLOCK SPECIES_LCAO_STATES"<<std::endl;
     out<<std::endl;
@@ -128,7 +128,7 @@ void CIOCellFile::input(std::string filename)
 {
      if(access(filename.c_str(),F_OK) != 0 )
       {
-           Log.OutputToFile<<filename <<" file is no exist! input_CIOPoscar"<<std::endl;
+           Log::Error<<filename <<" file is no exist! input_CIOPoscar"<<std::endl;
            boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file!"));
       }
       std::ifstream *in;
@@ -160,7 +160,7 @@ void CIOCellFile::input(std::string filename)
              m_pPeriodicFramework->addAtom(vecStr[0],std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]));
           }
       }catch(const std::ifstream::failure& e){
-          Log::OutputToFile<<"ERROR: "<< e.what() <<"input_CIOCellFile"<<std::endl;
+          Log::Error<< e.what() <<"input_CIOCellFile"<<std::endl;
           boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file: Error_information.txt."));
       }
       in->close();
