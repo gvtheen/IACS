@@ -1,3 +1,23 @@
+/******************************************************************************
+**
+** Copyright (C) 2019-2031 Dr.Gui-lin Zhuang <glzhuang@zjut.edu.cn>
+** All rights reserved.
+**
+**
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+******************************************************************************/
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <string>
@@ -26,6 +46,7 @@
 #include "CIOGjf.h"
 #include "CIOPoscar.h"
 #include "CStructPoolSupported.h"
+#include "CModelClusterLoaded2DSupport"
 
 using util::Log;
 
@@ -35,12 +56,20 @@ CStructPoolSupported::CStructPoolSupported(CParameter* oth)
 :CStructPoolBase(oth)
 {
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
-        if(m_pParameter->simulationMode ==CParameter::MOL_2DMATERIAL)
-            this->m_CalcStructPool.push_back(new CModel2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
-         else
-            this->m_CalcStructPool.push_back(new CModelClusterSupport(this->m_pParameter,&copy_pPeriodicFramework));
-         m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
-         m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
+        switch ( (int)(m_pParameter->simulationMode) ){
+            case CParameter::MOL_2DMATERIAL:
+                m_CalcStructPool.push_back(new CModel2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
+                break;
+            case CParameter::MOL_CLUSTER2DMATERIAL:
+                m_CalcStructPool.push_back(new CModelClusterLoaded2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
+                break;
+            case CParameter::MOL_CLUSTER:
+                m_CalcStructPool.push_back(new CModelClusterSupport(this->m_pParameter,&copy_pPeriodicFramework));
+            default:
+                break;
+        }
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
     }
 
 }

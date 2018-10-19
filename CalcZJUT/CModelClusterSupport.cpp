@@ -1,6 +1,6 @@
 /******************************************************************************
 **
-** Copyright (C) 2019-2031 Dr.Guilin Zhuang <glzhuang@zjut.edu.cn>
+** Copyright (C) 2019-2031 Dr.Gui-lin Zhuang <glzhuang@zjut.edu.cn>
 ** All rights reserved.
 **
 **

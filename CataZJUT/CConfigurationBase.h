@@ -30,6 +30,7 @@ namespace CALCZJUT{
       class CIOCellFile;
       class CModelSupport;
       class CModelClusterSupport;
+      class CModelClusterLoaded2DSupport;
       class CExeVASP;
       class CExeDMol;
       class CExeGaussian;
@@ -175,6 +176,7 @@ class CConfigurationBase
         friend class CALCZJUT::CIOCellFile;
         friend class CALCZJUT::CModelSupport;
         friend class CALCZJUT::CModel2DSupport;
+        friend class CALCZJUT::CModelClusterLoaded2DSupport;
 
         friend class CALCZJUT::CExeVASP;
         friend class CALCZJUT::CExeDMol;

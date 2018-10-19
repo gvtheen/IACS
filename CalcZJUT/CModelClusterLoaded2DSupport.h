@@ -14,7 +14,8 @@ using util::Vector3;
 namespace CATAZJUT{
   class CPeriodicFramework;
   class CPlane;
-  class CAtom;
+  class CSphere;
+
 }
 namespace CALCZJUT{
 
@@ -43,10 +44,21 @@ class CModelClusterLoaded2DSupport:public CModelBase
         void createSupport(const Bitset &);
         void createMoleAdsorb(const Bitset &);
 
+        void createSupportedCluster(const Bitset&);
+        void createSupportSurface(const Bitset&);
+
+        void createClusterSphere();
+        void createSupportPlane();
+
         Bitset SupportBit();
         Bitset MoleAdsorbBit();
+        Bitset ClusterBit();
+        Bitset SupportSurfaceBit();
         //overload the father class's function
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf);
+
+        LATT_DIRECTION latticeDirection();
+        void setLatticeDirection(LATT_DIRECTION);
 
     protected:
         void IdentifyvacuumLayerDirection();
@@ -58,7 +70,7 @@ class CModelClusterLoaded2DSupport:public CModelBase
         CModelMoleculeAdsorbent  *m_pAdsorbMolecule;
 
         CModelMoleculeAdsorbent  *m_pClusterOnSupport;
-        CModelSupport            *m_pPureSupport;
+        CModelSupport            *m_pPureSupportSurface;
 
         LATT_DIRECTION            m_latticeDirection;
         CATAZJUT::CPlane         *m_support_surface;

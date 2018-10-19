@@ -1,5 +1,25 @@
+/******************************************************************************
+**
+** Copyright (C) 2019-2031 Dr.Gui-lin Zhuang <glzhuang@zjut.edu.cn>
+** All rights reserved.
+**
+**
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+******************************************************************************/
+#include <math.h>
 #include "CModelClusterLoaded2DSupport.h"
-#include "CModel2DSupport.h"
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "CModelMoleculeAdsorbent.h"
 #include "../GaZJUT/GaDeclaration.h"
@@ -11,52 +31,78 @@
 #include "../Util/foreach.h"
 #include "../CataZJUT/CPlane.h"
 #include "../CataZJUT/CSphere.h"
+#include "../CataZJUT/CFragment.h"
 #include "../CataZJUT/CBondTolerance.h"
 #include "../GaZJUT/GaUtilityFunction.h"
 #include "../Util/Point-Vector.h"
+#include "../CataZJUT/Constant.h"
 
 using util::Log;
 using util::Point3;
 using util::Vector3;
+using CATAZJUT::constants::Pi;
 
 namespace CALCZJUT{
 
 CModelClusterLoaded2DSupport::CModelClusterLoaded2DSupport(CParameter* mParameter,
-                                                           CATAZJUT::CPeriodicFramework** mPeriodicFramework)
+                                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
 :CModelBase(mParameter)
 {
-    m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
+    m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mParameter);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
-    m_latticeDirection = CModel2DSupport::NONE_DIR;
+    m_latticeDirection = CModelClusterLoaded2DSupport::NONE_DIR;
+
+    m_pClusterOnSupport = nullptr;
+    m_pAdsorbMolecule = nullptr;
+    m_support_surface = nullptr;
+    m_pSphereCluster = nullptr;
 }
 
 CModelClusterLoaded2DSupport::~CModelClusterLoaded2DSupport()
 {
-     if( m_pClusterOnSupport!=nullptr)
+     if( m_pClusterOnSupport!= nullptr)
         delete m_pClusterOnSupport;
-     if( m_pAdsorbMolecule !=nullptr)
+     if( m_pAdsorbMolecule != nullptr)
         delete m_pAdsorbMolecule;
-     if( m_support_surface !=nullptr)
+     if( m_support_surface != nullptr)
         delete m_support_surface;
-     if( m_pSphereCluster!=nullptr)
+     if( m_pSphereCluster!= nullptr)
         delete m_pSphereCluster;
 }
 
 CModelBase* CModelClusterLoaded2DSupport::clone()
 {
-    CModel2DSupport* res= new CModelClusterLoaded2DSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
+    CModelClusterLoaded2DSupport* res= new CModelClusterLoaded2DSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
     res->setPeriodicFramekwork(this->periodicFramework());
+    // four types moieties
     res->createMoleAdsorb(this->MoleAdsorbBit());
     res->createSupport(this->SupportBit());
+    res->createSupportSurface(this->SupportSurfaceBit());
+    res->createSupportedCluster(this->ClusterBit());
+    // two types elements
     res->setLatticeDirection(this->latticeDirection());
-    res->setSupportSurfacePlane(this->supportSurfacePlane());
+    res->createClusterSphere();
+    res->createSupportPlane();
+
     return res;
 }
 void CModelClusterLoaded2DSupport::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
+    Point3 resCoordinate;
+    resCoordinate<<realValueOfgene[0],realValueOfgene[1],realValueOfgene[2];
+    resCoordinate = m_pSphereCluster->CartesianCoordAtGeneOf(resCoordinate);
 
+     // let adsorbing molecule move to new position
+    m_pAdsorbMolecule->moveBy(resCoordinate);
+
+     // rotation some angel along specific axis
+    resCoordinate<<realValueOfgene[3],realValueOfgene[4],realValueOfgene[5];
+    m_pAdsorbMolecule->rotate(resCoordinate,realValueOfgene[6]);
+
+     // check whether close contacts is avaiable.
+    this->eliminateCloseContacts();
 }
-void CModelClusterLoaded2DSupport::getGeneValuefromStruct(std::vector<double>&)
+void CModelClusterLoaded2DSupport::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
 
 }
@@ -64,15 +110,13 @@ void CModelClusterLoaded2DSupport::GeneVARRange(std::vector<GeneVAR>& currentGen
 {
         double distance = m_support_surface->Distance(m_pSphereCluster->SphereCenter());
 
-        doulbe R = m_pSphereCluster->Radius();
-
-
+        double R = m_pSphereCluster->Radius();
 
         currentGeneVARible.push_back({1.5,3.0,0.01});
         // 2nd gene:    phi: [0,2*PI]
         currentGeneVARible.push_back({0.0,2*Pi,0.01});
         // 3rd gene thea: [0,PI]
-        currentGeneVARible.push_back({0.0,Pi,0.01});
+        currentGeneVARible.push_back({0.0,Pi-std::acos(distance/R),0.01});
 
         // following four genes:  rotation axis and angle of adsorbing molecule over the sphere.
 
@@ -109,16 +153,16 @@ void CModelClusterLoaded2DSupport::IdentifyvacuumLayerDirection()
        if(!breakBol){
           switch (i){
             case 0:
-                m_latticeDirection = CModel2DSupport::A_AXIS;
+                m_latticeDirection = CModelClusterLoaded2DSupport::A_AXIS;
                 break;
             case 1:
-                m_latticeDirection = CModel2DSupport::B_AXIS;
+                m_latticeDirection = CModelClusterLoaded2DSupport::B_AXIS;
                 break;
             case 2:
-                m_latticeDirection = CModel2DSupport::C_AXIS;
+                m_latticeDirection = CModelClusterLoaded2DSupport::C_AXIS;
                 break;
             default:
-                m_latticeDirection = CModel2DSupport::NONE_DIR;
+                m_latticeDirection = CModelClusterLoaded2DSupport::NONE_DIR;
                 break;
           }
           break;
@@ -129,13 +173,13 @@ void CModelClusterLoaded2DSupport::perceiveSupportSurface()
 {
     size_t direction;
 
-    if(m_latticeDirection==NONE_DIR)
+    if(m_latticeDirection==CModelClusterLoaded2DSupport::NONE_DIR)
         IdentifyvacuumLayerDirection();
 
     // convert the direction to coordinate index;
-    if ( m_latticeDirection == CModel2DSupport::C_AXIS)
+    if ( m_latticeDirection == CModelClusterLoaded2DSupport::C_AXIS)
         direction=2;
-    else if(m_latticeDirection == CModel2DSupport::B_AXIS)
+    else if(m_latticeDirection == CModelClusterLoaded2DSupport::B_AXIS)
         direction=1;
     else //if (m_latticeDirection = CModel2DSupport::A_AXIS)
         direction=0;
@@ -147,7 +191,7 @@ void CModelClusterLoaded2DSupport::perceiveSupportSurface()
 
     Bitset  tempBit(m_pPeriodicFramework->atomCount(),false);
 
-    foreach(const CATAZJUT::CAtom *atom,m_pSupport->atoms())
+    foreach(CATAZJUT::CAtom *atom,m_pSupport->atoms())
         if(atom->position()[direction]>max_latticedirection){
             max_latticedirection=atom->position()[direction];
             most_highest_atom = atom;
@@ -163,25 +207,86 @@ void CModelClusterLoaded2DSupport::perceiveSupportSurface()
              if(atom->position()[direction]>monitor_height)
                 tempBit.set(atom->index(),true);
         if(this->m_pPeriodicFramework->FromMoietyGetFragmentsAtom(tempBit,most_highest_atom)==true){
-            this->m_BitbackupCluster = tmpBit;
+            this->m_BitbackupCluster = tempBit;
             break;
         }
     }
-    m_pClusterOnSupport = new CModelMoleculeAdsorbent(this->m_pPeriodicFramework,this->m_BitbackupCluster);
+    this->createSupportedCluster(this->m_BitbackupCluster);
 
     m_BitBackupSupportNoCluster = ~(m_BitbackupCluster & m_BitbackupSupport);
-    m_pPureSupport = new CModelSupport(this->m_pPeriodicFramework,this->m_BitBackupSupportNoCluster);
 
+    this->createSupportSurface(m_BitBackupSupportNoCluster);
     //construct the mode sphere of the cluster on the support.
+    this->createClusterSphere();
+
+    // identify the pure surface on the support
+    this->createSupportPlane();
+
+}
+void CModelClusterLoaded2DSupport::eliminateCloseContacts(double distanceCutOff)
+{
+    Vector3 vect;
+    double eps=0.2;
+    bool modifiedbol=true;
+    while(modifiedbol)
+    {
+       modifiedbol=false;
+       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
+            if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
+                vect = atom_m->position() - atom_s->position();
+                vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
+                this->m_pAdsorbMolecule->moveBy(vect);
+                modifiedbol=true;
+            }
+        }
+   }
+}
+void CModelClusterLoaded2DSupport::createSupport(const Bitset& mht )
+{
+    assert(m_pPeriodicFramework);
+    m_BitbackupSupport = mht;
+    m_pSupport= new CModelSupport(this->m_pPeriodicFramework,m_BitbackupSupport);
+}
+void CModelClusterLoaded2DSupport::createMoleAdsorb(const Bitset& mht)
+{
+    assert(m_pPeriodicFramework);
+    m_BitbackupAdsorbMolecule = mht;
+    m_pAdsorbMolecule = new CModelMoleculeAdsorbent(this->m_pPeriodicFramework,m_BitbackupAdsorbMolecule);
+}
+void CModelClusterLoaded2DSupport::createSupportedCluster(const Bitset& mht)
+{
+    assert(this->m_pPeriodicFramework);
+    m_BitbackupCluster = mht;
+    m_pClusterOnSupport = new CModelMoleculeAdsorbent(m_pPeriodicFramework,m_BitbackupCluster);
+
+}
+void CModelClusterLoaded2DSupport::createSupportSurface(const Bitset& mht)
+{
+    assert(this->m_pPeriodicFramework);
+    m_BitBackupSupportNoCluster = mht;
+    m_pPureSupportSurface = new CModelSupport( m_pPeriodicFramework,m_BitBackupSupportNoCluster );
+}
+void CModelClusterLoaded2DSupport::createClusterSphere()
+{
     std::vector<Point3> clusterCoordinate;
-    for(CATAZJUT::CAtom* atom,m_pPureSupport->atoms())
+    foreach(CATAZJUT::CAtom* atom,m_pPureSupportSurface->atoms())
         clusterCoordinate.push_back(atom->position());
     this->m_pSphereCluster = new CATAZJUT::CSphere(clusterCoordinate);
     clusterCoordinate.clear();
-
-    // identify the pure surface on the support
-    max_latticedirection=DBL_MIN;
-    foreach(const CATAZJUT::CAtom *atom,m_pPureSupport->atoms()){
+}
+void CModelClusterLoaded2DSupport::createSupportPlane()
+{
+    size_t direction;
+    double max_latticedirection=DBL_MIN;
+    if ( m_latticeDirection == CModelClusterLoaded2DSupport::C_AXIS)
+        direction=2;
+    else if(m_latticeDirection == CModelClusterLoaded2DSupport::B_AXIS)
+        direction=1;
+    else //if (m_latticeDirection = CModel2DSupport::A_AXIS)
+        direction=0;
+    foreach(const CATAZJUT::CAtom *atom,m_pPureSupportSurface->atoms()){
         if(atom->position()[direction]>max_latticedirection)
             max_latticedirection=atom->position()[direction];
     }
@@ -189,7 +294,7 @@ void CModelClusterLoaded2DSupport::perceiveSupportSurface()
     double PlaneCutoff = 0.1;
     while(true){
         matom.clear();
-        foreach(CATAZJUT::CAtom *atom,m_pPureSupport->atoms()){
+        foreach(CATAZJUT::CAtom *atom,m_pPureSupportSurface->atoms()){
            if(std::fabs(atom->position()[direction]-max_latticedirection)<PlaneCutoff)
               matom.push_back(atom);
         }
@@ -209,40 +314,6 @@ void CModelClusterLoaded2DSupport::perceiveSupportSurface()
 
     // clear space
     delete currentMat;
-
-}
-void CModelClusterLoaded2DSupport::eliminateCloseContacts(double distanceCutOff)
-{
-    Vector3 vect;
-    double eps=0.01;
-    bool modifiedbol=true;
-    while(modifiedbol)
-    {
-       modifiedbol=false;
-       foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms())
-          foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
-            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
-            if( m_pPeriodicFramework->distance(atom_m,atom_s) <distanceCutOff ){
-                vect = atom_m->position() - atom_s->position();
-                vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
-                this->m_pAdsorbMolecule->moveBy(vect);
-                modifiedbol=true;
-            }
-        }
-   }
-}
-void CModelClusterLoaded2DSupport::createSupport(const Bitset &)
-{
-    assert(m_pPeriodicFramework);
-    m_BitbackupSupport = mht;
-    m_pSupport= new CModelSupport(this->m_pPeriodicFramework,m_BitbackupSupport);
-}
-void CModelClusterLoaded2DSupport::createMoleAdsorb(const Bitset &)
-{
-    assert(m_pPeriodicFramework);
-    m_BitbackupAdsorbMolecule = mht;
-    m_pAdsorbMolecule = new CModelMoleculeAdsorbent(this->m_pPeriodicFramework,m_BitbackupAdsorbMolecule);
-}
 }
 
 Bitset CModelClusterLoaded2DSupport::SupportBit()
@@ -262,5 +333,15 @@ void CModelClusterLoaded2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFram
      this->m_pAdsorbMolecule->setConfiguration(this->m_pPeriodicFramework);
      this->m_pSupport->setConfiguration(this->m_pPeriodicFramework);
 }
+CModelClusterLoaded2DSupport::LATT_DIRECTION CModelClusterLoaded2DSupport::latticeDirection()
+{
+    return this->m_latticeDirection;
+}
+void CModelClusterLoaded2DSupport::setLatticeDirection(CModelClusterLoaded2DSupport::LATT_DIRECTION mht)
+{
+    this->m_latticeDirection = mht;
+}
+
+
 
 }   //namespace
