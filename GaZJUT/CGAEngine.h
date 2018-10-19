@@ -23,8 +23,8 @@ class CGAEngine
 		CGAEngine(CALCZJUT::CParameter*);
 		~CGAEngine();
 
-		void SetFitCalculator(const CalcFitnessInterface*);
-        CALCZJUT::CalcFitnessInterface* FitnessCalculator()const;
+		void SetFitCalculator(CALCZJUT::CExeFitnessInterface*);
+        CALCZJUT::CExeFitnessInterface* FitnessCalculator()const;
 
 
 
@@ -37,11 +37,11 @@ class CGAEngine
 	protected:
 	    std::vector<CGaOperatorBase*>  m_GeneticOperator;
         CGpopulation                  *m_pCurrentPopulation;
-CALCZJUT::CExeFitnessInterface       *m_pFitnessCalculator;
+CALCZJUT::CExeFitnessInterface        *m_pFitnessCalculator;
 CALCZJUT::CCalcStructBasePool         *m_pStructurePool;
 	    CGaparameter                  *m_pGaparameter;
 	    CALCZJUT::CParameter          *m_pParameter;
-	    std::vector<GeneVAR>           &m_GeneVAR;
+	    std::vector<GAZJUT::GeneVAR>           m_GeneVAR;
 
 };
 

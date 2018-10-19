@@ -546,11 +546,79 @@ void CConfigurationBase::perceiveFragments()
     }
     setFragmentsPerceived(true);
 }
-bool CConfigurationBase::isFragments(std::vector<size_t> *indexAtom)
+bool CConfigurationBase::FromMoietyGetFragmentsAtom(Bitset& mBit,CAtom* atom_label)
+{
+   std::vector<size_t> indexAtom;
+   for(size_t i=0;i<mBit.size();i++)
+      if( mBit[i] == 1 )
+         indexAtom.push_back(i);
+
+   std::vector<CFragment*> temp_Fragment;
+
+     Bitset totalBit(indexAtom.size());
+     totalBit.set();    //set elements of totalBit 1
+     size_t pos=0;      // 1st totalBit[0] corresponding with indexAtom[0]->Atom
+
+     while(true){
+        Bitset partBit(m_Atom.size());   // all value is set to 0
+
+        std::vector<const CAtom*> row;
+        row.push_back(m_Atom[indexAtom[pos]);
+
+        while(!row.empty()){
+            std::vector<const CAtom*> nextRow;
+            // analyze bonding atoms of current atoms ( row )
+            foreach(const CAtom* atom,row){
+                int atomIndex=std::distance(indexAtom.begin(),\
+                                  std::find(indexAtom.begin(),indexAtom.end(),atom->index()));
+                //set the value to 1 at atom->index() in parBit, tag this atoms to be selected
+                partBit.set(atom->index());
+
+                //set the value to 1 at atom->index() in totalBit, tag this atoms to be selected
+                //It will make it be not selected by pos pointer.
+                totalBit.set(atomIndex,false);
+                std::vector<size_t>::iterator it;
+                foreach(const CAtom* neighborAtom,atom->neighbors()){
+                    it=std::find(indexAtom.begin(),indexAtom.end(),neighborAtom->index());
+                    if(it!=indexAtom->end() && totalBit[std::distance(indexAtom.begin(),it)])
+                       nextRow.push_back(neighborAtom);
+                }
+            }
+            row = nextRow;
+        }
+
+        CFragment* newFragment =  new CFragment(this,partBit);
+        temp_Fragment.push_back(newFragment);
+        // search next position with 1 value and
+        // assign it to pos.
+        pos = totalBit.find_next(pos);
+        if(pos==Bitset::npos)  // Jude whether this bitset is over.
+            break;
+     }
+      if(temp_Fragment.size()>1){
+         for(size_t i=0;i<temp_Fragment.size();i++)
+             if(temp_Fragment[i]->contains(atom_label)){
+                 mBit=temp_Fragment[i]->bitSet();
+                 break;
+             }
+         return true;
+      }else
+         return false;
+
+}
+bool CConfigurationBase::isFragments(Bitset& mBit)
+{
+   std::vector<size_t> res;
+   for(size_t i=0;i<mBit.size();i++)
+      if( mBit[i] == 1 )
+         res.push_back(i);
+   return isFragments(res);
+}
+bool CConfigurationBase::isFragments(const std::vector<size_t>& indexAtom)
 {
      if(this->isEmpty()==true)
         return false;
-     Bitset totalBit(indexAtom->size());
+     Bitset totalBit(indexAtom.size());
      totalBit.set();    //set elements of totalBit 1
      size_t pos=0;      // 1st totalBit[0] corresponding with indexAtom[0]->Atom
      size_t fragmentNum=0;
@@ -558,25 +626,24 @@ bool CConfigurationBase::isFragments(std::vector<size_t> *indexAtom)
         Bitset partBit(m_Atom.size());   // all value is set to 0
 
         std::vector<const CAtom*> row;
-        row.push_back(m_Atom[indexAtom->at(pos)]);
+        row.push_back(m_Atom[indexAtom[pos]);
 
         while(!row.empty()){
             std::vector<const CAtom*> nextRow;
             // analyze bonding atoms of current atoms ( row )
             foreach(const CAtom* atom,row){
-                int atomIndex=std::distance(indexAtom->begin(),\
-                                  std::find(indexAtom->begin(),indexAtom->end(),atom->index()));
+                int atomIndex=std::distance(indexAtom.begin(),\
+                                  std::find(indexAtom.begin(),indexAtom.end(),atom->index()));
                 //set the value to 1 at atom->index() in parBit, tag this atoms to be selected
                 partBit.set(atom->index());
 
                 //set the value to 1 at atom->index() in totalBit, tag this atoms to be selected
                 //It will make it be not selected by pos pointer.
                 totalBit.set(atomIndex,false);
-
+                std::vector<size_t>::iterator it;
                 foreach(const CAtom* neighborAtom,atom->neighbors()){
-                    std::vector<size_t>::iterator it;
-                    it=std::find(indexAtom->begin(),indexAtom->end(),neighborAtom->index());
-                    if(it!=indexAtom->end() && totalBit[std::distance(indexAtom->begin(),it)])
+                    it=std::find(indexAtom.begin(),indexAtom.end(),neighborAtom->index());
+                    if(it!=indexAtom->end() && totalBit[std::distance(indexAtom.begin(),it)])
                        nextRow.push_back(neighborAtom);
                 }
             }

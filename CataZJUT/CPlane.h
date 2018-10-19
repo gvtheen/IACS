@@ -19,7 +19,7 @@ class CPlane
         virtual ~CPlane();
 
         void            CreatePlane(Eigen::MatrixXd* currentMat);
-        double          Distance(Point3);
+        double          Distance(const Point3&);
         Eigen::Vector4d Equation();
         void SetEquation(Eigen::Vector4d temp);
 

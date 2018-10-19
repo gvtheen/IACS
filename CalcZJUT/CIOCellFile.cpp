@@ -6,7 +6,7 @@
 #include "stdlib.h"
 #include "../Util/foreach.h"
 #include "../Util/log.hpp"
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CAtom.h"
 #include "GaUtilityFunction.h"
 #include "CPeriodicFramework.h"

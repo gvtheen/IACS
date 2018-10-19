@@ -127,7 +127,9 @@ class CConfigurationBase
         Bitset constraintBit()const;
         void setConstraintBit(const Bitset& othr);
         //fragment
-        bool isFragments(std::vector<size_t>*);   //identify whether the molecule have fragments
+        bool isFragments(const std::vector<size_t>&);   //identify whether the molecule have fragments
+        bool isFragments(Bitset&);
+        bool FromMoietyGetFragmentsAtom(Bitset&,CAtom*);
         void perceiveFragments();
         CFragment* fragmentForAtom(const CAtom *atom);
         FragmentRange fragments();

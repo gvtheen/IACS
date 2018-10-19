@@ -5,7 +5,7 @@
 #include "unistd.h"
 #include "Point-Vector.h"
 #include "CIOGjf.h"
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CPeriodicFramework.h"
 #include "CCartesianCoordinates.h"
 #include "CFractionCoordinates.h"

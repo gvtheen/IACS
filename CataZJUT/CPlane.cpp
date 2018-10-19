@@ -66,7 +66,7 @@ void CPlane::CreatePlane(Eigen::MatrixXd* CurrentPointMat)
 //{
 //
 //}
-double CPlane::Distance(Point3 P1) // projection of P0P1 vector on normal line of plane.
+double CPlane::Distance(const Point3& P1) // projection of P0P1 vector on normal line of plane.
 {
     // if distance<0, projection vector of P0P1 vector on normal line lie contrary direction with
     // normal line. Thus, P1 point lie below the plane

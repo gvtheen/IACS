@@ -1,5 +1,7 @@
 #ifndef CExeGaussian_H
 #define CExeGaussian_H
+
+#include<vector>
 #include "CExeFitnessInterface.h"
 using namespace GAZJUT;
 

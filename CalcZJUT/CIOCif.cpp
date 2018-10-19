@@ -9,7 +9,7 @@
 namespace CALCZJUT{
 
 CIOCif::CIOCif(CATAZJUT::CPeriodicFramework* mpa)
-:CIos(mpa)
+:CIOBase(mpa)
 {
     //ctor
 }

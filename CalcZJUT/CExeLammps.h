@@ -1,12 +1,14 @@
 #ifndef CExeLammps_H
 #define CExeLammps_H
+#include<vector>
+#include "CExeFitnessInterface.h"
 
 namespace CALCZJUT{
 
 class CExeLammps:public CExeFitnessInterface
 {
     public:
-        CExeLammps();
+        CExeLammps(CParameter* mpara);
         virtual ~CExeLammps();
 
         double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);

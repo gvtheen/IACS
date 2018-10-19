@@ -283,7 +283,7 @@ void CModel2DSupport::IdentifyvacuumLayerDirection()  //-1: none, 0:a,  1:b  2:c
 }
 void CModel2DSupport::perceiveSupportSurface()
 {
-    std::vector<size_t> coord_Num;
+   // std::vector<size_t> coord_Num;
     int direction;
     if ( m_latticeDirection == CModel2DSupport::C_AXIS)
         direction=2;
@@ -319,6 +319,7 @@ void CModel2DSupport::perceiveSupportSurface()
         (*currentMat).row(i) = matom[i]->position();
 
     this->m_support_surface = new CATAZJUT::CPlane(currentMat);
+    // clear space
     delete currentMat;
 }
 

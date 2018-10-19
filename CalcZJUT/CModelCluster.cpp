@@ -96,13 +96,13 @@ void CModelCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealV
 }
 void CModelCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 {
-   double max_radius=0;
-   Vector4 tempVect;
-
-   tempVect=util::SphereEquationFromPoints(this->m_pPeriodicFramework->coordinates()->coordinates());
-   max_radius=tempVect(3,0);
-   max_radius = max_radius + 0.50;
-   currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
+//   double max_radius=0;
+//   Vector4 tempVect;
+//
+//   tempVect=util::SphereEquationFromPoints(this->m_pPeriodicFramework->coordinates()->coordinates());
+//   max_radius=tempVect(3,0);
+//   max_radius = max_radius + 0.50;
+//   currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
 }
 void CModelCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
 {

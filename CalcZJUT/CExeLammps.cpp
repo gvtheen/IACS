@@ -2,7 +2,8 @@
 
 namespace CALCZJUT{
 
-CExeLammps::CExeLammps()
+CExeLammps::CExeLammps(CParameter* mpara)
+:CExeFitnessInterface(mpara)
 {
     //ctor
 }

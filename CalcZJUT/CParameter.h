@@ -25,7 +25,8 @@ class CParameter
         typedef enum EM_P_02{CLUSTER       =0x201,
                              PERIODIC      =0x202,
                              MOL_CLUSTER   =0x203,
-                             MOL_2DMATERIAL=0x204} SIMULATION_MODE;
+                             MOL_2DMATERIAL=0x204,
+                      MOL_CLUSTER2DMATERIAL=0x205} SIMULATION_MODE;
 
         CParameter(char* filename);
         virtual ~CParameter();
