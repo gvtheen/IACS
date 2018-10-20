@@ -123,8 +123,8 @@ bool CParameter::checkIsValidParameters()
         this->simulationMode == CParameter::MOL_2DMATERIAL )
             return false;
 
-     if( simulationMode != CLUSTER && adso_supp_Struct==""
-        && (adso_supp_Struct=="" || adsorbentStructFile==""))
+     if(( simulationMode != CLUSTER && simulationMode != PERIODIC )&&
+        ( adso_supp_Input_File.size()==0 || ( supportStructFile=="" && adsorbentStructFile=="" )))
             return false;
 
      return true;

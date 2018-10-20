@@ -23,7 +23,8 @@
 
 namespace CALCZJUT{
 
-CModelPeriodicStruct::CModelPeriodicStruct()
+CModelPeriodicStruct::CModelPeriodicStruct(CParameter* mPara,CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
+:CModelBase(mPara)
 {
     //ctor
 }

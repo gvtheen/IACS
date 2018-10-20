@@ -18,14 +18,16 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **
 ******************************************************************************/
-#include "CCalcStructBasePool.h"
+#include "../GACatalyst.h"
+#include "CStructPoolBase.h"
+#include "../Util/log.hpp"
 
-
+using util::Log;
 
 namespace CALCZJUT{
 
 CStructPoolBase::CStructPoolBase(CParameter* othr)
-:m_Parameter(othr)
+:m_pParameter(othr)
 {
     //ctor
 }
@@ -34,7 +36,7 @@ CStructPoolBase::~CStructPoolBase()
 {
     //dtor
 }
-CModelBase* CStructPoolBase::operator[](size index)
+CModelBase* CStructPoolBase::operator[](size_t index)
 {
     if(index>=this->m_CalcStructPool.size())
     {

@@ -43,10 +43,15 @@
 #include "CIOBase.h"
 #include "CIOMol.h"
 #include "CIOCar.h"
+#include "CIOCif.h"
 #include "CIOGjf.h"
+#include "CIOXyz.h"
+#include "CIOCellFile.h"
 #include "CIOPoscar.h"
 #include "CStructPoolSupported.h"
-#include "CModelClusterLoaded2DSupport"
+#include "CModel2DSupport.h"
+#include "CModelClusterSupport.h"
+#include "CModelClusterLoaded2DSupport.h"
 
 using util::Log;
 
@@ -68,8 +73,8 @@ CStructPoolSupported::CStructPoolSupported(CParameter* oth)
             default:
                 break;
         }
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_pParameter->excludeBond);
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_pParameter->bondToleranceFactor);
     }
 
 }
@@ -87,8 +92,8 @@ void CStructPoolSupported::init()
                if(i >= m_CalcStructPool.size())
                   break;
 
-                this->getIO(m_pParameter->adso_supp_Input_File[i],m_CalcStructPool[i]->periodicFramework())
-                this->m_IO->input(m_pParameter->adso_supp_Input_File[i]);
+                this->getIO(*(m_pParameter->adso_supp_Input_File[i]),m_CalcStructPool[i]->periodicFramework());
+                this->m_IO->input(*(m_pParameter->adso_supp_Input_File[i]));
                 m_CalcStructPool[i]->periodicFramework()->perceiveBonds();
                 m_CalcStructPool[i]->periodicFramework()->perceiveFragments();
                 m1 = m_CalcStructPool[i]->periodicFramework()->fragment(0);
@@ -116,12 +121,12 @@ void CStructPoolSupported::init()
       }else{ // treat cluster-support
             //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
            //
-           this->getIO(m_Parameter->supportStructFile,m_CalcStructPool[0]->periodicFramework());
-           this->m_IO->input(m_Parameter->supportStructFile);
+           this->getIO(m_pParameter->supportStructFile,m_CalcStructPool[0]->periodicFramework());
+           this->m_IO->input(m_pParameter->supportStructFile);
 
 
-           this->getIO(m_Parameter->adsorbentStructFile,m_CalcStructPool[0]->periodicFramework());
-           Bitset Bit_adsorbent = this->m_IO->input(m_Parameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
+           this->getIO(m_pParameter->adsorbentStructFile,m_CalcStructPool[0]->periodicFramework());
+           Bitset Bit_adsorbent = this->m_IO->input(m_pParameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
            // get opposite bit for support
            m_CalcStructPool[0]->createSupport(~Bit_adsorbent);
            //set molecular adsorbent bits
@@ -157,7 +162,8 @@ void CStructPoolSupported::getIO(std::string &file_name,CATAZJUT::CPeriodicFrame
     else if(vectstr[1]=="xyz")
         this->m_IO = new CIOXyz(currentPeriodicFramework);
 
-    return nullptr;
+    vectstr.clear();
+
 }
 void CStructPoolSupported::GeneVARRange(std::vector<GeneVAR>& mht)
 {

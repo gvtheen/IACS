@@ -1,8 +1,8 @@
 #ifndef CModelClusterSTRUCTPOOL_H
 #define CModelClusterSTRUCTPOOL_H
 #include <vector>
-#include "CCalcStructBasePool.h"
-#include "../GaZJUT/CGaDeclaration.h"
+#include "CStructPoolBase.h"
+#include "../GaZJUT/GaDeclaration.h"
 
 using GAZJUT::GeneVAR;
 

@@ -25,17 +25,17 @@
 #include<string>
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
-#include "GaUtilityFunction.h"
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CIOPoscar.h"
-#include "CUnitCell.h"
+#include "../CataZJUT/CUnitCell.h"
 #include "CParameter.h"
-#include "CPeriodicFramework.h"
-#include "CCartesianCoordinates.h"
-#include "CFractionCoordinates.h"
-#include "CConfigurationPrivateData.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CCartesianCoordinates.h"
+#include "../CataZJUT/CFractionCoordinates.h"
+#include "../CataZJUT/CConfigurationPrivateData.h"
 using util::Log;
-using CATAZJUT::Vector3;
-using CATAZJUT::Point3;
+using util::Vector3;
+using util::Point3;
 using CATAZJUT::CFractionCoordinates;
 using CATAZJUT::CCartesianCoordinates;
 namespace CALCZJUT{
@@ -77,7 +77,7 @@ void CIOPoscar::input(std::string file)
 
      if(access(file.c_str(),F_OK) != 0 )
       {
-           log::Error<<"POSCAR file is no exist! input_CIOPoscar!\n";
+           Log::Error<<"POSCAR file is no exist! input_CIOPoscar!\n";
            boost::throw_exception(std::runtime_error("POSCAR file is no exist! Check the file: Error_information.txt."));
       }
       std::ifstream *in;
@@ -165,7 +165,7 @@ void CIOPoscar::input(std::string file)
 
           }
       }catch(const std::ifstream::failure& e){
-          ERROR_OUTPUT(e.what(),"Input","CIOPoscar");
+          Log::Error<<e.what()<<"Input_CIOPoscar!\n";
           exit(-1);
       }
       in->close();
@@ -191,14 +191,14 @@ size_t CIOPoscar::atomicIndex(std::vector<size_t>& mht,size_t& atomNum)
     }
     return res;
 }
-void CIOPoscar::output(std::string& file)
+void CIOPoscar::output(const std::string& file)
 {
     assert(m_pPeriodicFramework);
 
     if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
-        log<<"Dimensional Type is error!","CIOPoscar::output");
-        boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: Error_information.txt."));
+        Log::Error<<"Dimensional Type is error! CIOPoscar::output!\n";
+        boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: CIOPoscar::output."));
     }
     std::ofstream out(file,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
@@ -211,15 +211,15 @@ void CIOPoscar::output(std::string& file)
        out<<m_pPeriodicFramework->unitcell()->bvec().transpose()<<std::endl;
        out<<m_pPeriodicFramework->unitcell()->cvec().transpose()<<std::endl;
        // atomic list of compound
-       std::vector<std::pair<std::string,size_t>>* compos = m_pPeriodicFramework->composition();
+       std::vector<std::pair<std::string,size_t>> compos = m_pPeriodicFramework->composition();
 
-       for( size_t i=0;i<compos->size();i++)
-           out<<(*compos)[i].first<<"   ";
+       for( size_t i=0;i<compos.size();i++)
+           out<<compos[i].first<<"   ";
        out<<std::endl;
-       for( size_t i=0;i<compos->size();i++)
-           out<<(*compos)[i].second<<"   ";
+       for( size_t i=0;i<compos.size();i++)
+           out<<compos[i].second<<"   ";
        out<<std::endl;
-       delete compos;
+       compos.clear();
        //coordinate type: cart direct
        if(m_pPeriodicFramework->coordinateType()!= CATAZJUT::DEFINED::Fraction)
        {

@@ -1,5 +1,6 @@
 #ifndef CCALCSTRUCTUREBASEPOOL_H
 #define CCALCSTRUCTUREBASEPOOL_H
+#include <iostream>
 #include <vector>
 #include "../GaZJUT/GaDeclaration.h"
 using GAZJUT::GeneVAR;

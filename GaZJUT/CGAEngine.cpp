@@ -35,7 +35,7 @@
 #include "../CalcZJUT/CExeGaussian.h"
 #include "../CalcZJUT/CExeDMol.h"
 #include "../CalcZJUT/CExeLammps.h"
-#include "../CalcZJUT/CCalcStructBasePool.h"
+#include "../CalcZJUT/CStructPoolBase.h"
 #include "../CalcZJUT/CStructPoolCluster.h"
 #include "../CalcZJUT/CStructPoolSupported.h"
 

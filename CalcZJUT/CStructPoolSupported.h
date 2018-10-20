@@ -21,7 +21,7 @@ class CStructPoolSupported:public CStructPoolBase
 
 
     protected:
-        void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
+        void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework);
     private:
         CATAZJUT::CPeriodicFramework*  copy_pPeriodicFramework;
 };

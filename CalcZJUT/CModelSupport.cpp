@@ -19,11 +19,11 @@
 **
 ******************************************************************************/
 #include "CModelSupport.h"
-#include "CConfigurationBase.h"
-#include "CPeriodicFramework.h"
-#include "CCartesianCoordinates.h"
-#include "foreach.h"
-#include "CAtom.h"
+#include "../CataZJUT/CConfigurationBase.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CCartesianCoordinates.h"
+#include "../Util/foreach.h"
+#include "../CataZJUT/CAtom.h"
 namespace CALCZJUT{
 
 CModelSupport::CModelSupport(CATAZJUT::CPeriodicFramework* mpconf, Bitset& supportBit)
@@ -58,7 +58,7 @@ CATAZJUT::CAtom* CModelSupport::atom(size_t index) const
     else
         return m_pPeriodicFramework->m_Atom[index];
 }
-CATAZJUT::AtomRange CModelSupport::atoms() const
+CModelSupport::AtomRange CModelSupport::atoms() const
 {
     return boost::make_iterator_range(this->m_Atoms);
 }
@@ -83,7 +83,7 @@ CATAZJUT::CCartesianCoordinates* CModelSupport::coordinates()
 {
     return m_pPeriodicFramework->coordinates();
 }
-Bitset CalcSupportBase::bitSet()const
+Bitset CModelSupport::bitSet()const
 {
     return this->m_AtomicBits;
 }

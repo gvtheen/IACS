@@ -8,7 +8,7 @@
 namespace CALCZJUT{
     class CExeFitnessInterface;
     class CParameter;
-    class CCalcStructBasePool;
+    class CStructPoolBase;
 }
 
 namespace GAZJUT{
@@ -38,7 +38,7 @@ class CGAEngine
 	    std::vector<CGaOperatorBase*>  m_GeneticOperator;
         CGpopulation                  *m_pCurrentPopulation;
 CALCZJUT::CExeFitnessInterface        *m_pFitnessCalculator;
-CALCZJUT::CCalcStructBasePool         *m_pStructurePool;
+CALCZJUT::CStructPoolBase         *m_pStructurePool;
 	    CGaparameter                  *m_pGaparameter;
 	    CALCZJUT::CParameter          *m_pParameter;
 	    std::vector<GAZJUT::GeneVAR>           m_GeneVAR;

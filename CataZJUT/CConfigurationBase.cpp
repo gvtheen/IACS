@@ -164,11 +164,11 @@ std::vector<std::pair<std::string,size_t>>& CConfigurationBase::composition()
 }
 std::string CConfigurationBase::formula()
 {
-    std::vector<std::pair<std::string,size_t>>* composit=composition();
+    std::vector<std::pair<std::string,size_t>> composit=composition();
     std::stringstream formula;
 
     std::vector<std::pair<std::string,size_t>>::iterator it;
-    for(it=composit->begin();it!=composit->end();it++)
+    for(it=composit.begin();it!=composit.end();it++)
     {
         formula << it->first;
         if(it->second > 1)
@@ -583,7 +583,7 @@ bool CConfigurationBase::FromMoietyGetFragmentsAtom(Bitset& mBit,CAtom* atom_lab
         Bitset partBit(m_Atom.size());   // all value is set to 0
 
         std::vector<const CAtom*> row;
-        row.push_back(m_Atom[indexAtom[pos]);
+        row.push_back(m_Atom[indexAtom[pos]]);
 
         while(!row.empty()){
             std::vector<const CAtom*> nextRow;
@@ -600,7 +600,7 @@ bool CConfigurationBase::FromMoietyGetFragmentsAtom(Bitset& mBit,CAtom* atom_lab
                 std::vector<size_t>::iterator it;
                 foreach(const CAtom* neighborAtom,atom->neighbors()){
                     it=std::find(indexAtom.begin(),indexAtom.end(),neighborAtom->index());
-                    if(it!=indexAtom->end() && totalBit[std::distance(indexAtom.begin(),it)])
+                    if(it!=indexAtom.end() && totalBit[std::distance(indexAtom.begin(),it)])
                        nextRow.push_back(neighborAtom);
                 }
             }
@@ -646,7 +646,7 @@ bool CConfigurationBase::isFragments(const std::vector<size_t>& indexAtom)
         Bitset partBit(m_Atom.size());   // all value is set to 0
 
         std::vector<const CAtom*> row;
-        row.push_back(m_Atom[indexAtom[pos]);
+        row.push_back(m_Atom[indexAtom[pos]]);
 
         while(!row.empty()){
             std::vector<const CAtom*> nextRow;
@@ -661,9 +661,9 @@ bool CConfigurationBase::isFragments(const std::vector<size_t>& indexAtom)
                 //It will make it be not selected by pos pointer.
                 totalBit.set(atomIndex,false);
                 std::vector<size_t>::iterator it;
-                foreach(const CAtom* neighborAtom,atom->neighbors()){
+                foreach(CAtom* neighborAtom,atom->neighbors()){
                     it=std::find(indexAtom.begin(),indexAtom.end(),neighborAtom->index());
-                    if(it!=indexAtom->end() && totalBit[std::distance(indexAtom.begin(),it)])
+                    if(it!=indexAtom.end() && totalBit[std::distance(indexAtom.begin(),it)])
                        nextRow.push_back(neighborAtom);
                 }
             }

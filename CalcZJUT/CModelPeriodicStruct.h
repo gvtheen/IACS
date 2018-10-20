@@ -8,7 +8,7 @@ namespace CALCZJUT{
 class CModelPeriodicStruct:public CModelBase
 {
     public:
-        CModelPeriodicStruct();
+        CModelPeriodicStruct(CParameter*,CATAZJUT::CPeriodicFramework**);
         virtual ~CModelPeriodicStruct();
 
         CModelBase* clone();

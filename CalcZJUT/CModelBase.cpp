@@ -25,18 +25,18 @@ void CModelBase::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
 {
     m_pPeriodicFramework = mbf;
 }
-void CModelBase::createSupport(Bitset & mt)
+void CModelBase::createSupport(const Bitset & mt)
 {
     // no doing
 }
-void CModelBase::createMoleAdsorb(Bitset & mt)
+void CModelBase::createMoleAdsorb(const Bitset & mt)
 {
     // no doing
 }
-void CModelBase::createStructureAtGene()
-{
-
-}
+//void CModelBase::createStructureAtGene()
+//{
+//
+//}
 void CModelBase::setRandomInitState(const bool& mht)
 {
     this->m_IsNeedRandomInit=mht;
@@ -45,19 +45,17 @@ bool CModelBase::RandomInitState()
 {
     return this->m_IsNeedRandomInit;
 }
-void CModelBase::removeStructureOfGene()
-{
-   for(size_t i=0;i<m_PopuPeriodicFramework.size();i++)
-       delete m_PopuPeriodicFramework[i];
-   m_PopuPeriodicFramework.clear();
-}
-void CModelBase::init()
-{
-    // nothing to do
-}
+//void CModelBase::removeStructureOfGene()
+//{
+//   for(size_t i=0;i<m_PopuPeriodicFramework.size();i++)
+//       delete m_PopuPeriodicFramework[i];
+//   m_PopuPeriodicFramework.clear();
+//}
+
 std::vector<std::pair<std::string,size_t>>& CModelBase::chemicalFormula()
 {
-
+     std::vector<std::pair<std::string,size_t>> none_res;
+     return none_res;
 }
 void CModelBase::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)
 {

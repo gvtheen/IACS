@@ -23,7 +23,7 @@ namespace CALCZJUT{
 class CModelMoleculeAdsorbent
 {
     public:
-        typedef boost::iterator_range<std::vector<CATAZJUT::CAtom *>::const_iterator> AtomRange;
+        typedef boost::iterator_range<std::vector<CATAZJUT::CAtom*>::const_iterator> AtomRange;
 
         CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* mpConf,Bitset& molIndexBit);
         CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* mpConf,std::vector<CATAZJUT::CAtom*>& molAtoms);

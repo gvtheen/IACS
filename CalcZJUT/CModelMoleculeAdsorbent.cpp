@@ -19,29 +19,28 @@
 **
 ******************************************************************************/
 #include "CModelMoleculeAdsorbent.h"
-#include "CConfigurationBase.h"
-#include "CAtom.h"
-#include "foreach.h"
+#include "../CataZJUT/CConfigurationBase.h"
+#include "../CataZJUT/CAtom.h"
+#include "../Util/foreach.h"
 
 namespace CALCZJUT{
 
 
-CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CConfigurationBase* mpConf,Bitset& molIndexBit)
+CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* mpConf,
+                                                 Bitset& molIndexBit)
 :m_pConfiguration(mpConf),m_AtomicBits(molIndexBit)
 {
     assert(m_pConfiguration);
-
-    for(size_t i=0;i<m_AtomicBits.size();i++)
-        if(m_AtomicBits.test(i)==1){
-          m_Atoms.push_back(m_pConfiguration->m_Atom[i]);
-        }
-
+    foreach(CATAZJUT::CAtom* atom,m_pConfiguration->atoms())
+          if(m_AtomicBits.test(atom->index())==1)
+             m_Atoms.push_back(atom);
 }
-CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CConfigurationBase* mpConf,std::vector<CAtom*>& molAtoms)
-:m_pConfiguration(mpConf),m_Atoms(molAtoms);
+CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* mpConf,
+                                                 std::vector<CATAZJUT::CAtom*>& molAtoms)
+:m_pConfiguration(mpConf),m_Atoms(molAtoms)
 {
-      m_AtomicBits.resize(m_pPeriodicFramework->atomCount(),false);
-      foreach(CAtom* atom, m_Atoms){
+      m_AtomicBits.resize(m_pConfiguration->atomCount(),false);
+      foreach(CATAZJUT::CAtom* atom, m_Atoms){
           m_AtomicBits.set(atom->index(),true);
       }
 }
@@ -50,23 +49,22 @@ CModelMoleculeAdsorbent::~CModelMoleculeAdsorbent()
     //dtor
 }
 
-CConfigurationBase* CModelMoleculeAdsorbent::configuration() const
+CATAZJUT::CConfigurationBase* CModelMoleculeAdsorbent::configuration() const
 {
     return this->m_pConfiguration;
 }
 void CModelMoleculeAdsorbent::setConfiguration(CATAZJUT::CConfigurationBase* mbf)
 {
     this->m_pConfiguration=mbf;
-    for(size_t i=0;i<m_AtomicBits.size();i++)
-        if(m_AtomicBits.test(i)==1){
-          m_Atoms.push_back(m_pConfiguration->m_Atom[i]);
-        }
+    foreach(CATAZJUT::CAtom* atom,m_pConfiguration->atoms())
+          if(m_AtomicBits.test(atom->index())==1)
+             m_Atoms.push_back(atom);
 }
 CModelMoleculeAdsorbent::AtomRange CModelMoleculeAdsorbent::atoms() const
 {
     return boost::make_iterator_range(this->m_Atoms);
 }
-CAtom* CModelMoleculeAdsorbent::atom(size_t index) const
+CATAZJUT::CAtom* CModelMoleculeAdsorbent::atom(size_t index) const
 {
     return m_Atoms[index];
 }
@@ -81,7 +79,7 @@ size_t CModelMoleculeAdsorbent::atomCount() const
 void CModelMoleculeAdsorbent::moveBy( const Point3 vect )
 {
    Point3 p1;
-   foreach(const CAtom* atom, atoms()){
+   foreach( CATAZJUT::CAtom* atom, atoms()){
        p1=atom->position()+vect;
        atom->SetPosition(p1);
    }
@@ -102,7 +100,7 @@ void CModelMoleculeAdsorbent::rotate(const Point3& vect, const double& angle_Rad
    Eigen::Matrix<double, 3, 1> axisVector(vect.x(), vect.y(), vect.z());
    Eigen::Transform<double, 3, 3> transform(Eigen::AngleAxis<double>(angle_Radian, axisVector));
    Point3 p1;
-   foreach(const CAtom* atom, atoms()){
+   foreach( CATAZJUT::CAtom* atom, atoms()){
        p1=transform*(atom->position());
        atom->SetPosition(p1);
    }
@@ -114,7 +112,7 @@ Point3 CModelMoleculeAdsorbent::gravityCentre()
 {
    Point3 temp;
    temp<<0,0,0;
-   foreach(cost CAtom* atom, atoms()){
+   foreach(const CATAZJUT::CAtom* atom, atoms()){
       temp=temp+atom->position();
    }
    return temp/atomCount();

@@ -1,6 +1,7 @@
 #ifndef CModelBase_H
 #define CModelBase_H
 #include <vector>
+#include <iostream>
 #include "../Util/Bitset.h"
 #include "../GaZJUT/GaDeclaration.h"
 //
@@ -28,17 +29,15 @@ class CModelBase
         // only effective for supported catalyst
         virtual void createSupport( const Bitset &);
         virtual void createMoleAdsorb( const Bitset &);
-
         virtual void init();
+        virtual std::vector<std::pair<std::string,size_t>>& chemicalFormula();
+        virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
 
         CATAZJUT::CPeriodicFramework* periodicFramework();
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
 
         void setRandomInitState(const bool&);
         bool RandomInitState();
-
-        virtual std::vector<std::pair<std::string,size_t>>& chemicalFormula();
-        virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
 
     public:
                           CParameter*          m_pParameter;
