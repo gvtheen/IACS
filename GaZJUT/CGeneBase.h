@@ -15,7 +15,7 @@ class CGenebase
         CGenebase(GeneVAR*);
         virtual ~CGenebase();
         virtual double decode();
-        virtual void init(GeneVAR);
+        virtual void init(GeneVAR*);
         virtual void updatecode(double);
         virtual size_t bitNum();
         virtual Bitset& bitGene();

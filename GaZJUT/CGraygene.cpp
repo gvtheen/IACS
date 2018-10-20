@@ -20,8 +20,9 @@
 ******************************************************************************/
 #include "CGraygene.h"
 #include "../Util/CRandomgenerator.h"
-#include "GaUtilityFunction.h"
+#include "../Util/utilFunction.hpp"
 #include "../Util/log.hpp"
+
 namespace GAZJUT{
 CGraygene::CGraygene():CGenebase()
 {
@@ -50,7 +51,7 @@ double CGraygene::decode()
      size_t m=this->m_bitdata.size();
 
      Bitset tempData=this->m_bitdata;
-     grayTobit(tempData);
+     util::grayTobit(tempData);
 
      for(size_t i=0;i<m;i++)
           sum=sum+(double)(tempData[i])*pow(2.0,m-i-1);
@@ -66,7 +67,7 @@ void CGraygene::init(GeneVAR* myVal)
 
     this->m_GeneVAR=myVal;
 
-    this->m_bitNum = calcBitNum(*myVal);
+    this->m_bitNum = util::calcBitNum(*myVal);
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
     for(size_t i=0;i<this->m_bitNum;i++)
@@ -104,7 +105,7 @@ void CGraygene::updatecode(double value)
         TenValue=TenValue/2;
         if (TenValue==0) break;
 	}
-    bitTogray(this->m_bitdata);
+    util::bitTogray(this->m_bitdata);
     this->m_value=decode();
 }
 Bitset& CGraygene::bitGene()

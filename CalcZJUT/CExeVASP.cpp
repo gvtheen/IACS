@@ -65,6 +65,12 @@ CExeVASP::~CExeVASP()
         delete m_pInputFile[i];
     m_pInputFile.clear();
 }
+
+CExeFitnessInterface* CExeVASP::clone()
+{
+     CExeVASP* res =new CExeVASP(this->m_Parameter);
+     return res;
+}
 void CExeVASP::init()
 {
     if(m_Parameter->output_struct_format=="")

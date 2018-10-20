@@ -13,6 +13,7 @@ class CExeVASP:public CExeFitnessInterface
 		~CExeVASP();
 
 		 //virtual function
+		 CExeFitnessInterface* clone();
 		 void init();
 		 double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
 		 void ConvOrigToRawScore(std::vector<double>&);

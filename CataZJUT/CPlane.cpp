@@ -192,7 +192,7 @@ Point3 CPlane::PointInCircleFromGene(double Height,double Radius_ratio,double An
     Eigen::MatrixXd* ProjPointsInNewPlane = std::move(newPlane->Projection(this->m_pPointsToPlane));
     newPlane->CreateCircleIncludingPoints(*ProjPointsInNewPlane);
 
-//    Vector3 Angle_Vect;
+    Vector3 Angle_Vect;
 //    double Angle_Radian = Angle_degrees*CATAZJUT::constants::DegreesToRadians;
 
     Angle_Vect<<1.0,std::cos(Angle_Radian),std::sin(Angle_Radian);

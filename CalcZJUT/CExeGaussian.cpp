@@ -58,6 +58,13 @@ CExeGaussian::~CExeGaussian()
     if(m_pInputFile!=nullptr)
       delete m_pInputFile;
 }
+CExeFitnessInterface* CExeGaussian::clone()
+{
+    CExeGaussian* res =new CExeGaussian(this->m_Parameter);
+    res->setInputFile(this->inputFile());
+
+    return res;
+}
 void CExeGaussian::init()
 {
     if(m_Parameter->output_struct_format=="")
@@ -248,7 +255,19 @@ void CExeGaussian::getRelaxedGeometryCoord()
           Log::Error<<e.what()<<"  see CExeGaussian::readFinalEnergy\n";
       }
       in->close();
-
 }
+std::string& CExeGaussian::inputFile()const
+{
+   return *(this->m_pInputFile);
+}
+void CExeGaussian::setInputFile(const std::string& filename)
+{
+    if(this->m_pInputFile!=nullptr)
+        delete this->m_pInputFile;
+
+    this->m_pInputFile = new std::string(filename);
+}
+
+
 
 }

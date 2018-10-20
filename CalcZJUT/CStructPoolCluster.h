@@ -27,15 +27,19 @@ class CStructPoolCluster:public CStructPoolBase
         void Initialization(const std::vector<std::string*>& inputfiles);     // initialize from exit structure
 
     protected:
-        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut);
+        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut,
+                                            std::vector<std::pair<std::string,size_t>>&);
         void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
         void eliminateFragment(CATAZJUT::CPeriodicFramework*);
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
 
         //predicting methods: sphere,
-        void metalClusterPredict(CATAZJUT::CPeriodicFramework*);
-        void nonMetalClusterPredict(CATAZJUT::CPeriodicFramework*);
-        void mixedClusterPredict(CATAZJUT::CPeriodicFramework*);
+        void metalClusterPredict(CATAZJUT::CPeriodicFramework*,
+                                 std::vector<std::pair<std::string,size_t>>&);
+        void nonMetalClusterPredict(CATAZJUT::CPeriodicFramework*,
+                                    std::vector<std::pair<std::string,size_t>>&);
+        void mixedClusterPredict(CATAZJUT::CPeriodicFramework*,
+                                 std::vector<std::pair<std::string,size_t>>&);
 
     private:
 

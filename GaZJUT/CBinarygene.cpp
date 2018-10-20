@@ -22,7 +22,7 @@
 #include "CBinarygene.h"
 #include "../Util/CRandomgenerator.h"
 #include "../Util/log.hpp"
-#include "GaUtilityFunction.h"
+#include "../Util/utilFunction.hpp"
 namespace GAZJUT{
 
 CBinarygene::CBinarygene():CGenebase()
@@ -93,7 +93,7 @@ void CBinarygene::init(GeneVAR*myVal)
 
     this->m_GeneVAR=myVal;
    // using CGeneBase::init(myVal);
-    this->m_bitNum = calcBitNum(*myVal);
+    this->m_bitNum = util::calcBitNum(*myVal);
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
 

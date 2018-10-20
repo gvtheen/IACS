@@ -28,8 +28,8 @@ CGaOperatorBase::CGaOperatorBase()
 CGaOperatorBase::~CGaOperatorBase()
 {
 }
-void CGaOperatorBase::run(const CGpopulation*)
-{
-}
+//void CGaOperatorBase::run(CGpopulation*)
+//{
+//}
 
 }

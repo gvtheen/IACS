@@ -61,6 +61,13 @@ CExeDMol::~CExeDMol()
         delete m_pInputFile[i];
     m_pInputFile.clear();
 }
+CExeFitnessInterface* CExeDMol::clone()
+{
+    CExeDMol* res =new CExeDMol(this->m_Parameter);
+    res->setInputFile(this->inputFile());
+
+    return res;
+}
 void CExeDMol::init()
 {
      #ifdef DEBUG
@@ -69,6 +76,19 @@ void CExeDMol::init()
 
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="car";   //default value;
+}
+std::string& CExeDMol::inputFile()const
+{
+    return *(this->dmol_inputfile);
+}
+void CExeDMol::setInputFile(const std::string& filename)
+{
+     if(dmol_inputfile!=nullptr)
+        delete dmol_inputfile;
+     dmol_inputfile =new std::string(filename);
+     m_pInputFile.push_back(new std::string(*dmol_inputfile+".car"));
+     m_pInputFile.push_back(new std::string(*dmol_inputfile+".input"));
+     m_pInputFile.push_back(new std::string(*dmol_inputfile+".mdf"));
 }
 double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {

@@ -634,7 +634,7 @@ bool CConfigurationBase::isFragments(Bitset& mBit)
          res.push_back(i);
    return isFragments(res);
 }
-bool CConfigurationBase::isFragments(const std::vector<size_t>& indexAtom)
+bool CConfigurationBase::isFragments( std::vector<size_t>& indexAtom)
 {
      if(this->isEmpty()==true)
         return false;
@@ -797,7 +797,7 @@ void CConfigurationBase::setConstraintBit(const Bitset& othrBit)
 }
 CFractionCoordinates* CConfigurationBase::Fractioncoordinates()
 {
-    //nothing is needed to be done.
+    return nullptr;
 }
 void CConfigurationBase::moveAtom(CAtom* atom, Point3 vect)
 {

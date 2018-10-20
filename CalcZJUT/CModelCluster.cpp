@@ -37,7 +37,7 @@
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
 #include "../CataZJUT/CFragment.h"
-#include "../Util/utilFunction.h"
+#include "../Util/utilFunction.hpp"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../CataZJUT/CElement.h"

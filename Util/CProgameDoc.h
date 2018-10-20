@@ -1,6 +1,6 @@
 #ifndef CPROGAMEDOC_H
 #define CPROGAMEDOC_H
-
+#include <string>
 namespace util{
 
 class CProgameDoc
@@ -9,12 +9,14 @@ class CProgameDoc
         CProgameDoc();
         virtual ~CProgameDoc();
 
+        void output();
+
     protected:
 
     private:
         std::string versionText;
         std::string authorText;
-        std::string logoText;
+        std::string addressText;
 };
 
 }

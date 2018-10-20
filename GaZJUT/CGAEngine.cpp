@@ -25,12 +25,12 @@
 #include "CElist.h"
 #include "CMutator.h"
 #include "CEvaluator.h"
+#include "CFitnessScaling.h"
 #include "CGaOperatorBase.h"
 #include "CExeFitnessInterface.h"
 #include "CGaparameter.h"
 #include "../CalcZJUT/CParameter.h"
 #include "CGpopulation.h"
-//
 #include "../CalcZJUT/CExeVASP.h"
 #include "../CalcZJUT/CExeGaussian.h"
 #include "../CalcZJUT/CExeDMol.h"
@@ -39,10 +39,10 @@
 #include "../CalcZJUT/CStructPoolCluster.h"
 #include "../CalcZJUT/CStructPoolSupported.h"
 
-//
+using CALCZJUT::CParameter;
 namespace GAZJUT{
 
-CGAEngine(CALCZJUT::CParameter* para)
+CGAEngine::CGAEngine(CALCZJUT::CParameter* para)
 :m_pParameter(para)
 {
     m_pGaparameter = m_pParameter->GaParameter();
@@ -77,12 +77,14 @@ void CGAEngine::init()
    switch ((int)m_pParameter->simulationMode)
    {
        case CParameter::CLUSTER:
-           m_pStructurePool = new CStructPoolCluster(this->m_pParameter);
+           m_pStructurePool = new CALCZJUT::CStructPoolCluster(this->m_pParameter);
+           break;
        case CParameter::PERIODIC:
            break;
-       case CParameter::MOL_2DMATERIAL:
+       case CParameter::MOL_2DMATERIAL:                 // It is just the same as that of MOL_CLUSTER.
+       case CParameter::MOL_CLUSTER2DMATERIAL:
        case CParameter::MOL_CLUSTER:
-           m_pStructurePool = new CStructPoolSupported(this->m_pParameter);
+           m_pStructurePool = new CALCZJUT::CStructPoolSupported(this->m_pParameter);
            break;
        default:
            break;

@@ -44,10 +44,10 @@ void CGenebase::updatecode(double m)
 }
 Bitset& CGenebase::bitGene()
 {
-    Bitset a1;        // nothing
+    Bitset a1;        // nothing is done!
     return a1;
 }
-double CGenebase::realGene()
+double& CGenebase::realGene()
 {
     return this->m_value;
 }

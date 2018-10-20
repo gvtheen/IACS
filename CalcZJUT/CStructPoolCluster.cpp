@@ -36,7 +36,7 @@
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
 #include "../CataZJUT/CFragment.h"
-#include "../Util/utilFunction.h"
+#include "../Util/utilFunction.hpp"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../CataZJUT/CElement.h"
@@ -49,16 +49,17 @@
 
 using util::Log;
 using util::Bitset;
+using util::Vector4;
 
 namespace CALCZJUT{
 
 CStructPoolCluster::CStructPoolCluster(CParameter* othr)
 :CStructPoolBase(othr)
 {
-    for(size_t i=0;i<this->m_Parameter->GaParameter()->PopNum();i++){
-        this->m_CalcStructPool.push_back(new CModelCluster(this->m_Parameter));
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_Parameter->excludeBond);
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_Parameter->bondToleranceFactor);
+    for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
+        this->m_CalcStructPool.push_back(new CModelCluster(this->m_pParameter));
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_pParameter->excludeBond);
+        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_pParameter->bondToleranceFactor);
     }
 
 }
@@ -88,11 +89,11 @@ void CStructPoolCluster::GeneVARRange(std::vector<GeneVAR>&  mht)
    std::vector<GeneVAR> resTemp;
    for(size_t i=0;i<this->m_CalcStructPool.size();i++){
         this->m_CalcStructPool[i]->GeneVARRange(resTemp);
-        if(maxRadius>resTemp[0]->max)
-            maxRadius = resTemp[0]->max;
+        if(maxRadius > resTemp[0].max)
+            maxRadius = resTemp[0].max;
    }
    maxRadius = maxRadius + 1.0;
-   size_t num=this->m_CalcStructPool[0].m_pPeriodicFramework->size();
+   size_t num=this->m_CalcStructPool[0]->m_pPeriodicFramework->size();
 
    for(size_t i=0;i<3*num;i++)
       mht.push_back({-1*maxRadius,maxRadius,0.001});
@@ -181,11 +182,11 @@ void CStructPoolCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFrame
      }
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
-        metalClusterPredict(predict_struct);
+        metalClusterPredict(predict_struct,chemFormula);
      }else if(cluster_type==2){  //pure nonmetal
-        nonMetalClusterPredict(predict_struct);
+        nonMetalClusterPredict(predict_struct,chemFormula);
      }else if(cluster_type==3){   //pure mixed nonmetal
-        mixedClusterPredict(predict_struct);
+        mixedClusterPredict(predict_struct,chemFormula);
      }
 }
 size_t CStructPoolCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
@@ -218,9 +219,9 @@ void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predi
     double covalent_Radius=0.0;
 
     size_t atom_Sum=0;
-    for(size_t i=0;i<this->chemFormula.size();i++){
-        covalent_Radius = covalent_Radius + (new CATAZJUT::CElement(this->chemFormula[i].first))->covalentRadius();
-        atom_Sum = atom_Sum + this->chemFormula[i].second;
+    for(size_t i=0;i<chemFormula.size();i++){
+        covalent_Radius = covalent_Radius + (new CATAZJUT::CElement(chemFormula[i].first))->covalentRadius();
+        atom_Sum = atom_Sum + chemFormula[i].second;
     }
     // clear all atoms and all bonds;
     predict_struct->clear();
@@ -240,7 +241,7 @@ void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predi
             cosPhi = std::cos(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             sinPhi = std::sin(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
-            predict_struct->addAtom(this->chemFormula[i].first,coordinate);
+            predict_struct->addAtom(chemFormula[i].first,coordinate);
         }
     //predict_struct->perceiveBonds(); // it is not necessary to perform it.
     this->eliminateFragment(predict_struct);
@@ -248,7 +249,7 @@ void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predi
 }
 // nonmetal compounds
 void CStructPoolCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
-                                                    std::vector<std::pair<std::string,size_t>>& chemFormula))
+                                                    std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     std::vector<std::pair<CATAZJUT::CElement*,size_t>> chemicalelement;
     for(size_t i=0;i<chemFormula.size();i++)
@@ -299,7 +300,8 @@ void CStructPoolCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* pr
 
 }
 // nonmetal-metal cluster
-void CStructPoolCluster::mixedClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct)
+void CStructPoolCluster::mixedClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+                                             std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     //GACatalysis(nousing)
 }
