@@ -115,11 +115,13 @@ void CGAEngine::evolve()
 
    while(true){
 
-      for(size_t i=0;i<m_GeneticOperator.size();i++)
-          m_GeneticOperator[i]->run(m_pCurrentPopulation);
-      m_pGaparameter->add_Curr_Generation();
-      if(m_pGaparameter->Curr_Generation>=total_pop_num)
-         break;
+       for(size_t i=0;i<m_GeneticOperator.size();i++)
+           m_GeneticOperator[i]->run(m_pCurrentPopulation);
+
+       m_pGaparameter->add_Curr_Generation();
+
+       if(m_pGaparameter->Curr_Generation >= total_pop_num)
+          break;
    }
 }
 

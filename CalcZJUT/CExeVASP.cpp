@@ -214,16 +214,16 @@ double CExeVASP::readFinalEnergy()
           exit(-1);
       }
       in->close();
-      double temEnergy = energy_Vect->at(energy_Vect->size()-1);
+      double FinalEnergy = energy_Vect->at(energy_Vect->size()-1);
 
       delete energy_Vect;
 
-      return temEnergy;
+      return FinalEnergy;
 }
 void CExeVASP::getRelaxedGeometryCoord()
 {
-     m_pIO->m_pPeriodicFramework->clear();
-     m_pIO->input("CONTCAR");
+      m_pIO->m_pPeriodicFramework->clear();
+      m_pIO->input("CONTCAR");
 }
 
 

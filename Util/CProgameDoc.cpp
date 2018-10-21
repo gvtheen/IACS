@@ -17,13 +17,13 @@ void CProgameDoc::output()
     Log::Output<<"**                           Dr.Jian-guo Wang  <jgw@zjut.edu.cn>            **"<<std::endl;
     Log::Output<<"**     ^^^^^^          ^^^^             ^^^^^^           ^^^^^^^            **"<<std::endl;
     Log::Output<<"**     ^^^^^^         ^^^^^^          ^^^^^^^^^         ^^^^^^^^^           **"<<std::endl;
-    Log::Output<<"**       ^^           ^^  ^^          ^^                ^^      ^^          **"<<std::endl;
+    Log::Output<<"**       ^^           ^^  ^^          ^^                ^^     ^^           **"<<std::endl;
     Log::Output<<"**       ^^           ^^  ^^          ^^                 ^^                 **"<<std::endl;
     Log::Output<<"**       ^^           ^^  ^^          ^^                  ^^                **"<<std::endl;
     Log::Output<<"**       ^^           ^^^^^^          ^^                   ^^               **"<<std::endl;
     Log::Output<<"**       ^^           ^^^^^^          ^^                    ^^              **"<<std::endl;
-    Log::Output<<"**       ^^           ^^  ^^          ^^               ^^    ^^             **"<<std::endl;
-    Log::Output<<"**     ^^^^^^         ^^  ^^          ^^^^^^^^^        ^^^^^^^^^            **"<<std::endl;
+    Log::Output<<"**       ^^           ^^  ^^          ^^                ^^   ^^             **"<<std::endl;
+    Log::Output<<"**     ^^^^^^         ^^  ^^          ^^^^^^^^^         ^^^^^^^^            **"<<std::endl;
     Log::Output<<"**     ^^^^^^         ^^  ^^            ^^^^^^           ^^^^^^             **"<<std::endl;
     Log::Output<<"**                                                                          **"<<std::endl;
     Log::Output<<"******************************************************************************"<<std::endl;

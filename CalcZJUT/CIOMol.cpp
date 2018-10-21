@@ -56,7 +56,7 @@ void CIOMol::output(const std::string& fileName)
         boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOMol::output!\n"));
     }
     std::string file_Name = fileName + ".mol";
-    std::ofstream out(file_Name,std::ios::app);
+    std::ofstream out(file_Name.c_str(),std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
     if(out.is_open())

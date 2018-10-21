@@ -23,8 +23,10 @@ using util::Vector3;
 namespace CALCZJUT{
 
 
-CModel2DSupport::CModel2DSupport(CParameter* mPara,CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
-:CModelBase(mPara)
+CModel2DSupport::CModel2DSupport(CParameter* mPara,
+                                 CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,
+                                 size_t index)
+:CModelBase(mPara,index)
 {
     m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
@@ -40,7 +42,9 @@ CModel2DSupport::~CModel2DSupport()
 }
 CModelBase* CModel2DSupport::clone()
 {
-    CModel2DSupport* res= new CModel2DSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
+    CModel2DSupport* res= new CModel2DSupport(this->m_pParameter,         \
+                                              this->m_ppBackupPeriodicFramework,    \
+                                              0);
     res->setPeriodicFramekwork(this->periodicFramework());
     res->createMoleAdsorb(this->MoleAdsorbBit());
     res->createSupport(this->SupportBit());

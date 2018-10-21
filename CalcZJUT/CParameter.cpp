@@ -20,15 +20,17 @@
 ******************************************************************************/
 #include "unistd.h"
 #include <fstream>
+#include <string>
 #include <string.h>
+#include <iostream>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string.hpp>
-#include "../GaZJUT/GaUtilityFunction.h"
 #include "CParameter.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../Util/log.hpp"
+#include "../Util/utilFunction.h"
 
 using util::Log;
+using util::strcasecmp;
 
 namespace CALCZJUT{
 
@@ -81,41 +83,54 @@ void CParameter::input()
       try{
           in= new std::ifstream(m_pfile->c_str(),std::ifstream::in);
           in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
-
-          Log::Output<<"*********** Read input file of "<<m_pfile->c_str()<<"***********"<< std::endl;
-
+          #ifdef DEBUG
+            Log::Debug<<"*********** Read input file of "<<m_pfile->c_str()<<"***********"<< std::endl;
+          #endif
           while(!in->eof()){
             std::getline(*in,str,'\n');
             boost::algorithm::trim(str);
             if(str=="") continue;
+
+            cmd_Str.clear();
+
             boost::algorithm::split(cmd_Str,str,boost::algorithm::is_any_of("#"),boost::algorithm::token_compress_on);
             for(size_t i=0;i<cmd_Str.size();i++){
                 boost::algorithm::trim(cmd_Str[i]);
                 if(cmd_Str[i]!="" && i%2==0){
-                     Log::Output<< ">>>" <<cmd_Str[i]<< std::endl;
+                     #ifdef DEBUG
+                        Log::Debug<< ">>>" <<cmd_Str[i]<< std::endl;
+                     #endif // DEBUG
                      boost::algorithm::split(keyValue,cmd_Str[i],boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
 
                      if(keyValue.size()!=2){
-                        Log::Error<<cmd_Str[i] <<" command is wrong!" <<std::endl;
-                        boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! Check the file: Error_information.txt."));
+                        Log::Error<<cmd_Str[i] <<" command is wrong! see code of CParameter::input()!" <<std::endl;
+                        boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! see code of CParameter::input()!"));
                      }
 
                      boost::algorithm::trim(keyValue[0]);
                      boost::algorithm::trim(keyValue[1]);
                      if(m_mapCmdFunc.find(keyValue[0]) != m_mapCmdFunc.end()){
+                         // call pointer function
                          (this->*m_mapCmdFunc[keyValue[0]])(keyValue[1]);
                      }else{
                          Log::Error<< cmd_Str[i] <<" command is wrong!" <<std::endl;
-                         boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! Check the file: Error_information.txt."));
+                         boost::throw_exception(std::runtime_error(cmd_Str[i] + " command is wrong! see code of CParameter::input()!"));
                      }
                  }
              }
          }
       }catch(const std::ifstream::failure& e){
-          Log::Error<< e.what() <<"Input_CParameter\n";
-          boost::throw_exception(std::runtime_error(std::string(e.what()) + "Check the file: Error_information.txt."));
+          Log::Error<< e.what() <<"CParameter::input()\n";
+          boost::throw_exception(std::runtime_error(std::string(e.what()) + "Check the file: CParameter::input()."));
       }
-      Log::Output<<"*********** End read "<<"***********"<< std::endl;
+      #ifdef DEBUG
+         Log::Debug<<"*********** End read ***********"<< std::endl;
+      #endif
+}
+void CParameter::output()
+{
+    Log::Output<<"***********Parameters of GA***********"<<std::endl;
+
 }
 bool CParameter::checkIsValidParameters()
 {
@@ -161,7 +176,7 @@ void CParameter::setBond_Tolerance_Factor(std::string mtr)
     boost::algorithm::split(vectStr,mtr,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
     if(vectStr.size()<2){
         Log::Error<<mtr << " command is wrong! setBond_Tolerance_Factor_CParameter!\n";
-        boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+        boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setBond_Tolerance_Factor."));
     }
     bondToleranceFactor.first =std::stod(vectStr[0]);
     bondToleranceFactor.second=std::stod(vectStr[1]);
@@ -179,7 +194,7 @@ void CParameter::setExclude_Bond(std::string mtr)
     boost::algorithm::split(vectStr,mtr,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
     if(vectStr.size()<2){
         Log::Error<<mtr << " command is wrong! setExclude_Bond_CParameter!\n";
-        boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+        boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setExclude_Bond_CParameter."));
     }
     excludeBond.push_back(std::pair<std::string*,std::string*>(new std::string(vectStr[0]),\
                                                                new std::string(vectStr[1])));
@@ -192,19 +207,19 @@ void CParameter::setEvaluator_Code(std::string mtr)
 # 3: DMOL
 # 4: CASTEP
 # 5: LAMMPS   */
-      if(mtr=="VASP" || std::stoi(mtr)==1)
+      if(strcasecmp(mtr,"VASP") || std::stoi(mtr)==1)
         (*m_pGAParameter)["[Evaluator_Code]"]="VASP";
-      else if(mtr=="GAUSSIAN" || std::stoi(mtr)==2)
+      else if(strcasecmp(mtr,"GAUSSIAN") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Evaluator_Code]"]="GAUSSIAN";
-      else if(mtr=="DMOL" || std::stoi(mtr)==3)
+      else if(strcasecmp(mtr,"DMOL") || std::stoi(mtr)==3)
         (*m_pGAParameter)["[Evaluator_Code]"]="DMOL";
-      else if(mtr=="CASTEP" || std::stoi(mtr)==4)
+      else if(strcasecmp(mtr,"CASTEP") || std::stoi(mtr)==4)
         (*m_pGAParameter)["[Evaluator_Code]"]="CASTEP";
-      else if(mtr=="LAMMPS" || std::stoi(mtr)==5)
+      else if(strcasecmp(mtr,"LAMMPS") || std::stoi(mtr)==5)
         (*m_pGAParameter)["[Evaluator_Code]"]="LAMMPS";
       else{
          Log::Error << mtr <<" command is wrong! setEvaluator_Code_CParameter\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setEvaluator_Code_CParameter!"));
       }
 }
 void CParameter::setOutput_struct_format(std::string mtr)
@@ -217,49 +232,49 @@ void CParameter::setOutput_struct_format(std::string mtr)
 ## 5: gjf      //.gjf
 ## 6: cell     //.cell
 */
-     if(mtr=="poscar" || std::stoi(mtr)==1)
+     if(strcasecmp(mtr,"poscar") || std::stoi(mtr)==1)
         this->output_struct_format = "poscar";
-      else if(mtr=="mol" || std::stoi(mtr)==2)
+      else if( strcasecmp(mtr,"mol") || std::stoi(mtr)==2)
         this->output_struct_format = "mol";
-      else if(mtr=="cif" || std::stoi(mtr)==3)
+      else if(strcasecmp(mtr,"cif") || std::stoi(mtr)==3)
         this->output_struct_format = "cif";
-      else if(mtr=="car" || std::stoi(mtr)==4)
+      else if(strcasecmp(mtr,"car") || std::stoi(mtr)==4)
         this->output_struct_format = "car";
-      else if(mtr=="gjf" || std::stoi(mtr)==5)
+      else if(strcasecmp(mtr,"gjf") || std::stoi(mtr)==5)
         this->output_struct_format = "gjf";
-      else if(mtr=="cell" || std::stoi(mtr)==6)
+      else if(strcasecmp(mtr,"cell") || std::stoi(mtr)==6)
         this->output_struct_format = "cell";
       else{
           Log::Error<< mtr << " format isnot supported! setOutput_struct_format_CParameter!\n";
-          boost::throw_exception(std::runtime_error(mtr+ "  format isnot supported! Check the file: Error_information.txt."));
+          boost::throw_exception(std::runtime_error(mtr+ "  format is not supported! Check the file: CParameter::setOutput_struct_format!"));
       }
 }
 void CParameter::setEvaluator_Criterion(std::string mtr)
 {
-     if( mtr=="Energy" || std::stoi(mtr)==1 )
+     if( strcasecmp(mtr,"Energy") || std::stoi(mtr)==1 )
          this->evaluatorCriterion = CParameter::ENERGY;
-     else if( mtr=="Force" || std::stoi(mtr)==2 )
+     else if( strcasecmp(mtr,"Force") || std::stoi(mtr)==2 )
          this->evaluatorCriterion = CParameter::FORCE;
-     else if( mtr=="Band_gap" || std::stoi(mtr)==3 )
+     else if( strcasecmp(mtr,"Band_gap") || std::stoi(mtr)==3 )
          this->evaluatorCriterion = CParameter::BAND_GAP;
      else{
          Log::Error<< mtr << " command is wrong! setEvaluator_Criterion_CParameter!\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setEvaluator_Criterion."));
      }
 }
 void CParameter::setMutation_Mode(std::string mtr)
 {
-     if(mtr=="UNIFORM_M" || std::stoi(mtr)==1 )
+     if(strcasecmp(mtr,"UNIFORM_M") || std::stoi(mtr)==1 )
         (*m_pGAParameter)["[Mutation_Mode]"]="UNIFORM_M";
-     else if(mtr=="BOUNDARY" || std::stoi(mtr)==2)
+     else if(strcasecmp(mtr,"BOUNDARY") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Mutation_Mode]"]="BOUNDARY";
-     else if(mtr=="NOUNIFORM" || std::stoi(mtr)==3)
+     else if( strcasecmp(mtr,"NOUNIFORM") || std::stoi(mtr)==3)
         (*m_pGAParameter)["[Mutation_Mode]"]="NOUNIFORM";
-     else if(mtr=="GAUSSIAN_M" || std::stoi(mtr)==4)
+     else if(strcasecmp(mtr,"GAUSSIAN_M") || std::stoi(mtr)==4)
         (*m_pGAParameter)["[Mutation_Mode]"]="GAUSSIAN_M";
      else{
          Log::Error<<mtr << " command is wrong! setMutation_Mode_CParameter\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setMutation_Mode_CParameter."));
      }
 }
 void CParameter::setGene_Code(std::string mtr)
@@ -267,15 +282,15 @@ void CParameter::setGene_Code(std::string mtr)
 /*
 1: BINARY ; 2:GRAY;  3: REAL
 */
-     if(mtr=="BINARY " || std::stoi(mtr)==1)
+     if(strcasecmp(mtr,"BINARY") || std::stoi(mtr)==1)
         (*m_pGAParameter)["[Gene_Code]"]="BINARY ";
-     else if(mtr=="GRAY" || std::stoi(mtr)==2)
+     else if(strcasecmp(mtr,"GRAY") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Gene_Code]"]="GRAY";
-     else if(mtr=="REAL" || std::stoi(mtr)==3)
+     else if(strcasecmp(mtr,"REAL") || std::stoi(mtr)==3)
         (*m_pGAParameter)["[Gene_Code]"]="REAL";
      else{
          Log::Error<<mtr << " command is wrong! setGene_Code_CParameter!\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Code."));
      }
 }
 void CParameter::setCross_Mode(std::string mtr)
@@ -287,17 +302,17 @@ void CParameter::setCross_Mode(std::string mtr)
 #4: ARITHMETIC
 #5: UNARITHMETIC
 */
-     if(mtr=="SINGLE" || std::stoi(mtr)==1 )
+     if(strcasecmp(mtr,"SINGLE") || std::stoi(mtr)==1 )
         (*m_pGAParameter)["[Cross_Mode]"]="SINGLE";
-     else if(mtr=="MULTIPLE" || std::stoi(mtr)==2)
+     else if(strcasecmp(mtr,"MULTIPLE") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Cross_Mode]"]="MULTIPLE";
-     else if(mtr=="UNIFORM_C" || std::stoi(mtr)==3)
+     else if(strcasecmp(mtr,"UNIFORM_C") || std::stoi(mtr)==3)
         (*m_pGAParameter)["[Cross_Mode]"]="UNIFORM_C";
-     else if(mtr=="UNARITHMETIC" || std::stoi(mtr)==4)
+     else if(strcasecmp(mtr,"UNARITHMETIC") || std::stoi(mtr)==4)
         (*m_pGAParameter)["[Cross_Mode]"]="UNARITHMETIC";
      else{
          Log::Error<<mtr << " command is wrong! setCross_Mode_CParameter!\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setCross_Mode!"));
      }
 }
 void CParameter::setSelect_Mode(std::string mtr)
@@ -308,17 +323,17 @@ void CParameter::setSelect_Mode(std::string mtr)
 ## 3:  RANDOM
 ## 4:  mixed
 */
-     if(mtr=="ROULETTE_WHEEL" || std::stoi(mtr)==1 )
+     if(strcasecmp(mtr,"ROULETTE_WHEEL") || std::stoi(mtr)==1 )
         (*m_pGAParameter)["[Search_Mode]"] = "ROULETTE_WHEEL";
-     else if(mtr=="TOURNAMENT" || std::stoi(mtr)==2)
+     else if(strcasecmp(mtr,"TOURNAMENT") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Search_Mode]"] = "TOURNAMENT";
-     else if(mtr=="RANDOM" || std::stoi(mtr)==3)
+     else if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==3)
         (*m_pGAParameter)["[Search_Mode]"] = "RANDOM";
-     else if(mtr=="MIXED" || std::stoi(mtr)==4)
+     else if(strcasecmp(mtr,"MIXED") || std::stoi(mtr)==4)
         (*m_pGAParameter)["[Search_Mode]"] = "MIXED";
      else{
-         Log::Error<< mtr << " command is wrong! setSelect_Mode_CParameter!\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         Log::Error<< mtr << " command is wrong! CParameter::setSelect_Mode!\n";
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setSelect_Mode."));
      }
 }
 void CParameter::setGene_Formation_Mode(std::string mtr)
@@ -327,13 +342,13 @@ void CParameter::setGene_Formation_Mode(std::string mtr)
 #1: RANDOM
 #2: FILE
 */
-     if(mtr=="RANDOM" || std::stoi(mtr)==1)
+     if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==1)
         (*m_pGAParameter)["[Gene_Formation_Mode]"]="RANDOM";
-     else if(mtr=="FILE" || std::stoi(mtr)==2)
+     else if(strcasecmp(mtr,"FILE") || std::stoi(mtr)==2)
         (*m_pGAParameter)["[Gene_Formation_Mode]"]="FILE";
      else{
-         Log::Error<< mtr << " command is wrong! setGene_Formation_Mode_CParameter!\n";
-         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: Error_information.txt."));
+         Log::Error<< mtr << " command is wrong! CParameter::setGene_Formation_Mode!\n";
+         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Formation_Mode."));
      }
 
 }

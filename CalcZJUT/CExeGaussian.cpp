@@ -72,7 +72,7 @@ void CExeGaussian::init()
 }
 double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
-         pid_t pid;
+     pid_t pid;
      double res;
      //
      size_t currGeneration =m_Parameter->GaParameter()->Curr_Generation;

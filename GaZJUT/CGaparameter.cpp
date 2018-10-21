@@ -307,10 +307,7 @@ std::string& CGaparameter::operator[](std::string key_name)
     }
     return (*m_mapCmdString)[key_name];
 }
-void CGaparameter::OutputTofile()   //util::Log::OutputTofile<<
-{
 
-}
 
 
 

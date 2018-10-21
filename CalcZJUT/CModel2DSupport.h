@@ -31,7 +31,9 @@ class CModel2DSupport:public CModelBase
                             C_AXIS=0x30AD,
                           NONE_DIR=0x30AE}LATT_DIRECTION;
 
-        CModel2DSupport(CParameter*,CATAZJUT::CPeriodicFramework**);
+        CModel2DSupport(CParameter*,
+                        CATAZJUT::CPeriodicFramework**,
+                        size_t index);
         virtual ~CModel2DSupport();
 
         CModelBase* clone();
@@ -48,9 +50,8 @@ class CModel2DSupport:public CModelBase
         Bitset MoleAdsorbBit();
         //overload the father class's function
         void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf);
+        void outputStructureToFile();
 
-//      void backUpStructure();
-//      void fromBackupToCurrent();
         CATAZJUT::CPlane* supportSurfacePlane();
         void setSupportSurfacePlane(CATAZJUT::CPlane*);
 
@@ -64,13 +65,13 @@ class CModel2DSupport:public CModelBase
     protected:
 
     private:
-        CModelSupport        *m_pSupport;
+        CModelSupport            *m_pSupport;
         CModelMoleculeAdsorbent  *m_pAdsorbMolecule;
-        LATT_DIRECTION           m_latticeDirection;
-        CATAZJUT::CPlane        *m_support_surface;
+        LATT_DIRECTION            m_latticeDirection;
+        CATAZJUT::CPlane         *m_support_surface;
 
-                   Bitset        m_BitbackupSupport;
-                   Bitset        m_BitbackupAdsorbMolecule;
+                   Bitset         m_BitbackupSupport;
+                   Bitset         m_BitbackupAdsorbMolecule;
 
 };
 

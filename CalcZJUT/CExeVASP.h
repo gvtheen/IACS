@@ -22,7 +22,7 @@ class CExeVASP:public CExeFitnessInterface
 		 void   CheckInputFile();
          bool   IsNormalComplete();
          double readFinalEnergy();
-         void getRelaxedGeometryCoord();
+         void   getRelaxedGeometryCoord();
 
 	protected:
 		 std::vector<std::string*>   m_pInputFile;

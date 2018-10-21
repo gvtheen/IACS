@@ -36,7 +36,7 @@
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
 #include "../CataZJUT/CFragment.h"
-#include "../Util/utilFunction.hpp"
+#include "../Util/utilFunction.h"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../CataZJUT/CElement.h"
@@ -57,7 +57,7 @@ CStructPoolCluster::CStructPoolCluster(CParameter* othr)
 :CStructPoolBase(othr)
 {
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
-        this->m_CalcStructPool.push_back(new CModelCluster(this->m_pParameter));
+        this->m_CalcStructPool.push_back(new CModelCluster(this->m_pParameter,i));
         m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_pParameter->excludeBond);
         m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_pParameter->bondToleranceFactor);
     }

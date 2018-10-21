@@ -1,8 +1,9 @@
 #include <cstddef>
 #include <boost/config.hpp>
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/algorithm/string.hpp>
 #include "Point-Vector.h"
-#include "utilFunction.hpp"
+#include "utilFunction.h"
 #include "../CataZJUT/Geometry.h"
 #include "../GaZJUT/GaDeclaration.h"
 
@@ -81,6 +82,13 @@ void bitTogray(Bitset& data)
         data[i]=(temp[i])^(temp[i-1]);
      temp.clear();
 }
-
+bool strcasecmp(const std::string& s1, const std::string& s2)
+{
+    std::string t1=s1;
+    std::string t2=s2;
+    boost::to_upper(t1);
+    boost::to_upper(t2);
+    return t1==t2;
+}
 
 }

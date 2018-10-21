@@ -21,7 +21,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <string>
-#include <strings.h>
+#include <sstream>
 #include <cstring>
 #include <exception>
 #include <math.h>
@@ -37,7 +37,7 @@
 #include "../Util/Point-Vector.h"
 #include "../CataZJUT/Constant.h"
 #include "../CataZJUT/CFragment.h"
-#include "../Util/utilFunction.hpp"
+#include "../Util/utilFunction.h"
 #include "../Util/CRandomgenerator.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../CataZJUT/CElement.h"
@@ -54,8 +54,8 @@ using util::Vector4;
 
 namespace CALCZJUT{
 
-CModelCluster::CModelCluster(CParameter* mPara)
-:CModelBase(mPara)
+CModelCluster::CModelCluster(CParameter* mPara,size_t index)
+:CModelBase(mPara,index)
 {
     CATAZJUT::CConfigurationBase* temp = new CATAZJUT::CConfigurationBase(mPara);
 
@@ -71,7 +71,7 @@ CModelCluster::~CModelCluster()
 }
 CModelBase* CModelCluster::clone()
 {
-     CModelCluster* res = new CModelCluster(this->m_pParameter);
+     CModelCluster* res = new CModelCluster(this->m_pParameter,0);
      res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
      res->m_IsNeedRandomInit = this->RandomInitState();
      res->setChemicalFormula(this->chemicalFormula());

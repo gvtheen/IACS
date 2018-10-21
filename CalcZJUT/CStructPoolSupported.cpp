@@ -63,13 +63,13 @@ CStructPoolSupported::CStructPoolSupported(CParameter* oth)
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
         switch ( (int)(m_pParameter->simulationMode) ){
             case CParameter::MOL_2DMATERIAL:
-                m_CalcStructPool.push_back(new CModel2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
+                m_CalcStructPool.push_back(new CModel2DSupport(this->m_pParameter,&copy_pPeriodicFramework,i));
                 break;
             case CParameter::MOL_CLUSTER2DMATERIAL:
-                m_CalcStructPool.push_back(new CModelClusterLoaded2DSupport(this->m_pParameter,&copy_pPeriodicFramework));
+                m_CalcStructPool.push_back(new CModelClusterLoaded2DSupport(this->m_pParameter,&copy_pPeriodicFramework,i));
                 break;
             case CParameter::MOL_CLUSTER:
-                m_CalcStructPool.push_back(new CModelClusterSupport(this->m_pParameter,&copy_pPeriodicFramework));
+                m_CalcStructPool.push_back(new CModelClusterSupport(this->m_pParameter,&copy_pPeriodicFramework,i));
             default:
                 break;
         }
@@ -117,6 +117,7 @@ void CStructPoolSupported::init()
                m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
                // get support and adsorption molecular, then re-set new structure.
                m_CalcStructPool[i]->setRandomInitState(true);
+               m_CalcStructPool[i]->setIndex(i);
           }
       }else{ // treat cluster-support
             //read coordinate of mixed adso_supp_Struct, add the pointer of m_pCalcModeStruct;
@@ -138,6 +139,7 @@ void CStructPoolSupported::init()
                m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
                // get support and adsorption molecular, then re-set new structure.
                m_CalcStructPool[i]->setRandomInitState(true);
+               m_CalcStructPool[i]->setIndex(i);
            }
      }
      this->copy_pPeriodicFramework = m_CalcStructPool[0]->periodicFramework()->clone();

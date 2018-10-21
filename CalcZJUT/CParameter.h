@@ -16,6 +16,7 @@ namespace CALCZJUT{
 class CParameter
 {
     public:
+        //pointer of function
         typedef void (CParameter::*cmdFun)(std::string);
 
         typedef enum EM_P_01{ ENERGY  =0x101,
@@ -32,10 +33,12 @@ class CParameter
         virtual ~CParameter();
 
         void input();
+        void output();
         GAZJUT::CGaparameter* GaParameter();
         size_t currentGenerationNum();
         size_t popNum();
 
+    public:
         //Parameter of general setting
         std::string sysName;
         std::vector<std::string>   runCmd;

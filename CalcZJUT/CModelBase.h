@@ -8,46 +8,55 @@
 using util::Bitset;
 using GAZJUT::GeneVAR;
 
-namespace CATAZJUT{
-  class CPeriodicFramework;
+namespace CATAZJUT
+{
+class CPeriodicFramework;
 }
-namespace CALCZJUT{
-    //declare this class in this namespace
+namespace CALCZJUT
+{
+//declare this class in this namespace
 class CParameter;
 
 class CModelBase
 {
-    public:
-        CModelBase(CParameter*);
-        virtual ~CModelBase();
+public:
+    CModelBase(CParameter*,size_t);
+    virtual ~CModelBase();
 
-        virtual CModelBase* clone()=0;
+    virtual CModelBase* clone()=0;
 
-        virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
-        virtual void getGeneValuefromStruct(std::vector<double>&) =0;
-        virtual void GeneVARRange(std::vector<GeneVAR>&)=0;
-        // only effective for supported catalyst
-        virtual void createSupport( const Bitset &);
-        virtual void createMoleAdsorb( const Bitset &);
-        virtual void init();
-        virtual std::vector<std::pair<std::string,size_t>>& chemicalFormula();
-        virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
+    virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
+    virtual void getGeneValuefromStruct(std::vector<double>&) =0;
+    virtual void GeneVARRange(std::vector<GeneVAR>&)=0;
+    // only effective for supported catalyst
+    virtual void createSupport( const Bitset &);
+    virtual void createMoleAdsorb( const Bitset &);
+    virtual void init();
+    virtual std::vector<std::pair<std::string,size_t>>& chemicalFormula();
+    virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
+    virtual void outputStructureToFile();
 
-        CATAZJUT::CPeriodicFramework* periodicFramework();
-        void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
+    CATAZJUT::CPeriodicFramework* periodicFramework();
+    void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
 
-        void setRandomInitState(const bool&);
-        bool RandomInitState();
+    void setRandomInitState(const bool&);
+    bool RandomInitState();
 
-    public:
-                          CParameter*          m_pParameter;
-                std::vector<GeneVAR>*          m_pGeneVAR;
+    size_t index();
+    void setIndex(size_t );
 
-        CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-        CATAZJUT::CPeriodicFramework**         m_ppBackupPeriodicFramework;
+public:
+    CParameter             *m_pParameter;
+    std::vector<GeneVAR>   *m_pGeneVAR;
 
- std::vector<std::pair<std::string,size_t>>    m_chemicalFormula;
-                                 bool          m_IsNeedRandomInit;
+    CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
+    CATAZJUT::CPeriodicFramework**         m_ppBackupPeriodicFramework;
+
+    std::vector<std::pair<std::string,size_t>>    m_chemicalFormula;
+    bool          m_IsNeedRandomInit;
+private:
+
+    size_t        m_index;
 
 };
 

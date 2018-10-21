@@ -2,6 +2,7 @@
 #define UTILFUNCTION_H
 
 #include <cstddef>
+#include <string>
 #include "Point-Vector.h"
 #include "../CataZJUT/Geometry.h"
 #include "../GaZJUT/GaDeclaration.h"
@@ -16,6 +17,8 @@ double binaryDecode(const Bitset & myCode,GeneVAR myGenVar);
 int calcBitNum(GeneVAR myGeneVAR);
 void grayTobit(Bitset& data);
 void bitTogray(Bitset& data);
+bool strcasecmp(const std::string& s1, const std::string& s2);
+
 
 
 

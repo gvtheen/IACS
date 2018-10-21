@@ -4,7 +4,9 @@
 #include <map>
 #include <vector>
 #include "GaDeclaration.h"
-
+namespace CALCZJUT{
+   class CParameter;
+}
 namespace GAZJUT{
 
 class CGaparameter
@@ -19,7 +21,7 @@ class CGaparameter
         CGaparameter& operator=( CGaparameter& other);
 
         void   defaultInit();
-        void   OutputTofile();
+
         size_t    GenerationNum();
         size_t    PopNum();
         size_t    CrossNum();
@@ -70,21 +72,23 @@ class CGaparameter
 
         std::map<std::string, std::string>      *m_mapCmdString;
     private:
+        friend class CALCZJUT::CParameter;
+
         std::vector<GAZJUT::GeneVAR>     m_GeneVARofPopulation;
-        size_t                   m_PopNum;
-        size_t                   m_GenerationNum;
-        size_t                   m_CrossNum;
-        double                   m_CrossProb;
-	    double                   m_MutaProb;
-	    std::string              m_GeneFile;
-        std::string              m_SearchType;
-	    std::string              m_CrossMode;
-	    std::string              m_MutateMode;
-	    std::string              m_SelectMode;
-	    std::string              m_IntilGenMode;
-	    std::string              m_EvaluateEXE;
-	    std::string              m_ScalingMode;
-	    std::string              m_CodeMode;
+//        size_t                   m_PopNum;
+//        size_t                   m_GenerationNum;
+//        size_t                   m_CrossNum;
+//        double                   m_CrossProb;
+//	    double                   m_MutaProb;
+//	    std::string              m_GeneFile;
+//        std::string              m_SearchType;
+//	    std::string              m_CrossMode;
+//	    std::string              m_MutateMode;
+//	    std::string              m_SelectMode;
+//	    std::string              m_IntilGenMode;
+//	    std::string              m_EvaluateEXE;
+//	    std::string              m_ScalingMode;
+//	    std::string              m_CodeMode;
 };
 
 }

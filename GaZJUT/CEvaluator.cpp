@@ -66,6 +66,10 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       //sett i th structure to evaluator
       m_pEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
 
+      #ifdef DEBUG
+         (*m_pStructurePool)[i]->outputStructureToFile();
+      #endif // DEBUG
+
       // Run evaluator, obtained raw value.
       tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
 

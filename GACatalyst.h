@@ -4,7 +4,8 @@
 
 #include <stdexcept>
 #include <boost/throw_exception.hpp>
-
+//#define NDEBUG
+#include "assert.h"
 
 
 
