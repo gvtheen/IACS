@@ -50,11 +50,12 @@ CEvaluator::~CEvaluator()
 void CEvaluator::run(CGpopulation* CurrentPopulation)
 {
    bool runstate=false;
-   double tempOrigValue;
    size_t pop_num = CurrentPopulation->popNum();
 
-   std::vector<double> OrigScore;
+   std::vector<double> OrigScoreVect;
    std::vector<double> DecValueOfGenome;
+
+   std::map <size_t, double> OrigScoreMap;
    // calculate the fitness of each genome in population
    for(size_t i=0;i<pop_num;i++)
    {
@@ -71,7 +72,10 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       #endif // DEBUG
 
       // Run evaluator, obtained raw value.
-      tempOrigValue = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
+      OrigScoreMap[i] = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
+      /** \brief
+       * \OrigScoreMap:    build the map relation between pop index and orig. Value;
+       */
 
       // Get dec value from relaxed structure after calculation
       // Re-set this value to individual Genome.
@@ -83,15 +87,18 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       if(DecValueOfGenome.size()!=0)
          ((*CurrentPopulation)[i])->updateDecValueGene(DecValueOfGenome);
 
-      OrigScore.push_back(tempOrigValue);
-      ((*CurrentPopulation)[i])->setOrigValue( OrigScore[i] );
+      ((*CurrentPopulation)[i])->setOrigValue( OrigScoreMap[i] );
       ((*CurrentPopulation)[i])->setFinishState(runstate);
    }
       // call the function of m_pEvaluator for converting the original value to Raw score.
-   m_pEvaluator->ConvOrigToRawScore(OrigScore);
+   OrigScoreVect.resize(pop_num);
+   for(size_t i=0;i<pop_num;i++)
+      OrigScoreVect[i] = OrigScoreMap[i];
+
+   m_pEvaluator->ConvOrigToRawScore(OrigScoreVect);
 
    for(size_t i=0;i<pop_num;i++)
-      ((*CurrentPopulation)[i])->setRawScore(OrigScore[i]);
+      ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
 }
 void CEvaluator::setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcFitness)
 {

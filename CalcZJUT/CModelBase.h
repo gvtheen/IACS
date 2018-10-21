@@ -36,6 +36,7 @@ public:
     virtual void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
     virtual void outputStructureToFile();
 
+    void standardOutput(size_t type=0);
     CATAZJUT::CPeriodicFramework* periodicFramework();
     void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
 

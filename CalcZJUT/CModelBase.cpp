@@ -22,7 +22,17 @@
 #include <sstream>
 #include "CModelBase.h"
 #include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CatalystUniverseDefine.h"
+#include "../CataZJUT/CUnitCell.h"
+#include "../CataZJUT/CAtom.h"
+#include "../Util/log.hpp"
+#include "../Util/foreach.h"
+#include "../Util/Point-Vector.h"
 #include "CIOCar.h"
+
+using util::Log;
+using util::Point3;
+
 namespace CALCZJUT{
 
 CModelBase::CModelBase(CParameter* temParameter,size_t index)
@@ -102,5 +112,48 @@ void CModelBase::outputStructureToFile()
    io->output(filename);
    delete io;
 }
+void CModelBase::standardOutput(size_t type)
+{
+/** \brief   output the most stable structure of current population.
+ *
+ * \type = 1  : output the most stable structure of current population
+ * \type = 0  : output each  structure of current population
+ * \type = 2  : output the most stable structure after the whole calculation
+ *
+ */
+    switch (type){
+      case 1:
+         Log::Output<<"*****The most stable structure in ";
+         Log::Output<<m_pParameter->currentGenerationNum()<<"th Generation"<<"*****"<<std::endl;
+         break;
+      case 0:
+         Log::Output<<"*****The relaxed structure in " << m_pParameter->popNum() << "th Population ";
+         Log::Output<<m_pParameter->currentGenerationNum()<<"th Generation"<<"*****"<<std::endl;
+         break;
+      case 2:
+         Log::Output<<"*****The most stable structures after calculation"<<"*****"<<std::endl;
+         break;
+      default:
+         break;
+    }
+    if(m_pPeriodicFramework->dimensionalType()==CATAZJUT::DEFINED::Periodic){
+       Eigen::Matrix<double, 3, 3> mat = m_pPeriodicFramework->unitcell()->MatrixOfBravaisLattice();
+       Log::Output<<"********************Unit cell parameter****************************"<<std::endl;
+       for(size_t i=0;i<3;i++)
+          Log::Output<<mat(i,0)<<"    "<<mat(i,1)<<"   "<<mat(i,2)<<std::endl;
+       Log::Output<<"*******************************************************************"<<std::endl;
+    }
+    Log::Output<<"-------------------------------------------------------------------"<<std::endl;
+    Log::Output<<"Element               X                Y              Z            "<<std::endl;
+    Log::Output<<"-------------------------------------------------------------------"<<std::endl;
+    Point3 poi;
+    foreach(CATAZJUT::CAtom* atom,m_pPeriodicFramework->atoms()){
+       poi = atom->position();
+       Log::Output<<atom->Symbol()<<"    ";
+       Log::Output<<poi[0]<<"    "<<poi[1]<<"    "<<poi[2]<<std::endl;
+    }
+    Log::Output<<"-------------------------------------------------------------------"<<std::endl;
 
 }
+
+}//namespace
