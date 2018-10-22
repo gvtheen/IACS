@@ -56,6 +56,7 @@ class CGaparameter
         //void   SetCodeMode(E_CODE_TYPE);
         //overload operator
         std::string& operator[](std::string key_name);
+        void setKeyValue(const std::string key,const std::string value);
         //const parameter
         //scalling
         size_t       Curr_Generation;

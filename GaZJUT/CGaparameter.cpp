@@ -307,7 +307,10 @@ std::string& CGaparameter::operator[](std::string key_name)
     }
     return (*m_mapCmdString)[key_name];
 }
+void CGaparameter::setKeyValue(const std::string key,const std::string value)
+{
 
+}
 
 
 
