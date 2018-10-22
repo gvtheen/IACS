@@ -81,6 +81,10 @@ std::string& CExeDMol::inputFile()const
 {
     return *(this->dmol_inputfile);
 }
+char* CExeDMol::ExeName()
+{
+    return "DMol3";
+}
 void CExeDMol::setInputFile(const std::string& filename)
 {
      if(dmol_inputfile!=nullptr)

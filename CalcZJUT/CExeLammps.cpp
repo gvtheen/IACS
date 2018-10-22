@@ -32,5 +32,11 @@ CExeLammps::~CExeLammps()
 {
     //dtor
 }
-
+char* CExeLammps::ExeName()
+{
+    return "Lammps";
 }
+
+
+
+}// namespace

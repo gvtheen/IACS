@@ -1,5 +1,9 @@
 #ifndef CEVALUATOR_H
 #define CEVALUATOR_H
+#include <vector>
+#include <map>
+#include <iostream>
+
 #include "CGpopulation.h"
 #include "CGaOperatorBase.h"
 #include "../Util/Bitset.h"
@@ -23,6 +27,9 @@ namespace GAZJUT{
 class CEvaluator:public CGaOperatorBase
 {
 	public:
+	    typedef enum{OPTIMAL_ENERGY = 0x9231A,
+                        OPTIMAL_GAP = 0x9232A
+	                 }OPT_TYPE;
 		CEvaluator();
 		CEvaluator(CALCZJUT::CExeFitnessInterface*,
                    CALCZJUT::CStructPoolBase*);
@@ -37,6 +44,11 @@ class CEvaluator:public CGaOperatorBase
         CALCZJUT::CExeFitnessInterface* CalcFitnessInterface();
 
 	protected:
+        void getTargetPopWithCondition(std::vector<size_t>& res,std::map <size_t, double>& mapIndexValue,
+                                                       size_t num=1,double conditionValue = 0);
+        void standardOutput(std::map <size_t, double>&);
+        void standardOutput(CGpopulation*);
+    private:
 	    CALCZJUT::CExeFitnessInterface      *m_pEvaluator;
 	          CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;

@@ -21,7 +21,7 @@ class CParameter
 
         typedef enum EM_P_01{ ENERGY  =0x101,
                               FORCE   =0x102,
-                              BAND_GAP=0x103} EVALUATOR_CRIT;
+                              BAND_GAP=0x103} EVALUATOR_CRITERION;
 
         typedef enum EM_P_02{CLUSTER       =0x201,
                              PERIODIC      =0x202,
@@ -46,7 +46,7 @@ class CParameter
         std::vector<std::pair<std::string*,std::string*>> excludeBond;
         std::pair<double,double> bondToleranceFactor;
         SIMULATION_MODE simulationMode;
-        EVALUATOR_CRIT  evaluatorCriterion;
+        EVALUATOR_CRITERION  evaluatorCriterion;
         // for supported catalyst
         std::string supportStructFile;
         std::string adsorbentStructFile;
@@ -57,6 +57,8 @@ class CParameter
 
 
         std::string output_struct_format;
+
+        double optimal_gap_value;
 
 //        size_t PopSize()const;
 //        double Pm()const;

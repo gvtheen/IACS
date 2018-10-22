@@ -28,6 +28,8 @@ class CExeFitnessInterface
 		 virtual double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
          virtual void   ConvOrigToRawScore(std::vector<double>&);
 
+         virtual char* ExeName()=0;
+
          void setCalcModeStruct(CModelBase* Temp_calcModeStruct);
          CModelBase* calcModeStruct();
 

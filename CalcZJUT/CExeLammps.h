@@ -13,6 +13,7 @@ class CExeLammps:public CExeFitnessInterface
 
         double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
 		 void ConvOrigToRawScore(std::vector<double>&);
+        char* ExeName();
 
     protected:
 

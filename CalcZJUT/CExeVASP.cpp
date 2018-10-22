@@ -76,6 +76,10 @@ void CExeVASP::init()
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="poscar";   //default value;
 }
+char* CExeVASP::ExeName()
+{
+    return "VASP";
+}
 void CExeVASP::ConvOrigToRawScore(std::vector<double>& temporgValue)
 {
     std::vector<double> tmpValue;

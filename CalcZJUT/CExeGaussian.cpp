@@ -130,6 +130,10 @@ void CExeGaussian::ConvOrigToRawScore(std::vector<double>& temporgValue)
     for(size_t i=0;i<tmpValue.size();i++)
          temporgValue[i] = *maxEnergy - tmpValue[i];
 }
+char* CExeGaussian::ExeName()
+{
+    return "Gaussian";
+}
 void CExeGaussian::CheckInputFile()
 {
    if(access(m_pInputFile->c_str(),F_OK) != 0)

@@ -18,14 +18,23 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **
 ******************************************************************************/
+#include <float.h>
 #include "CEvaluator.h"
+#include "CGenome.h"
 #include "../CalcZJUT/CExeFitnessInterface.h"
 #include "../CalcZJUT/CStructPoolBase.h"
 #include "../CalcZJUT/CModelBase.h"
 #include "../CalcZJUT/CParameter.h"
+#include "../Util/Bitset.h"
+#include "../Util/log.hpp"
+
+
+using util::Bitset;
+using util::Log;
 
 namespace CALCZJUT{
    class CStructPoolBase;
+   class CParameter;
 }
 
 namespace GAZJUT{
@@ -39,7 +48,7 @@ CEvaluator::CEvaluator(CALCZJUT::CExeFitnessInterface  *myEvaluator,
 {
     // sample evaluator
     this->m_pEvaluator     = myEvaluator;
-    //sample structural pool
+    // sample structural pool
     this->m_pStructurePool = myStructPool;
     // sample evaluator monitor!
     pop_run_state.resize(m_pStructurePool->m_pParameter->popNum(),false);
@@ -74,7 +83,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       // Run evaluator, obtained raw value.
       OrigScoreMap[i] = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
       /** \brief
-       * \OrigScoreMap:    build the map relation between pop index and orig. Value;
+       *  \OrigScoreMap:    build the map relation between pop index and orig. Value;
        */
 
       // Get dec value from relaxed structure after calculation
@@ -90,25 +99,108 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       ((*CurrentPopulation)[i])->setOrigValue( OrigScoreMap[i] );
       ((*CurrentPopulation)[i])->setFinishState(runstate);
    }
-      // call the function of m_pEvaluator for converting the original value to Raw score.
+   // convert original value to raw score by using specific method.
+   // call the function of m_pEvaluator for converting the original value to Raw score.
+   // Then set the set value to the whole population.
    OrigScoreVect.resize(pop_num);
    for(size_t i=0;i<pop_num;i++)
       OrigScoreVect[i] = OrigScoreMap[i];
-
    m_pEvaluator->ConvOrigToRawScore(OrigScoreVect);
-
    for(size_t i=0;i<pop_num;i++)
       ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
+   // After one cycle calculation, output some structure and computational value.
+   // output the result
+   this->standardOutput(CurrentPopulation);
+   // output the relaxed structure
+   this->standardOutput(OrigScoreMap);
+
+}
+void CEvaluator::standardOutput(std::map <size_t, double>& mapIndexScore)
+{
+   std::vector<size_t> res;
+
+   switch((int)(m_pStructurePool->m_pParameter->evaluatorCriterion)){
+          case CALCZJUT::CParameter::ENERGY:
+          case CALCZJUT::CParameter::FORCE:
+               getTargetPopWithCondition(res, mapIndexScore, 1, 0);
+               break;
+          case CALCZJUT::CParameter::BAND_GAP:
+               getTargetPopWithCondition(res, mapIndexScore, 1,
+                                         m_pStructurePool->m_pParameter->optimal_gap_value);
+               break;
+          default:
+               break;
+   }
+   for(size_t i=0;i<res.size();i++)
+       (*m_pStructurePool)[i]->standardOutput(1);
+}
+void CEvaluator::standardOutput( CGpopulation* CurrentPopulation )
+{
+   Log::Output<<"Computational results in "<<m_pStructurePool->m_pParameter->currentGenerationNum();
+   Log::Output<<" th generation by using " << m_pEvaluator->ExeName()<<std::endl;
+   Log::Output<<"-------------------------------------------------------------------"<<std::endl;
+   for(size_t i=0;i<CurrentPopulation->popNum();i++){
+       switch((int)(m_pStructurePool->m_pParameter->evaluatorCriterion)){
+          case CALCZJUT::CParameter::ENERGY:
+               Log::Output<<"  E( Pop["<<i+1<<"] ) = ";
+               break;
+          case CALCZJUT::CParameter::FORCE:
+               Log::Output<<"  F( Pop["<<i+1<<"] ) = ";
+               break;
+          case CALCZJUT::CParameter::BAND_GAP:
+               Log::Output<<"Gap( Pop["<<i+1<<"] ) = ";
+          default:
+               break;
+       }
+       Log::Output<<(*(*CurrentPopulation)[i])["origvalue"]<<std::endl;
+   }
+   Log::Output<<"-------------------------------------------------------------------"<<std::endl;
 }
 void CEvaluator::setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcFitness)
 {
-      this->m_pEvaluator=CalcFitness;
+    this->m_pEvaluator=CalcFitness;
 }
 CALCZJUT::CExeFitnessInterface* CEvaluator::CalcFitnessInterface()
 {
-      return this->m_pEvaluator;
+    return this->m_pEvaluator;
 }
+void CEvaluator::getTargetPopWithCondition(std::vector<size_t>& res, std::map <size_t, double>& mapIndexValue,
+                                           size_t num, double conditionValue)
+{
+    Bitset pos(mapIndexValue.size());
+    pos.set(true);
 
+    if(res.size()!=0)
+        res.clear();
+
+    double minValue=DBL_MAX;
+    size_t pos_index_min=0;
+    while(num>0)
+    {
+        for(size_t i=0; i<mapIndexValue.size(); i++){
+          switch((int)(m_pStructurePool->m_pParameter->evaluatorCriterion)){
+             case CALCZJUT::CParameter::ENERGY:
+             case CALCZJUT::CParameter::FORCE:
+                 if(pos[i]==1 && mapIndexValue[i] < minValue ){
+                    minValue = mapIndexValue[i];
+                    pos_index_min = i;
+                 }
+                 break;
+             case CALCZJUT::CParameter::BAND_GAP:
+                 if(pos[i]==1 && std::fabs(mapIndexValue[i]-conditionValue) < minValue ){
+                    minValue = std::fabs(mapIndexValue[i]-conditionValue);
+                    pos_index_min = i;
+                 }
+                 break;
+             default:
+                break;
+          }
+        }
+        res.push_back(pos_index_min);
+        pos.set(pos_index_min,false);
+        num--;
+    }
+}
 
 
 

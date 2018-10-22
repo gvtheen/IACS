@@ -19,6 +19,7 @@ class CExeGaussian:public CExeFitnessInterface
 		 void init();
 		 double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
 		 void ConvOrigToRawScore(std::vector<double>&);
+		 char* ExeName();
 
 		 //normal function
 		 void   CheckInputFile();
