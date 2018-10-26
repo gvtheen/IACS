@@ -52,66 +52,77 @@ void CIOCellFile::output(const std::string& file_name)
         Log::Error<<"Dimensional Type is error! CIOCellFile_output"<< std::endl;
         boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: output file."));
     }
-    std::string filename = file_name + ".cell";
+
+    std::string filename;
+    if(boost::algorithm::contains(str,".cell")>0)
+        filename = file_name;
+    else
+        filename = file_name + ".cell";
+
     std::ofstream out(filename,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
+    if(out.is_open()){
+        out<<"%BLOCK LATTICE_CART"<<std::endl;
+        double scalingfactor = m_pPeriodicFramework->unitcell()->scalingFactor();
+        out<<scalingfactor*(m_pPeriodicFramework->unitcell()->avec().transpose())<<std::endl;
+        out<<scalingfactor*(m_pPeriodicFramework->unitcell()->bvec().transpose())<<std::endl;
+        out<<scalingfactor*(m_pPeriodicFramework->unitcell()->cvec().transpose())<<std::endl;
+        out<<"%ENDBLOCK LATTICE_CART"<<std::endl;
+        out<<std::endl;
+        //Fractional coordinate
+        out<<"%BLOCK POSITIONS_FRAC"<<std::endl;
+        foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms())
+        {
+          out<<atom->Symbol()<<" "<<m_pPeriodicFramework->Fractioncoordinates()->position(atom->index()).transpose()<<std::endl;
+        }
+        out<<"%ENDBLOCK POSITIONS_FRAC"<<std::endl;
+        //K-point
+        out<<std::endl;
+        out<<"%BLOCK KPOINTS_LIST"<<std::endl;
+        out<<"0.0000000000000000   0.0000000000000000   0.0000000000000000       1.000000000000000"<<std::endl;
+        out<<"%ENDBLOCK KPOINTS_LIST"<<std::endl;
+        //
+        out<<std::endl;
+        out<<"FIX_COM : false"<<std::endl;
+        out<<"%BLOCK IONIC_CONSTRAINTS"<<std::endl;
+        out<<"%ENDBLOCK IONIC_CONSTRAINTS"<<std::endl;
 
-    out<<"%BLOCK LATTICE_CART"<<std::endl;
-    double scalingfactor = m_pPeriodicFramework->unitcell()->scalingFactor();
-    out<<scalingfactor*(m_pPeriodicFramework->unitcell()->avec().transpose())<<std::endl;
-    out<<scalingfactor*(m_pPeriodicFramework->unitcell()->bvec().transpose())<<std::endl;
-    out<<scalingfactor*(m_pPeriodicFramework->unitcell()->cvec().transpose())<<std::endl;
-    out<<"%ENDBLOCK LATTICE_CART"<<std::endl;
-    out<<std::endl;
-    //Fractional coordinate
-    out<<"%BLOCK POSITIONS_FRAC"<<std::endl;
-    foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms())
-    {
-      out<<atom->Symbol()<<" "<<m_pPeriodicFramework->Fractioncoordinates()->position(atom->index()).transpose()<<std::endl;
+        out<<std::endl;
+        out<<"%BLOCK EXTERNAL_EFIELD"<<std::endl;
+        out<<"0.0000000000     0.0000000000     0.0000000000"<<std::endl;
+        out<<"%ENDBLOCK EXTERNAL_EFIELD"<<std::endl;
+
+        out<<std::endl;
+        std::vector<std::pair<std::string,size_t>> tmp = m_pPeriodicFramework->composition();
+        std::vector<std::pair<std::string,size_t>>::iterator iter;
+        out<<"%BLOCK SPECIES_MASS"<<std::endl;
+        for(iter = tmp.begin();iter!= tmp.end(); iter++)
+           out<<iter->first<<"   "<< (new CATAZJUT::CElement(iter->first))->exactMass() <<std::endl;
+
+        out<<"%ENDBLOCK SPECIES_MASS"<<std::endl;
+        out<<std::endl;
+
+        out<<"%BLOCK SPECIES_POT"<<std::endl;
+        if(m_pseudoPotentialFiles.size()==0){
+            for(iter = tmp.begin();iter!= tmp.end(); iter++)
+                out<<iter->first<<"  "<<iter->first<<"_00PBE.usp" <<std::endl;
+        }else{
+           std::map<std::string,std::string>::iterator it;
+           for(it=m_pseudoPotentialFiles.begin();it!=m_pseudoPotentialFiles.end();it++)
+                out<<"      "<<it->first<<"   "<<it->second<<std::endl;
+        }
+        out<<"%ENDBLOCK SPECIES_POT"<<std::endl;
+        out<<std::endl;
+
+        out<<"%BLOCK SPECIES_LCAO_STATES"<<std::endl;
+        for(iter = tmp.begin();iter!= tmp.end(); iter++)
+              out<<iter->first<<"   "<<iter->second<<std::endl;
+        out<<"%ENDBLOCK SPECIES_LCAO_STATES"<<std::endl;
+        out<<std::endl;
+        out<<std::endl;
+        out.close();
     }
-    out<<"%ENDBLOCK POSITIONS_FRAC"<<std::endl;
-    //K-point
-    out<<std::endl;
-    out<<"%BLOCK KPOINTS_LIST"<<std::endl;
-    out<<"0.0000000000000000   0.0000000000000000   0.0000000000000000       1.000000000000000"<<std::endl;
-    out<<"%ENDBLOCK KPOINTS_LIST"<<std::endl;
-    //
-    out<<std::endl;
-    out<<"FIX_COM : false"<<std::endl;
-    out<<"%BLOCK IONIC_CONSTRAINTS"<<std::endl;
-    out<<"%ENDBLOCK IONIC_CONSTRAINTS"<<std::endl;
-
-    out<<std::endl;
-    out<<"%BLOCK EXTERNAL_EFIELD"<<std::endl;
-    out<<"0.0000000000     0.0000000000     0.0000000000"<<std::endl;
-    out<<"%ENDBLOCK EXTERNAL_EFIELD"<<std::endl;
-
-    out<<std::endl;
-    std::vector<std::pair<std::string,size_t>> tmp = m_pPeriodicFramework->composition();
-    std::vector<std::pair<std::string,size_t>>::iterator iter;
-    out<<"%BLOCK SPECIES_MASS"<<std::endl;
-    for(iter = tmp.begin();iter!= tmp.end(); iter++)
-       out<<iter->first<<"   "<< (new CATAZJUT::CElement(iter->first))->exactMass() <<std::endl;
-
-    out<<"%ENDBLOCK SPECIES_MASS"<<std::endl;
-    out<<std::endl;
-
-    out<<"%BLOCK SPECIES_POT"<<std::endl;
-    for(iter = tmp.begin();iter!= tmp.end(); iter++)
-    {
-        out<<iter->first<<"  "<<iter->first<<"_00PBE.usp" <<std::endl;
-    }
-    out<<"%ENDBLOCK SPECIES_POT"<<std::endl;
-    out<<std::endl;
-
-    out<<"%BLOCK SPECIES_LCAO_STATES"<<std::endl;
-    for(iter = tmp.begin();iter!= tmp.end(); iter++)
-          out<<iter->first<<"   "<<iter->second<<std::endl;
-    out<<"%ENDBLOCK SPECIES_LCAO_STATES"<<std::endl;
-    out<<std::endl;
-
-    out.close();
 }
 Bitset CIOCellFile::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE tmp)
 {
@@ -126,10 +137,15 @@ Bitset CIOCellFile::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE
 }
 void CIOCellFile::input(std::string filename)
 {
-     if(access(filename.c_str(),F_OK) != 0 )
-      {
-           Log::Error<<filename <<" file is no exist! input_CIOPoscar"<<std::endl;
+     //check whether the file is exist.
+      if(access(filename.c_str(),F_OK) != 0 ){
+           Log::Error<<filename <<" file is no exist! CIOCellFile::input"<<std::endl;
            boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file!"));
+      }
+      // check the file format
+      if(boost::algorithm::contains(filename,".cell")==0){
+           Log::Error<<filename <<" file is no cell format! CIOCellFile::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no no cell format! Check the file!"));
       }
       std::ifstream *in;
       std::string str;
@@ -147,17 +163,42 @@ void CIOCellFile::input(std::string filename)
             tmpVet<<std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]);
             m_pPeriodicFramework->unitcell()->setVec(i,tmpVet);
           }
+          //set the scalingFactor to 1.0.
           m_pPeriodicFramework->unitcell()->setscalingFactor(1.0);
+          //set the coordinate Type
+          m_pPeriodicFramework->setCoordinateType(CATAZJUT::DEFINED::Fraction);
           std::getline(*in,str,'\n');
           std::getline(*in,str,'\n');
           std::getline(*in,str,'\n');
           while(1){
              std::getline(*in,str,'\n');
              boost::algorithm::trim(str);
-             if(boost::algorithm::contains(str,"%ENDBLOCK")>0)
+             if(boost::algorithm::contains(str,"%ENDBLOCK POSITIONS_FRAC")>0)
                  break;
              boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
              m_pPeriodicFramework->addAtom(vecStr[0],std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]));
+          }
+          while(1){
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(boost::algorithm::contains(str,"%BLOCK SPECIES_POT")>0)
+                 break;
+          }
+
+          while(1){
+             std::getline(*in,str,'\n');
+             boost::algorithm::trim(str);
+             if(str=="")
+                continue;
+             if(boost::algorithm::contains(str,"%ENDBLOCK SPECIES_POT")>0)
+                 break;
+             boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+             if(vecStr.size()==2)
+                m_pseudoPotentialFiles[vecStr[0]]=vecStr[1];
+             else{
+                Log::Error<<filename <<"Pseudopotential file is no error! CIOCellFile::input"<<std::endl;
+                boost::throw_exception(std::runtime_error(filename + "Pseudopotential file is no error! CIOCellFile::input!"));
+             }
           }
       }catch(const std::ifstream::failure& e){
           Log::Error<< e.what() <<"input_CIOCellFile"<<std::endl;
@@ -167,7 +208,7 @@ void CIOCellFile::input(std::string filename)
 }
 CIOCellFile::~CIOCellFile()
 {
-    //dtor
+    m_pseudoPotentialFiles.clear();
 }
 
 }

@@ -1,6 +1,6 @@
 #ifndef CIOMONITOR_H
 #define CIOMONITOR_H
-
+#include <string>
 namespace CALCZJUT{
 
 class CParameter;
@@ -12,14 +12,16 @@ class CIOMonitor
         virtual ~CIOMonitor();
 
         void createWorkingPath();
-        std::string& absoluteFilePath(size_t,size_t);
+        void absoluteFilePath(size_t,size_t,std::string&);
         std::string& currentPath();
 
         void initWorkingEnvironment(size_t,size_t);
+
     protected:
 
     private:
         CParameter* m_pParameter;
+        std::string m_currentPath;
 };
 
 

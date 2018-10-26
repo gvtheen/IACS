@@ -142,7 +142,8 @@ Eigen::Matrix<double, 3, 3> CUnitCell::MatrixOfBravaisLattice()
         tmpMat.col(0)=m_a;
         tmpMat.col(1)=m_b;
         tmpMat.col(2)=m_c;
-        return tmpMat*m_ScalingFactor;
+        tmpMat = tmpMat*m_ScalingFactor;
+        return tmpMat;
     }else{
         CUnitCell* tempCell=std::move(this->toBravais());
         tmpMat.col(0)=(tempCell->scalingFactor())*tempCell->avec();

@@ -240,8 +240,8 @@ void CModelClusterLoaded2DSupport::eliminateCloseContacts(double distanceCutOff)
                 this->m_pAdsorbMolecule->moveBy(vect);
                 modifiedbol=true;
             }
-        }
-   }
+          }
+    }
 }
 void CModelClusterLoaded2DSupport::createSupport(const Bitset& mht )
 {

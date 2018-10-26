@@ -110,8 +110,10 @@ void CModel2DSupport::setGeneValueToStruct(const std::vector<double>& realValueO
     //identify the surface on the support
     if(this->RandomInitState()==false){
         this->setRandomInitState(true);
-        goto RETURN_Random_Label;
+        goto RETURN_Label;
     }
+    if(realValueOfgene.size()==0)
+       goto RETURN_Label;
 
     /*
         check backup configuration;
@@ -176,7 +178,7 @@ void CModel2DSupport::setGeneValueToStruct(const std::vector<double>& realValueO
      // eliminate the closecontact in new structure
     this->eliminateCloseContacts();
 
-RETURN_Random_Label:
+RETURN_Label:
     ;
     //nothing;
 }

@@ -55,8 +55,13 @@ class CGaparameter
         E_CODE_TYPE            CodeMode();
         //void   SetCodeMode(E_CODE_TYPE);
         //overload operator
-        std::string& operator[](std::string key_name);
+        //std::string& operator[](std::string key_name);
         void setKeyValue(const std::string key,const std::string value);
+        void setKeyValue(const char* key,const std::string value);
+        void setKeyValue(const char* key,const char* value);
+
+        std::string& getKeyValue(const char* key);
+        void getKeyValue(std::vector<std::string>& res, const char* key);
         //const parameter
         //scalling
         size_t       Curr_Generation;
@@ -71,7 +76,7 @@ class CGaparameter
         const double UnifArithmCrossConstant   = 0.25;
         const double NoUnifArithmCrossConstant = 0.10;
 
-        std::map<std::string, std::string>      *m_mapCmdString;
+        std::multimap<std::string, std::string>      *m_mapCmdString;
     private:
         friend class CALCZJUT::CParameter;
 

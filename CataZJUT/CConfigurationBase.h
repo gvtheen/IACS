@@ -155,6 +155,9 @@ class CConfigurationBase
 
         void setTolerancefactor(std::pair<double,double> &mht);
         void setExcludeBond(std::vector<std::pair<std::string*,std::string*>>&);
+
+        CALCZJUT::CParameter* sysParameter();
+
     protected:
         CConfigurationPrivateData *m_pData;
              CALCZJUT::CParameter *m_pParameter;
@@ -185,6 +188,8 @@ class CConfigurationBase
         friend class CALCZJUT::CExeFitnessInterface;
 
         mutable CCartesianCoordinates       *m_pCartesian;
+        //mutable CInternalCoordinates        *m_pInternal;
+
         std::vector<CElement>                m_Element;          // contain the chemical property of all atoms
         std::vector<CAtom*>                  m_Atom;             // contain the behavior of all atoms
         CBondTolerance                      *m_pBondEvaluator;   //

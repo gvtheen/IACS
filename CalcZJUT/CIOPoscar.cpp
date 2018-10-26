@@ -59,6 +59,8 @@ Format of POSCAR file:
 */
 Bitset CIOPoscar::input(std::string file,CParameter::SIMULATION_MODE temp)
 {
+     assert(m_pPeriodicFramework);
+
      size_t n1 = m_pPeriodicFramework->atomCount();
      this->input(file);
      size_t n2 = m_pPeriodicFramework->atomCount();
@@ -226,7 +228,7 @@ void CIOPoscar::output(const std::string& file)
            out<<"Direct"<<std::endl;
            CFractionCoordinates* coord = m_pPeriodicFramework->Fractioncoordinates();
            for(size_t i=0;coord->size();i++)
-              out<<"  "<<coord->position(i).transpose()<<"  T   T   T"<<std::endl;
+               out<<"  "<<coord->position(i).transpose()<<"  T   T   T"<<std::endl;
            out<<std::endl<<std::endl;
        }else{
            out<<"Cartesian"<<std::endl;

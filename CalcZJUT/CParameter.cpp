@@ -150,19 +150,19 @@ void CParameter::setSysName(std::string mtr)
 }
 void CParameter::setPopSize(std::string mtr)
 {
-    (*m_pGAParameter)["[Population_Size]"]=mtr;
+    m_pGAParameter->setKeyValue("[Population_Size]",mtr);
 }
 void CParameter::setPm(std::string mtr)
 {
-    (*m_pGAParameter)["[Mutation_Probability]"]=mtr;
+    m_pGAParameter->setKeyValue("[Mutation_Probability]",mtr);
 }
 void CParameter::setPc(std::string mtr)
 {
-    (*m_pGAParameter)["[Mutation_Probability]"]=mtr;
+    m_pGAParameter->setKeyValue("[Mutation_Probability]",mtr);
 }
 void CParameter::setGenNum(std::string mtr)
 {
-    (*m_pGAParameter)["[Cross_Probability]"]=mtr;
+    m_pGAParameter->setKeyValue("[Cross_Probability]",mtr);
 }
 void CParameter::setRunCmd(std::string mtr)
 {
@@ -208,15 +208,17 @@ void CParameter::setEvaluator_Code(std::string mtr)
 # 4: CASTEP
 # 5: LAMMPS   */
       if(strcasecmp(mtr,"VASP") || std::stoi(mtr)==1)
-        (*m_pGAParameter)["[Evaluator_Code]"]="VASP";
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","VASP");
       else if(strcasecmp(mtr,"GAUSSIAN") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Evaluator_Code]"]="GAUSSIAN";
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","GAUSSIAN");
       else if(strcasecmp(mtr,"DMOL") || std::stoi(mtr)==3)
-        (*m_pGAParameter)["[Evaluator_Code]"]="DMOL";
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","DMOL");
       else if(strcasecmp(mtr,"CASTEP") || std::stoi(mtr)==4)
-        (*m_pGAParameter)["[Evaluator_Code]"]="CASTEP";
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","CASTEP");
       else if(strcasecmp(mtr,"LAMMPS") || std::stoi(mtr)==5)
-        (*m_pGAParameter)["[Evaluator_Code]"]="LAMMPS";
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","LAMMPS");
+      else if(strcasecmp(mtr,"DFTB") || std::stoi(mtr)==6)
+        m_pGAParameter->setKeyValue("[Evaluator_Code]","DFTB");
       else{
          Log::Error << mtr <<" command is wrong! setEvaluator_Code_CParameter\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setEvaluator_Code_CParameter!"));
@@ -265,13 +267,13 @@ void CParameter::setEvaluator_Criterion(std::string mtr)
 void CParameter::setMutation_Mode(std::string mtr)
 {
      if(strcasecmp(mtr,"UNIFORM_M") || std::stoi(mtr)==1 )
-        (*m_pGAParameter)["[Mutation_Mode]"]="UNIFORM_M";
+        m_pGAParameter->setKeyValue("[Mutation_Mode]","UNIFORM_M");
      else if(strcasecmp(mtr,"BOUNDARY") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Mutation_Mode]"]="BOUNDARY";
+        m_pGAParameter->setKeyValue("[Mutation_Mode]","BOUNDARY");
      else if( strcasecmp(mtr,"NOUNIFORM") || std::stoi(mtr)==3)
-        (*m_pGAParameter)["[Mutation_Mode]"]="NOUNIFORM";
+        m_pGAParameter->setKeyValue("[Mutation_Mode]","NOUNIFORM");
      else if(strcasecmp(mtr,"GAUSSIAN_M") || std::stoi(mtr)==4)
-        (*m_pGAParameter)["[Mutation_Mode]"]="GAUSSIAN_M";
+        m_pGAParameter->setKeyValue("[Mutation_Mode]","GAUSSIAN_M");
      else{
          Log::Error<<mtr << " command is wrong! setMutation_Mode_CParameter\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setMutation_Mode_CParameter."));
@@ -283,11 +285,11 @@ void CParameter::setGene_Code(std::string mtr)
 1: BINARY ; 2:GRAY;  3: REAL
 */
      if(strcasecmp(mtr,"BINARY") || std::stoi(mtr)==1)
-        (*m_pGAParameter)["[Gene_Code]"]="BINARY ";
+        m_pGAParameter->setKeyValue("[Gene_Code]","BINARY");
      else if(strcasecmp(mtr,"GRAY") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Gene_Code]"]="GRAY";
+        m_pGAParameter->setKeyValue("[Gene_Code]","GRAY");
      else if(strcasecmp(mtr,"REAL") || std::stoi(mtr)==3)
-        (*m_pGAParameter)["[Gene_Code]"]="REAL";
+        m_pGAParameter->setKeyValue("[Gene_Code]","REAL");
      else{
          Log::Error<<mtr << " command is wrong! setGene_Code_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Code."));
@@ -303,13 +305,13 @@ void CParameter::setCross_Mode(std::string mtr)
 #5: UNARITHMETIC
 */
      if(strcasecmp(mtr,"SINGLE") || std::stoi(mtr)==1 )
-        (*m_pGAParameter)["[Cross_Mode]"]="SINGLE";
+        m_pGAParameter->setKeyValue("[Cross_Mode]","SINGLE");
      else if(strcasecmp(mtr,"MULTIPLE") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Cross_Mode]"]="MULTIPLE";
+        m_pGAParameter->setKeyValue("[Cross_Mode]","MULTIPLE");
      else if(strcasecmp(mtr,"UNIFORM_C") || std::stoi(mtr)==3)
-        (*m_pGAParameter)["[Cross_Mode]"]="UNIFORM_C";
+        m_pGAParameter->setKeyValue("[Cross_Mode]","UNIFORM_C");
      else if(strcasecmp(mtr,"UNARITHMETIC") || std::stoi(mtr)==4)
-        (*m_pGAParameter)["[Cross_Mode]"]="UNARITHMETIC";
+        m_pGAParameter->setKeyValue("[Cross_Mode]","UNARITHMETIC");
      else{
          Log::Error<<mtr << " command is wrong! setCross_Mode_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setCross_Mode!"));
@@ -324,13 +326,13 @@ void CParameter::setSelect_Mode(std::string mtr)
 ## 4:  mixed
 */
      if(strcasecmp(mtr,"ROULETTE_WHEEL") || std::stoi(mtr)==1 )
-        (*m_pGAParameter)["[Search_Mode]"] = "ROULETTE_WHEEL";
+        m_pGAParameter->setKeyValue("[Search_Mode]","ROULETTE_WHEEL");
      else if(strcasecmp(mtr,"TOURNAMENT") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Search_Mode]"] = "TOURNAMENT";
+        m_pGAParameter->setKeyValue("[Search_Mode]", "TOURNAMENT");
      else if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==3)
-        (*m_pGAParameter)["[Search_Mode]"] = "RANDOM";
+        m_pGAParameter->setKeyValue("[Search_Mode]", "RANDOM");
      else if(strcasecmp(mtr,"MIXED") || std::stoi(mtr)==4)
-        (*m_pGAParameter)["[Search_Mode]"] = "MIXED";
+        m_pGAParameter->setKeyValue("[Search_Mode]", "MIXED");
      else{
          Log::Error<< mtr << " command is wrong! CParameter::setSelect_Mode!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setSelect_Mode."));
@@ -343,9 +345,9 @@ void CParameter::setGene_Formation_Mode(std::string mtr)
 #2: FILE
 */
      if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==1)
-        (*m_pGAParameter)["[Gene_Formation_Mode]"]="RANDOM";
+        m_pGAParameter->setKeyValue("[Gene_Formation_Mode]","RANDOM");
      else if(strcasecmp(mtr,"FILE") || std::stoi(mtr)==2)
-        (*m_pGAParameter)["[Gene_Formation_Mode]"]="FILE";
+        m_pGAParameter->setKeyValue("[Gene_Formation_Mode]","FILE");
      else{
          Log::Error<< mtr << " command is wrong! CParameter::setGene_Formation_Mode!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Formation_Mode."));

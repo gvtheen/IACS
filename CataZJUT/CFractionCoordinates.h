@@ -76,6 +76,7 @@ class CFractionCoordinates
         CFractionCoordinates& operator = (const CFractionCoordinates&);
         CFractionCoordinates  operator + (const CFractionCoordinates&) const;
         CFractionCoordinates  operator - (const CFractionCoordinates&) const;
+        const Point3& operator[](size_t index) const;
 
     private:
         CPeriodicFramework  *m_pPeriodicFramework;

@@ -730,7 +730,7 @@ bool CConfigurationBase::fragmentsPerceived()const
 }
 double CConfigurationBase::distance(const CAtom *a, const CAtom *b)
 {
-    return this->coordinates()->distance(a->index(),b->index());
+    return coordinates()->distance(a->index(),b->index());
 }
 double CConfigurationBase::bondAngle(const CAtom *a, const CAtom *b, const CAtom *c)
 {
@@ -797,6 +797,9 @@ void CConfigurationBase::setConstraintBit(const Bitset& othrBit)
 }
 CFractionCoordinates* CConfigurationBase::Fractioncoordinates()
 {
+    /** \virtual function is derived by CPeriodicFramework.
+     **/
+
     return nullptr;
 }
 void CConfigurationBase::moveAtom(CAtom* atom, Point3 vect)
@@ -811,7 +814,10 @@ void CConfigurationBase::setExcludeBond(std::vector<std::pair<std::string*,std::
 {
     this->m_pBondEvaluator->setExcludeBond(mht);
 }
-
+CALCZJUT::CParameter *CConfigurationBase::sysParameter()
+{
+    return this->m_pParameter;
+}
 
 
 

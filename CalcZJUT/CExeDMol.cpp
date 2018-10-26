@@ -159,7 +159,7 @@ void CExeDMol::ConvOrigToRawScore(std::vector<double>& temporgValue)
 void CExeDMol::CheckInputFile()
 {
     bool res=true;
-    for(unsigned int i=0;i<this->m_pInputFile.size();i++)
+    for(size_t i=0;i<this->m_pInputFile.size();i++)
         if(access(m_pInputFile[i]->c_str(),F_OK) != 0)
         {
            std::string error_info = *(m_pInputFile[i]) + std::string(" file is not exist!");

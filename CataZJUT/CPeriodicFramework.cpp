@@ -67,7 +67,7 @@ CFractionCoordinates* CPeriodicFramework::Fractioncoordinates()
     if(m_pData->coordinateSets.empty()|| m_pData->coordinateSets.front()->type()\
                                                == CCoordinateSet::None){
             // if no, construct new coordinate
-            CFractionCoordinates* temp_Internal= new CFractionCoordinates(this,atomCount());
+            CFractionCoordinates* temp_Internal = new CFractionCoordinates(this,atomCount());
             m_pData->coordinateSets.push_back(boost::make_shared<CCoordinateSet>(temp_Internal));
             returnindex = 0;
     }else{

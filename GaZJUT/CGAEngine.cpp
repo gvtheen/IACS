@@ -35,6 +35,8 @@
 #include "../CalcZJUT/CExeGaussian.h"
 #include "../CalcZJUT/CExeDMol.h"
 #include "../CalcZJUT/CExeLammps.h"
+#include "../CalcZJUT/CExeDFTB.h"
+#include "../CalcZJUT/CExeCastep.h"
 #include "../CalcZJUT/CStructPoolBase.h"
 #include "../CalcZJUT/CStructPoolCluster.h"
 #include "../CalcZJUT/CStructPoolSupported.h"
@@ -65,14 +67,22 @@ CGAEngine::~CGAEngine()
 */
 void CGAEngine::init()
 {
-   if((*m_pGaparameter)["Evaluator"]=="VASP")
-       m_pFitnessCalculator = new CALCZJUT::CExeVASP(this->m_pParameter);
-   else if((*m_pGaparameter)["Evaluator"]=="DMOL")
-       m_pFitnessCalculator = new CALCZJUT::CExeDMol(this->m_pParameter);
-   else if((*m_pGaparameter)["Evaluator"]=="GAUSSIAN")
-       m_pFitnessCalculator = new CALCZJUT::CExeGaussian(this->m_pParameter);
-   else if((*m_pGaparameter)["Evaluator"]=="LAMMPS")
-       m_pFitnessCalculator = new CALCZJUT::CExeLammps(this->m_pParameter);
+   std::vector<std::string> res;
+   m_pGaparameter->getKeyValue(res,"Evaluator");
+   for(size_t i=0;i<res.size();i++){
+       if(res[i]=="VASP")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeVASP(this->m_pParameter));
+       else if(res[i]=="DMOL")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeDMol(this->m_pParameter));
+       else if(res[i]=="GAUSSIAN")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeGaussian(this->m_pParameter));
+       else if(res[i]=="LAMMPS")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeLammps(this->m_pParameter));
+       else if(res[i]=="DFTB")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeDFTB(this->m_pParameter));
+       else if(res[i]=="CASTEP")
+           m_FitnessCalculator.push_back(new CALCZJUT::CExeCastep(this->m_pParameter));
+   }
 
    switch ((int)m_pParameter->simulationMode)
    {
@@ -94,14 +104,15 @@ void CGAEngine::init()
      Obtain the gene-variable range for the construction of Population object
    */
    this->m_pStructurePool->init();
-   //
-   this->m_pFitnessCalculator->init();
+
+   for(size_t i=0;i<m_FitnessCalculator.size();i++)
+        m_FitnessCalculator[i]->init();
    // until now, all parameters in object of Gaparameter were set.
    //
    m_pCurrentPopulation = new CGpopulation(m_pGaparameter);
 
    // sequence of operators!
-   m_GeneticOperator.push_back(new CEvaluator());
+   m_GeneticOperator.push_back(new CEvaluator(&m_FitnessCalculator,m_pStructurePool));
    m_GeneticOperator.push_back(new CFitnessScaling());
    m_GeneticOperator.push_back(new CElist());
    m_GeneticOperator.push_back(new CSelector());

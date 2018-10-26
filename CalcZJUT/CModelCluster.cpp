@@ -85,6 +85,9 @@ void CModelCluster::setGeneValueToStruct(const std::vector<double>& realValueOfg
         Log::Error<<"The size() of realValueofGene is error! CModelCluster::setGeneValueToStruct!\n";
         boost::throw_exception(std::runtime_error("The size() of realValueofGene is error! CModelCluster::setGeneValueToStruct!"));
      }
+     if(realValueOfgene.size()==0)
+       goto RETURN_Label;
+
       size_t index=0;
       Point3 tempPoint;
       if(this->m_pParameter->currentGenerationNum()>0){
@@ -100,7 +103,8 @@ void CModelCluster::setGeneValueToStruct(const std::vector<double>& realValueOfg
              boost::throw_exception(std::runtime_error(e.what()));
           }
       }
-
+RETURN_Label:
+    ;
 }
 void CModelCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {

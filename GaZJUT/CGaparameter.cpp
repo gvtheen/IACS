@@ -65,7 +65,7 @@ CGaparameter::CGaparameter( CGaparameter& other)
 
     this->Curr_Generation = other.Curr_Generation;
 
-    this->m_mapCmdString = new (std::map <std::string, std::string>);
+    this->m_mapCmdString = new (std::multimap <std::string, std::string>);
     this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
 
 }
@@ -76,7 +76,7 @@ CGaparameter& CGaparameter::operator=( CGaparameter& other)
     //assignment operator
     this->Curr_Generation = other.Curr_Generation;
 
-    this->m_mapCmdString = new (std::map <std::string, std::string>);
+    this->m_mapCmdString = new (std::multimap <std::string, std::string>);
     this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
 
     this->m_GeneVARofPopulation.assign(other.GeneVAR().begin(), other.GeneVAR().end());
@@ -86,7 +86,7 @@ CGaparameter& CGaparameter::operator=( CGaparameter& other)
 
 void CGaparameter::defaultInit()
 {
-    m_mapCmdString = new (std::map <std::string, std::string>);
+    m_mapCmdString = new (std::multimap <std::string, std::string>);
 
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Generation_Number]",    "30"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Population_Size]",      "20"));
@@ -115,7 +115,7 @@ std::vector <GeneVAR>& CGaparameter::GeneVAR()
 }
 size_t CGaparameter::PopNum()
 {
-     std::string keyValue=(*m_mapCmdString)["[Population_Size]"];
+     std::string keyValue=this->getKeyValue("[Population_Size]");
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -127,7 +127,7 @@ size_t CGaparameter::PopNum()
 }
 size_t CGaparameter::GenerationNum()
 {
-     std::string keyValue=(*m_mapCmdString)["[Generation_Number]"];
+     std::string keyValue=this->getKeyValue("[Generation_Number]");
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -139,7 +139,7 @@ size_t CGaparameter::GenerationNum()
 }
 size_t CGaparameter::CrossNum()
 {
-     std::string keyValue=(*m_mapCmdString)["[Cross_Number]"];
+     std::string keyValue=this->getKeyValue("[Cross_Number]");
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -178,7 +178,7 @@ void CGaparameter::checkGeneVAR()
 }
 double CGaparameter::CrossProb()
 {
-     std::string keyValue=(*m_mapCmdString)["[Cross_Probability]"];
+     std::string keyValue=this->getKeyValue("[Cross_Probability]");
      double d_value;
      try{
         d_value=stof(keyValue);
@@ -190,7 +190,7 @@ double CGaparameter::CrossProb()
 }
 double CGaparameter::MutaProb()
 {
-     std::string keyValue=(*m_mapCmdString)["[Mutation_Probability]"];
+     std::string keyValue=this->getKeyValue("[Mutation_Probability]");
      double d_value;
      try{
         d_value=stof(keyValue);
@@ -202,7 +202,7 @@ double CGaparameter::MutaProb()
 }
 std::string CGaparameter::GeneFile()
 {
-    return (*m_mapCmdString)["[Initial_Gene_File]"];
+    return this->getKeyValue("[Initial_Gene_File]");
 }
 E_GA_TYPE CGaparameter::SearchType()
 {
@@ -210,7 +210,7 @@ E_GA_TYPE CGaparameter::SearchType()
     E_GA_TYPE res;
     mySearch->insert(std::pair<std::string,E_GA_TYPE>("MIN",    MIN));
     mySearch->insert(std::pair<std::string,E_GA_TYPE>("MAX",    MAX));
-    res = (*mySearch)[(*m_mapCmdString)["[Search_Mode]"]];
+    res = (*mySearch)[this->getKeyValue("[Search_Mode]")];
     delete mySearch;
     return res;
 }
@@ -222,7 +222,7 @@ E_SELECT_OPERATOR  CGaparameter::SelectMode()
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("TOURNAMENT",    TOURNAMENT));
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("ROULETTE_WHEEL",ROULETTE_WHEEL));
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("MIXED",         MIXED));
-      res = (*mySearch)[(*m_mapCmdString)["[Select_Mode]"]];
+      res = (*mySearch)[this->getKeyValue("[Select_Mode]")];
       delete mySearch;
       return res;
 }
@@ -235,7 +235,7 @@ E_CROSSOVER_OPERATOR CGaparameter::CrossMode()
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("UNIFORM_C",     UNIFORM_C));
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("ARITHMETIC",    ARITHMETIC));
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("UNARITHMETIC",  UNARITHMETIC));
-    res = (*mySearch)[(*m_mapCmdString)["[Cross_Mode]"]];
+    res = (*mySearch)[this->getKeyValue("[Cross_Mode]")];
     delete mySearch;
     return res;
 }
@@ -248,7 +248,7 @@ E_MUTATE_OPERATOR CGaparameter::MutateMode()
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("BOUNDARY",     BOUNDARY));
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("NOUNIFORM",    NOUNIFORM));
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("GAUSSIAN_M",   GAUSSIAN_M));
-    res = (*mySearch)[(*m_mapCmdString)["[Mutation_Mode]"]];
+    res = (*mySearch)[this->getKeyValue("[Mutation_Mode]")];
     delete mySearch;
     return res;
 }
@@ -258,7 +258,7 @@ E_GENEFORMATION_TYPE CGaparameter::InitGenMode()
     E_GENEFORMATION_TYPE res;
     mySearch->insert(std::pair<std::string,E_GENEFORMATION_TYPE>("RANDOM_FORMATION",    RANDOM_FORMATION));
     mySearch->insert(std::pair<std::string,E_GENEFORMATION_TYPE>("FILE_INPUT",FILE_INPUT));
-    res=(*mySearch)[(*m_mapCmdString)["[Gene_Formation_Mode]"]];
+    res=(*mySearch)[this->getKeyValue("[Gene_Formation_Mode]")];
     delete mySearch;
     return res;
 }
@@ -271,7 +271,7 @@ E_EVALUATOR_EXE CGaparameter::EvaluateEXE()
     mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("DMOL",    DMOL));
     mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("CASTEP",  CASTEP));
     mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("LAMMPS",  LAMMPS));
-    res =(*mySearch)[(*m_mapCmdString)["[Evaluator_Code]"]];
+    res =(*mySearch)[this->getKeyValue("[Evaluator_Code]")];
     delete mySearch;
     return res;
 }
@@ -282,7 +282,7 @@ E_SCALING_TYPE CGaparameter::ScalingMode()
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("LINEAR",  LINEAR));
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("SIGMA",   SIGMA));
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("POWER",   POWER));
-    res = (*mySearch)[(*m_mapCmdString)["[Scaling_Mode]"]];
+    res = (*mySearch)[this->getKeyValue("[Scaling_Mode]")];
     delete mySearch;
     return res;
 }
@@ -294,24 +294,56 @@ E_CODE_TYPE CGaparameter::CodeMode()
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("BINARY",  BINARY));
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("GRAY",    GRAY));
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("REAL",    REAL));
-    res = (*mySearch)[(*m_mapCmdString)["[Gene_Code]"]];
+    res = (*mySearch)[this->getKeyValue("[Gene_Code]")];
     delete mySearch;
     return res;
 }
-std::string& CGaparameter::operator[](std::string key_name)
-{
-    if(m_mapCmdString->find(key_name) == m_mapCmdString->end())
-    {
-        Log::Error<< "keyname is error: CGaparameter_operator[]!\n";
-        boost::throw_exception(std::runtime_error("keyname is error! CGaparameter_operator[]!\n"));
-    }
-    return (*m_mapCmdString)[key_name];
-}
+//std::string& CGaparameter::operator[](std::string key_name)
+//{
+//    if(m_mapCmdString->find(key_name) == m_mapCmdString->end())
+//    {
+//        Log::Error<< "keyname is error: CGaparameter_operator[]!\n";
+//        boost::throw_exception(std::runtime_error("keyname is error! CGaparameter_operator[]!\n"));
+//    }
+//    return (*m_mapCmdString)[key_name];
+//}
 void CGaparameter::setKeyValue(const std::string key,const std::string value)
 {
-
+    if( key != "[Evaluator_Code]" ){
+        if ( m_mapCmdString->count(key) !=0 )
+            m_mapCmdString->erase(m_mapCmdString->find(key));
+        m_mapCmdString->insert(std::pair<std::string,std::string>(key,value));
+    }else
+        m_mapCmdString->insert(std::pair<std::string,std::string>(key,value));
 }
+void CGaparameter::setKeyValue(const char* key,const std::string value)
+{
+    std::string keystr(key);
+    this->setKeyValue(keystr,value);
+}
+void CGaparameter::setKeyValue(const char* key,const char* value)
+{
+    std::string keystr(key);
+    std::string valuestr(value);
+    this->setKeyValue(keystr,valuestr);
+}
+std::string& CGaparameter::getKeyValue(const char* key)
+{
+    std::multimap<std::string, std::string>::iterator it;
+    it = m_mapCmdString->find(key);
+    return it->second;
+}
+void CGaparameter::getKeyValue(std::vector<std::string>& res, const char* key)
+{
+    std::multimap<std::string, std::string>::iterator it;
+    if(res.size()!=0)
+        res.clear();
 
+    size_t num = m_mapCmdString->count(key);
+    it = m_mapCmdString->find(key);
+    for(size_t i=0;i<num;i++,it++)
+        res.push_back(it->second);
+}
 
 
 

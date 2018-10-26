@@ -223,7 +223,7 @@ void CFractionCoordinates::moveBy(const Vector3 &m_vector)
     CCartesianCoordinates* res = toCartesianCoordinates();
     res->moveBy(toCartesian(m_vector));
     for(size_t i=0;i<m_coordinates.size();i++)
-        insert(i,toFractionFromCart(res->position(i)));
+        this->insert(i,toFractionFromCart(res->position(i)));
 }
 void CFractionCoordinates::moveBy(double x, double y, double z)
 {
@@ -251,7 +251,7 @@ Point3 CFractionCoordinates::toCartesian(const Point3& position) const
     assert(m_pPeriodicFramework);
 
     //double scalingFactor = m_pPeriodicFramework->m_pUnitCell->scalingFactor();
-    return (m_pPeriodicFramework->m_pUnitCell->MatrixOfBravaisLattice())*position;
+    return (m_pPeriodicFramework->unitcell()->MatrixOfBravaisLattice())*position;
 }
 Point3 CFractionCoordinates::toCartesian(const double x, const double y, const double z) const
 {
@@ -267,7 +267,7 @@ Point3 CFractionCoordinates::toFractionFromCart(const Point3& position)
    tmpP<<position[0],
          position[1],
          position[2];
-   return (m_pPeriodicFramework->m_pUnitCell->MatrixOfBravaisLattice().inverse())*tmpP;
+   return (m_pPeriodicFramework->unitcell()->MatrixOfBravaisLattice().inverse())*tmpP;
 }
 Point3 CFractionCoordinates::toFractionFromCart(const double x, const double y, const double z)
 {
@@ -300,7 +300,7 @@ CFractionCoordinates& CFractionCoordinates::operator = (const CFractionCoordinat
 CFractionCoordinates CFractionCoordinates::add(const CFractionCoordinates& othr) const
 {
      if(this->size()==othr.size() &&
-        *(m_pPeriodicFramework->m_pUnitCell) == *(othr.m_pPeriodicFramework->m_pUnitCell))
+        *(m_pPeriodicFramework->unitcell()) == *(othr.m_pPeriodicFramework->unitcell()))
      {
          CFractionCoordinates resultFractCoord(m_pPeriodicFramework);
          Point3 resultP;
@@ -344,6 +344,14 @@ CFractionCoordinates  CFractionCoordinates::operator + (const CFractionCoordinat
 CFractionCoordinates  CFractionCoordinates::operator - (const CFractionCoordinates& othr) const
 {
    return substract(othr);
+}
+const Point3& CFractionCoordinates::operator[](size_t index) const
+{
+      if(index >= this->m_coordinates.size()){
+        Log::Error<<"Index exceed the size of vector in CFractionCoordinates::operator!!!"<<endl;
+        boost::throw_exception(std::runtime_error("Index exceed the size of vector in CFractionCoordinates::operator!!!"));
+      }
+      return m_coordinates[index];
 }
 
 

@@ -80,7 +80,7 @@ double CAtom::PartialCharge() const
 }
 double CAtom::distance(const CAtom *atom) const
 {
-    return CATAZJUT::Geometry::distance(position(),atom->position());
+    return m_pConfiguration->distance(this,atom);
 }
 std::string CAtom::Symbol() const
 {

@@ -43,11 +43,11 @@ CEvaluator::CEvaluator()
 {
 
 }
-CEvaluator::CEvaluator(CALCZJUT::CExeFitnessInterface  *myEvaluator,
+CEvaluator::CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>  *myEvaluatorPool,
                        CALCZJUT::CStructPoolBase *myStructPool)
 {
     // sample evaluator
-    this->m_pEvaluator     = myEvaluator;
+    this->m_pEvaluatorPool = myEvaluatorPool;
     // sample structural pool
     this->m_pStructurePool = myStructPool;
     // sample evaluator monitor!
@@ -66,6 +66,9 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
 
    std::map <size_t, double> OrigScoreMap;
    // calculate the fitness of each genome in population
+
+   //put the 1st evaluator into current evaluator.
+   CALCZJUT::CExeFitnessInterface* currentEvaluator = (*m_pEvaluatorPool)[0];
    for(size_t i=0;i<pop_num;i++)
    {
       //clear all content of DecValueOfGenome
@@ -74,7 +77,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
 
       //sett i th structure to evaluator
-      m_pEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
+      currentEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
 
       #ifdef DEBUG
          (*m_pStructurePool)[i]->outputStructureToFile();
@@ -100,12 +103,12 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       ((*CurrentPopulation)[i])->setFinishState(runstate);
    }
    // convert original value to raw score by using specific method.
-   // call the function of m_pEvaluator for converting the original value to Raw score.
+   // call the function of currentEvaluator for converting the original value to Raw score.
    // Then set the set value to the whole population.
    OrigScoreVect.resize(pop_num);
    for(size_t i=0;i<pop_num;i++)
       OrigScoreVect[i] = OrigScoreMap[i];
-   m_pEvaluator->ConvOrigToRawScore(OrigScoreVect);
+   currentEvaluator->ConvOrigToRawScore(OrigScoreVect);
    for(size_t i=0;i<pop_num;i++)
       ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
    // After one cycle calculation, output some structure and computational value.
@@ -156,14 +159,14 @@ void CEvaluator::standardOutput( CGpopulation* CurrentPopulation )
    }
    Log::Output<<"-------------------------------------------------------------------"<<std::endl;
 }
-void CEvaluator::setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcFitness)
-{
-    this->m_pEvaluator=CalcFitness;
-}
-CALCZJUT::CExeFitnessInterface* CEvaluator::CalcFitnessInterface()
-{
-    return this->m_pEvaluator;
-}
+//void CEvaluator::setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcFitness)
+//{
+//    this->m_pEvaluator=CalcFitness;
+//}
+//CALCZJUT::CExeFitnessInterface* CEvaluator::CalcFitnessInterface()
+//{
+//    return this->m_pEvaluator;
+//}
 void CEvaluator::getTargetPopWithCondition(std::vector<size_t>& res, std::map <size_t, double>& mapIndexValue,
                                            size_t num, double conditionValue)
 {

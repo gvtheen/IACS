@@ -45,6 +45,7 @@ class CPeriodicFramework:public CConfigurationBase
 
     private:
         CUnitCell *m_pUnitCell;
+        //mutable CFractionCoordinates        *m_pFraction;
 
 };
 

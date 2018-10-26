@@ -38,8 +38,10 @@ using CATAZJUT::constants::Pi;
 
 namespace CALCZJUT{
 
-CModelClusterSupport::CModelClusterSupport(CParameter* mPara,CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
-:CModelBase(mPara)
+CModelClusterSupport::CModelClusterSupport(CParameter* mPara,
+                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,
+                                           size_t index)
+:CModelBase(mPara,index)
 {
     m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
@@ -90,6 +92,14 @@ void CModelClusterSupport::setCrystalPlanes(CATAZJUT::CCrystalPlanes* mth)
 void CModelClusterSupport::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
    Point3 resCoordinate;
+
+   if(this->RandomInitState()==false){
+        this->setRandomInitState(true);
+        goto RETURN_Label;
+    }
+    if(realValueOfgene.size()==0)
+       goto RETURN_Label;
+
    if(m_ClusterModelType==CModelClusterSupport::POLYHEDRON){
      //get coordinate of gravity center of adsorbing molecule.
      resCoordinate = this->m_pCrystalPlanes->CartesianCoordinateAtGene((int)realValueOfgene[0],realValueOfgene[1],
@@ -116,6 +126,8 @@ void CModelClusterSupport::setGeneValueToStruct(const std::vector<double>& realV
      // check whether close contacts is avaiable.
      this->eliminateCloseContacts();
    }
+RETURN_Label:
+    ;
 }
 void CModelClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {

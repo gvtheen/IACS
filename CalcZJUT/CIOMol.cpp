@@ -50,12 +50,20 @@ CIOMol::CIOMol(CATAZJUT::CPeriodicFramework* mpa)
 }
 void CIOMol::output(const std::string& fileName)
 {
+    assert(m_pPeriodicFramework);
+
     if( this->m_pPeriodicFramework->m_DimensionalType != CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOMol::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOMol::output!\n"));
     }
-    std::string file_Name = fileName + ".mol";
+
+    std::string file_Name;
+    if(boost::algorithm::contains(str,".mol")>0)
+        file_Name = file_name;
+    else
+        file_Name = file_name + ".mol";
+
     std::ofstream out(file_Name.c_str(),std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
@@ -82,6 +90,8 @@ void CIOMol::output(const std::string& fileName)
 }
 Bitset CIOMol::input(std::string file,CParameter::SIMULATION_MODE mode)
 {
+     assert(m_pPeriodicFramework);
+
      size_t n1 = m_pPeriodicFramework->atomCount();
      this->input(file);
      size_t n2 = m_pPeriodicFramework->atomCount();
@@ -93,6 +103,8 @@ Bitset CIOMol::input(std::string file,CParameter::SIMULATION_MODE mode)
 }
 void  CIOMol::input(std::string filename)
 {
+     assert(m_pPeriodicFramework);
+
      if(access(filename.c_str(),F_OK) != 0 )
       {
            Log::Error<<filename <<" file is no exist! input_CIOMol!\n";

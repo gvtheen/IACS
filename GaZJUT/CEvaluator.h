@@ -31,7 +31,7 @@ class CEvaluator:public CGaOperatorBase
                         OPTIMAL_GAP = 0x9232A
 	                 }OPT_TYPE;
 		CEvaluator();
-		CEvaluator(CALCZJUT::CExeFitnessInterface*,
+		CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>*,
                    CALCZJUT::CStructPoolBase*);
 		~CEvaluator();
 
@@ -40,8 +40,8 @@ class CEvaluator:public CGaOperatorBase
 		void run( CGpopulation* );
 
 
-        void setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcModeStruct);
-        CALCZJUT::CExeFitnessInterface* CalcFitnessInterface();
+//        void setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcModeStruct);
+//        CALCZJUT::CExeFitnessInterface* CalcFitnessInterface();
 
 	protected:
         void getTargetPopWithCondition(std::vector<size_t>& res,std::map <size_t, double>& mapIndexValue,
@@ -49,10 +49,10 @@ class CEvaluator:public CGaOperatorBase
         void standardOutput(std::map <size_t, double>&);
         void standardOutput(CGpopulation*);
     private:
-	    CALCZJUT::CExeFitnessInterface      *m_pEvaluator;
-	          CALCZJUT::CStructPoolBase     *m_pStructurePool;
+	    std::vector<CALCZJUT::CExeFitnessInterface*>      *m_pEvaluatorPool;
+	                        CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;
-	                             Bitset       pop_run_state;
+	                                          Bitset       pop_run_state;
 };
 
 }

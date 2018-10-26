@@ -1,6 +1,7 @@
 #ifndef CIOCELLFILE_H
 #define CIOCELLFILE_H
 #include <string>
+#include <vector>
 #include "CIOBase.h"
 
 namespace CATAZJUT{
@@ -21,6 +22,7 @@ class CIOCellFile:public CIOBase
     protected:
 
     private:
+        std::map<std::string,std::string> m_pseudoPotentialFiles;
 };
 
 

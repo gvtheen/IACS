@@ -62,12 +62,18 @@ Bitset CIOXyz::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode
 void CIOXyz::output(const std::string& file)
 {
     assert(m_pPeriodicFramework);
-
+    // check whether this file is exit
     if( m_pPeriodicFramework->dimensionalType() == CATAZJUT::DEFINED::Periodic )
     {
         Log::Error<<"Periodic structure is not saved as xyz file! CIOXyz::output!\n";
         boost::throw_exception(std::runtime_error("Periodic structure is not saved as xyz file! CIOXyz::output!"));
     }
+    //check file format
+    if(boost::algorithm::contains(filename,".xyz")==0){
+           Log::Error<<filename <<" file is no xyz format! CIOXyz::output"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no no xyz format! Check the file!"));
+    }
+
     std::ofstream out(file,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
@@ -85,11 +91,15 @@ void  CIOXyz::input(std::string file)
      assert(m_pPeriodicFramework);
 
      if (file=="")
-         file="POSCAR";
+         file=m_pPeriodicFramework->;
 
      if(access(file.c_str(),F_OK) != 0 ){
            Log::Error<<file <<" file is no exist! input_CIOXyz!\n";
            boost::throw_exception(std::runtime_error("XYZ file is no exist! Check the file: input_CIOXyz."));
+      }
+      if(boost::algorithm::contains(filename,".xyz")==0){
+           Log::Error<<filename <<" file is no xyz format! CIOXyz::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no no xyz format! Check the code CIOXyz::input!"));
       }
       std::ifstream *in;
       std::string str;

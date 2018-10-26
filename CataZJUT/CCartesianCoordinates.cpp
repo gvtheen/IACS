@@ -20,6 +20,8 @@
 ******************************************************************************/
 #include <Eigen/Dense>
 #include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
+#include "../GACatalyst.h"
 #include "Geometry.h"
 #include "foreach.h"
 #include "Constant.h"
@@ -31,6 +33,7 @@
 #include "CAtom.h"
 #include "CUnitCell.h"
 
+using util::Log;
 
 namespace CATAZJUT{
 
@@ -451,6 +454,10 @@ CCartesianCoordinates& CCartesianCoordinates::operator=(const CCartesianCoordina
 /// Returns the position at \p index.
 Point3& CCartesianCoordinates::operator[](size_t index)
 {
+    if(index>=this->m_coordinates.size()){
+      Log::Error<<"Index exceed the size of vector in CCartesianCoordinates::operator!!!"<<endl;
+      boost::throw_exception(std::runtime_error("Index exceed the size of vector in CCartesianCoordinates::operator!!!"));
+    }
     return m_coordinates[index];
 }
 
