@@ -153,7 +153,8 @@ void CModelBase::standardOutput(size_t type)
        Log::Output<<poi[0]<<"    "<<poi[1]<<"    "<<poi[2]<<std::endl;
     }
     Log::Output<<"-------------------------------------------------------------------"<<std::endl;
-
+    Log::Output<<m_pPeriodicFramework->SymmetrySymbol()<<std::endl;
+    Log::Output<<std::endl;
 }
 
 }//namespace

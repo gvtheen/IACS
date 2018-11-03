@@ -1,5 +1,6 @@
 #ifndef CEXECASTEP_H
 #define CEXECASTEP_H
+#include "CExeFitnessInterface.h"
 
 namespace CALCZJUT{
 

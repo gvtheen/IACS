@@ -229,7 +229,8 @@ void CIOPoscar::output(const std::string& file)
            CFractionCoordinates* coord = m_pPeriodicFramework->Fractioncoordinates();
            for(size_t i=0;coord->size();i++)
                out<<"  "<<coord->position(i).transpose()<<"  T   T   T"<<std::endl;
-           out<<std::endl<<std::endl;
+           out<<std::endl;
+           out<<std::endl;
        }else{
            out<<"Cartesian"<<std::endl;
            CCartesianCoordinates* coord = m_pPeriodicFramework->coordinates();
@@ -239,7 +240,8 @@ void CIOPoscar::output(const std::string& file)
                tmp=m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*(coord->position(i));
                out<<"  "<<tmp.transpose()<<"  T   T   T"<<std::endl;
            }
-           out<<std::endl<<std::endl;
+           out<<std::endl;
+           out<<std::endl;
        }
        out.close();
     }

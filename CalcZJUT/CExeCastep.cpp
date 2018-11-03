@@ -1,4 +1,25 @@
+#include "unistd.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <boost/algorithm/string.hpp>
+#include "../GaZJUT/GaUtilityFunction.h"
 #include "CExeCastep.h"
+#include "CParameter.h"
+#include "../Util/log.hpp"
+#include "CIOCar.h"
+#include "CModel2DSupport.h"
+#include "CModelCluster.h"
+#include "CModelClusterSupport.h"
+#include "../CataZJUT/CFragment.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../Util/Point-Vector.h"
+#include "../Util/log.hpp"
+#include "../GaZJUT/CGaparameter.h"
+#include "../CataZJUT/CBondTolerance.h"
+using util::Log;
 
 namespace CALCZJUT{
 
@@ -8,7 +29,6 @@ CExeCastep::CExeCastep(CParameter* mpara)
     std::string sys_name=this->m_Parameter->sysName;
     m_pInputFile.push_back(sys_name+".cell");
     m_pInputFile.push_back(sys_name+".param");
-
 }
 
 CExeCastep::~CExeCastep()
@@ -18,9 +38,9 @@ CExeCastep::~CExeCastep()
 void CExeCastep::init()
 {
     if(m_Parameter->output_struct_format=="")
-        m_Parameter->output_struct_format = "cell"
+        m_Parameter->output_struct_format = "cell";
 }
-double CExeCastep::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
+double CExeCastep::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
     pid_t pid;
      double res;
@@ -34,7 +54,7 @@ double CExeCastep::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& po
      //
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
      //write structure in the car file
-     m_pIO->output(*(m_pInputFile[0])); //.cell file
+     m_pIO->output(m_pInputFile[0]); //.cell file
      //
      //Check whether input files is OK?
      CheckInputFile();
@@ -90,9 +110,9 @@ void CExeCastep::CheckInputFile()
 {
     bool res=true;
     for(size_t i=0;i<this->m_pInputFile.size();i++)
-        if(access(m_pInputFile[i]->c_str(),F_OK) != 0)
+        if(access(m_pInputFile[i].c_str(),F_OK) != 0)
         {
-           std::string error_info = *(m_pInputFile[i]) + std::string(" file is not exist!");
+           std::string error_info = m_pInputFile[i] + std::string(" file is not exist!");
            Log::Error<<error_info<<" CExeCastep::CheckInputFile()\n";
            res=false;
         }

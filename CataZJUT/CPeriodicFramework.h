@@ -28,6 +28,8 @@ class CPeriodicFramework:public CConfigurationBase
         CPeriodicFramework* clone();
         virtual CFractionCoordinates* Fractioncoordinates();
         CUnitCell* unitcell();
+
+        std::string SymmetrySymbol();
     protected:
 
     private:

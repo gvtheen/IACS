@@ -58,6 +58,8 @@ class CParameter
 
         std::string output_struct_format;
 
+        const char* Backup_Parameter_Folder;
+
         double optimal_gap_value;
 
 //        size_t PopSize()const;

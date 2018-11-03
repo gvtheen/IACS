@@ -47,6 +47,8 @@ CIOCellFile::CIOCellFile(CATAZJUT::CPeriodicFramework* mpa)
 }
 void CIOCellFile::output(const std::string& file_name)
 {
+   assert(m_pPeriodicFramework);
+
    if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOCellFile_output"<< std::endl;
@@ -54,7 +56,7 @@ void CIOCellFile::output(const std::string& file_name)
     }
 
     std::string filename;
-    if(boost::algorithm::contains(str,".cell")>0)
+    if(boost::algorithm::contains(file_name,".cell")>0)
         filename = file_name;
     else
         filename = file_name + ".cell";
@@ -126,6 +128,8 @@ void CIOCellFile::output(const std::string& file_name)
 }
 Bitset CIOCellFile::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE tmp)
 {
+     assert(m_pPeriodicFramework);
+
      size_t n1 = m_pPeriodicFramework->atomCount();
      this->input(file);
      size_t n2 = m_pPeriodicFramework->atomCount();

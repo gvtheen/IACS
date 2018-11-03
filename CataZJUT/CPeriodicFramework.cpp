@@ -24,6 +24,9 @@
 #include "CConfigurationPrivateData.h"
 #include "CFractionCoordinates.h"
 #include "CUnitCell.h"
+#include "../CalcZJUT/CParameter.h"
+#include "CMolecularSymmetry.h"
+#include "CSpaceGroup.h"
 
 namespace CATAZJUT{
 
@@ -85,6 +88,22 @@ CFractionCoordinates* CPeriodicFramework::Fractioncoordinates()
     }
     return m_pData->coordinateSets[returnindex]->fractionCoordinates();
 }
-
+std::string CPeriodicFramework::SymmetrySymbol()
+{
+    if(m_pParameter->simulationMode==CALCZJUT::CParameter::CLUSTER ||
+       m_pParameter->simulationMode == CALCZJUT::CParameter::MOL_CLUSTER ){
+        CMolecularSymmetry* molsym = new CMolecularSymmetry(this);
+        std::string res("Molecular symmetry: point group ");
+        res=res + molsym->GetPointGroup();
+        delete molsym;
+        return res;
+    }else{
+        CSpaceGroup* spaceGroup = new CSpaceGroup(this);
+        std::string res("Crystallography symmetry: space group ");
+        res=res + spaceGroup->GetSpaceGroup();
+        delete spaceGroup;
+        return res;
+    }
+}
 
 }

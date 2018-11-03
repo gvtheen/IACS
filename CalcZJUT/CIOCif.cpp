@@ -29,7 +29,10 @@
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CUnitCell.h"
+#include "../Util/foreach.h"
+#include "../Util/log.hpp"
 
+using util::Log;
 using util::Point3;
 namespace CALCZJUT{
 
@@ -47,17 +50,18 @@ void CIOCif::output(const std::string& file_name)
 {
     assert(m_pPeriodicFramework);
 
-    if( this->m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
+    if( this->m_pPeriodicFramework->coordinateType() == CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOCif::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOCif::output!\n"));
     }
 
     std::string file_Name;
-    if(boost::algorithm::contains(str,".cif")>0)
+    if(boost::algorithm::contains(file_name,".cif")>0)
         file_Name = file_name;
     else
         file_Name = file_name + ".cif";
+
     std::ofstream out(file_Name.c_str(),std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
@@ -112,7 +116,9 @@ void CIOCif::output(const std::string& file_name)
 }
 void CIOCif::input(std::string filename)
 {
-     if(access(filename.c_str(),F_OK) != 0 ){
+      assert(m_pPeriodicFramework);
+      //check whether the file is exist.
+      if(access(filename.c_str(),F_OK) != 0 ){
            Log::Error<<filename <<" file is no exist! CIOCellFile::input"<<std::endl;
            boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file CIOCif::input!"));
       }
@@ -182,7 +188,26 @@ void CIOCif::input(std::string filename)
 }
 Bitset CIOCif::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode)
 {
+     assert(m_pPeriodicFramework);
 
+     //check whether the file is exist.
+     if(access(file.c_str(),F_OK) != 0 ){
+           Log::Error<<file <<" file is no exist! CIOCellFile::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file CIOCellFile::input!"));
+     }
+      // check the file format
+     if(boost::algorithm::contains(file,".cell")==0){
+           Log::Error<<filename <<" file is no cell format! CIOCellFile::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(filename + "file is no no cell format! Check the file CIOCellFile::input!"));
+     }
+     size_t n1 = m_pPeriodicFramework->atomCount();
+     this->input(file);
+     size_t n2 = m_pPeriodicFramework->atomCount();
+     Bitset res(n2);
+
+     for(size_t i=n1;i<res.size();i++)
+        res.set(i);
+     return res;
 }
 
 }

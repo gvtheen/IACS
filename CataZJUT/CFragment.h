@@ -24,7 +24,7 @@ class CFragment
         CFragment(CConfigurationBase*,const Bitset&);
         virtual ~CFragment();
 
-            // properties
+    // properties
        inline size_t size() const;
        inline CConfigurationBase* Configuration() const;
 

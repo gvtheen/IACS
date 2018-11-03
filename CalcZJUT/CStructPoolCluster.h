@@ -19,6 +19,7 @@ class CStructPoolCluster:public CStructPoolBase
         CStructPoolCluster(CParameter* othr);
         virtual ~CStructPoolCluster();
 
+        //virtual function
         void init();
         void GeneVARRange(std::vector<GeneVAR>&);
 

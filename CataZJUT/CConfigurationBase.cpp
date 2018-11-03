@@ -36,6 +36,7 @@
 #include "CConfigurationPrivateData.h"
 
 
+
 /*
 The target of this Configurationbase class:
    (1) keep the date of atoms, bonds and et.al except for coordinate.
