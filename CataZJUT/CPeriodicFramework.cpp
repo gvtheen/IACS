@@ -105,5 +105,11 @@ std::string CPeriodicFramework::SymmetrySymbol()
         return res;
     }
 }
+void CPeriodicFramework::perceiveBonds()
+{
+    CConfigurationBase::perceiveBonds();
+}
+
+
 
 }

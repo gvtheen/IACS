@@ -93,12 +93,14 @@ void CIOCif::output(const std::string& file_name)
        out<<"_atom_site_fract_z"<<std::endl;
        out<<"_atom_site_U_iso_or_equiv"<<std::endl;
 
+       // Here donot delete temp pointer.
        CATAZJUT::CCartesianCoordinates* temp = m_pPeriodicFramework->coordinates();
        CATAZJUT::CFractionCoordinates *res = temp->toFractionCoordinates();
        std::vector<std::pair<std::string,size_t>> tempComposition = m_pPeriodicFramework->composition();
        std::map<std::string,size_t> label_Map;
        for(size_t i=0;i<tempComposition.size();i++)
            label_Map[tempComposition[i]->first] = 1;
+
        Point3 pos;
        foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms()){
           pos = (*res)[atom->index()];

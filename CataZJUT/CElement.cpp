@@ -748,9 +748,9 @@ size_t CElement::maxCoordinationNum()
     }else if(is2ndTransitionMetal() && !isNobelMetal()){
        return 12;
     }
-    return 0;
+    return 1;
 }
-std::string CElement::valentConfigurationStr()
+const char* CElement::valentConfigurationStr()
 {
     return ChemicalData[m_atomicNumber].ValentStruct;
 }

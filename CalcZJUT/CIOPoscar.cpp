@@ -150,7 +150,7 @@ void CIOPoscar::input(std::string file)
                  atom_Number++;
                  tmpvect<<std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]);
                  if(m_pPeriodicFramework->coordinateType()==CATAZJUT::DEFINED::Cartesian){
-                      // °ÑOblique coordinate ×ª»»Îª cartesian coordinate
+                      // Oblique coordinate cartesian coordinate
                       tmpvect =m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*tmpvect;
 
                       index = this->atomicIndex(AtomicNum,atom_Number);

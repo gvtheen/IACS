@@ -12,6 +12,7 @@ class CSpaceGroup
         virtual ~CSpaceGroup();
 
         char* GetSpaceGroup();
+        bool  Find_primitive();
     protected:
 
     private:

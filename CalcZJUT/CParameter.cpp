@@ -246,6 +246,7 @@ void CParameter::setOutput_struct_format(std::string mtr)
         this->output_struct_format = "gjf";
       else if(strcasecmp(mtr,"cell") || std::stoi(mtr)==6)
         this->output_struct_format = "cell";
+      else if(strcasecmp(mtr,"xyz") || std::stoi(mtr)==7)
       else{
           Log::Error<< mtr << " format isnot supported! setOutput_struct_format_CParameter!\n";
           boost::throw_exception(std::runtime_error(mtr+ "  format is not supported! Check the file: CParameter::setOutput_struct_format!"));

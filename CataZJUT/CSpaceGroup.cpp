@@ -85,7 +85,61 @@ az   bz   cz
   }
 
 }
+bool CSpaceGroup::Find_primitive()
+{
+   double (*lattice)[3];
+   double (*position)[3];
 
+   int  num_atom;
+   num_atom = this->m_pCPeriodicFramework->atomCount();
+
+   lattice = (double(*)[3])(new double[3*3]);
+
+   Eigen::Matrix<double, 3, 3> Latt = m_pCPeriodicFramework->unitcell()->MatrixOfBravaisLattice();
+   Latt.transpose();
+   for(size_t i=0;i<3;i++)
+      for(size_t j=0;j<3;j++)
+        lattice[i][j]=Latt(i,j);
+
+   int *types = new int[num_atom];
+   size_t index=0;
+   position =(double(*)[3])(new double[3*num_atom]);
+   std::vector<std::pair<std::string,size_t>> composition = m_pCPeriodicFramework->composition();
+
+   Point3 pos;
+   foreach(CAtom* atom, this->m_pCPeriodicFramework->atoms()){
+    for(size_t i=0;i<composition.size();i++)
+       if(atom->Symbol() == composition[i].first ){
+           types[index] = i+1;
+           break;
+       }
+    pos = atom->position();
+    position[index][0]=pos[0];
+    position[index][1]=pos[1];
+    position[index][2]=pos[2];
+  }
+  int num_primitive_atom;
+  double symprec = 1e-5;
+  num_primitive_atom = spg_find_primitive(lattice, position, types, num_atom, symprec);
+
+  if (num_primitive_atom != 0){
+      m_pCPeriodicFramework->clear();
+      for(size_t i=0;i<3;i++){
+         pos<<lattice[i][0],lattice[i][1],lattice[i][2];
+         m_pCPeriodicFramework->unitcell()->setVec(i,pos);
+      }
+      m_pCPeriodicFramework->unitcell()->setscalingFactor(1.0);
+
+      for(int i=0;i<num_primitive_atom;i++){
+         pos<<position[i][0],position[i][1],position[i][2];
+         m_pCPeriodicFramework->addAtom(composition[types[i]-1].first,pos);
+      }
+      m_pCPeriodicFramework->perceiveBonds();
+      return true;
+  }else
+      return false;
+
+}
 
 
 }

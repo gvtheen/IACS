@@ -68,7 +68,7 @@ public:
     bool isZeroGroupElement()const;
 
     std::vector<Atomic_Block> valentConfiguration();
-    std::string valentConfigurationStr();
+    const char* valentConfigurationStr();
     size_t maxCoordinationNum();
     //
 

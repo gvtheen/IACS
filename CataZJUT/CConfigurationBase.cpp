@@ -221,8 +221,7 @@ CInternalCoordinates* CConfigurationBase::Internalcoordinates()
              returnindex = i;
              break;
           }
-        if(returnindex == -1)
-        {
+        if(returnindex == -1){
             CInternalCoordinates* temp_Internal= new CInternalCoordinates(this,atomCount());
             m_pData->coordinateSets.push_back(boost::make_shared<CCoordinateSet>(temp_Internal));
             returnindex = m_pData->coordinateSets.size() - 1;

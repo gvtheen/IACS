@@ -30,6 +30,7 @@ class CPeriodicFramework:public CConfigurationBase
         CUnitCell* unitcell();
 
         std::string SymmetrySymbol();
+        void perceiveBonds();
     protected:
 
     private:
