@@ -202,6 +202,8 @@ void CIOPoscar::output(const std::string& file)
         Log::Error<<"Dimensional Type is error! CIOPoscar::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: CIOPoscar::output."));
     }
+    m_pPeriodicFramework->sortAtomsViaElements();
+
     std::ofstream out(file,std::ios::app);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);

@@ -29,7 +29,8 @@ void CProgameDoc::output()
     Log::Output<<"******************************************************************************"<<std::endl;
     Log::Output<<"******************************************************************************"<<std::endl;
     Log::Output<<"*******************************Acknowledgements*******************************"<<std::endl;
-    Log::Output<<"**We very thank the contributors from libmsym, libmsym, Boost, hdf5, Eigen!***"<<std::endl;
+    Log::Output<<"We very thank the contributors from libmsym, libmsym, Boost C++, hdf5, Eigen,"<<std::endl;
+    Log::Output<<"chemkit!"<<std::endl;
     Log::Output<<"******************************************************************************"<<std::endl;
     Log::Output<<"Current Version: IACS" <<this->versionText<<std::endl;
     Log::Output<<this->authorText <<";" <<this->addressText<<std::endl;

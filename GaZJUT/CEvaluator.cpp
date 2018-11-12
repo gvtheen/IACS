@@ -84,7 +84,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       #endif // DEBUG
 
       // Run evaluator, obtained raw value.
-      OrigScoreMap[i] = m_pEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
+      OrigScoreMap[i] = currentEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
       /** \brief
        *  \OrigScoreMap:    build the map relation between pop index and orig. Value;
        */

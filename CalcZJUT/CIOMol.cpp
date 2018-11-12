@@ -59,12 +59,12 @@ void CIOMol::output(const std::string& fileName)
     }
 
     std::string file_Name;
-    if(boost::algorithm::contains(str,".mol")>0)
-        file_Name = file_name;
+    if(boost::algorithm::contains(fileName,".mol")>0)
+        file_Name = fileName;
     else
-        file_Name = file_name + ".mol";
+        file_Name = fileName + ".mol";
 
-    std::ofstream out(file_Name.c_str(),std::ios::app);
+    std::ofstream out(file_Name.c_str(),std::ios::out);
     out.setf(std::ios::fixed, std::ios::floatfield);
     out.precision(10);
     if(out.is_open())

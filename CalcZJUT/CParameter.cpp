@@ -67,6 +67,11 @@ CParameter::CParameter(char* file)
 
     m_pGAParameter=new GAZJUT::CGaparameter();
 }
+CParameter::~CParameter()
+{
+    if(m_pfile!=nullptr)
+       delete m_pfile;
+}
 void CParameter::input()
 {
     if(m_pfile==nullptr)
@@ -247,6 +252,7 @@ void CParameter::setOutput_struct_format(std::string mtr)
       else if(strcasecmp(mtr,"cell") || std::stoi(mtr)==6)
         this->output_struct_format = "cell";
       else if(strcasecmp(mtr,"xyz") || std::stoi(mtr)==7)
+        this->output_struct_format = "xyz";
       else{
           Log::Error<< mtr << " format isnot supported! setOutput_struct_format_CParameter!\n";
           boost::throw_exception(std::runtime_error(mtr+ "  format is not supported! Check the file: CParameter::setOutput_struct_format!"));
@@ -399,10 +405,117 @@ size_t CParameter::popNum()
 {
     return this->m_pGAParameter->PopNum();
 }
-CParameter::~CParameter()
+// set work environment
+void CParameter::initWorkEnvironment()
 {
-    if(m_pfile!=nullptr)
-       delete m_pfile;
+    /** \brief  create working environment
+    * \path1: scratch
+    * \path2: work          create  pop_num  folder
+    * \path3: parameter     initial files
+    */
+    boost::filesystem::path working_path,scratch_path,parameter_path;
+      working_path = m_root_WorkingPath/"work";
+    if(!boost::filesystem::exists(working_path))
+        boost::filesystem::create_directory(working_path);
+
+      scratch_path = m_root_WorkingPath/"scratch";
+    if(!boost::filesystem::exists(scratch_path))
+        boost::filesystem::create_directory(scratch_path);
+
+    parameter_path = m_root_WorkingPath/"parameter";
+    if(!boost::filesystem::exists(parameter_path))
+        boost::filesystem::create_directory(parameter_path);
+
+}
+void CParameter::setCurrentWorkPathAt(size_t generation,size_t population)
+{
+    std::stringstream str;
+    str<<"Gen_"<<generation<<"Pop_"<<population;
+    std::string pathstr;
+    str>>pathstr;
+    boost::filesystem::path working_path;
+    working_path = m_root_WorkingPath/"work";
+
+    working_path=working_path/pathstr.c_str();
+
+    if(! boost::filesystem::exists(working_path))
+         boost::filesystem::create_directory(working_path);
+
+    boost::filesystem::current_path(working_path);
+}
+std::string CParameter::rootPath()
+{
+    return this->m_root_WorkingPath.string();
+}
+std::string CParameter::scratchPath()
+{
+    boost::filesystem::path scratch_path = m_root_WorkingPath/"scratch";
+    return scratch_path.string();
+}
+std::string CParameter::parameterPath()
+{
+    boost::filesystem::path  parameter_path;
+    parameter_path = m_root_WorkingPath/"parameter";
+    return parameter_path.string();
+}
+std::string CParameter::currentWorkPath()
+{
+    return boost::filesystem::current_path().string();
+}
+void CParameter::checkExeNecessaryFiles(std::vector<std::string*>& files)
+{
+    boost::filesystem::path tempPath,tempPath_2;
+    for(size_t i=0;i<files.size();i++){
+       tempPath=m_root_WorkingPath/files[i]->c_str();
+
+       tempPath_2 = m_root_WorkingPath/"parameter";
+       tempPath_2 = tempPath_2/files[i]->c_str();
+       if(!boost::filesystem::is_regular_file(tempPath)||!boost::filesystem::is_regular_file(tempPath_2)
+         ||boost::filesystem::file_size(tempPath) ==0 || boost::filesystem::file_size(tempPath_2) ==0){
+           Log::Error<<*files[i]<<" parameter file is not exist or empty in current director and parameter folder!"<<std::endl;
+           boost::throw_exception(std::runtime_error(*files[i] +" parameter file is no exist or empty! CParameter::checkExeNecessaryFiles!\n"));
+       }else{
+           boost::filesystem::path parameter_path = m_root_WorkingPath/"parameter";
+           this->copyFileToPath(tempPath.string(),parameter_path.string());
+       }
+    }
+}
+void CParameter::moveFileToPath(const std::string& file, const std::string& dir)
+{
+    boost::filesystem::path oldFilePath(file);
+
+    if(!boost::filesystem::is_regular_file(oldFilePath)){
+        Log::Error<<file<<" parameter file is not exist or empty!"<<std::endl;
+        boost::throw_exception(std::runtime_error(file +" parameter file is no exist or empty! CParameter::moveFileToPath!\n"));
+    }
+
+    boost::filesystem::path newDirPath(dir);
+
+    if(! boost::filesystem::exists(newDirPath))
+         boost::filesystem::create_directory(newDirPath);
+
+    boost::filesystem::path newFilePath(dir + "/" + oldFilePath.leaf().string());
+    if(!boost::filesystem::is_regular_file(newFilePath) ||
+       boost::filesystem::file_size(newFilePath) ==0 )
+       boost::filesystem::rename(oldFilePath,newFilePath);
+}
+
+void CParameter::copyFileToPath(const std::string& file, const std::string& dir)
+{
+    boost::filesystem::path oldFilePath(file);
+
+    if(!boost::filesystem::is_regular_file(oldFilePath)){
+        Log::Error<<file<<" parameter file is not exist or empty!"<<std::endl;
+        boost::throw_exception(std::runtime_error(file +" parameter file is no exist or empty! CParameter::moveFileToPath!\n"));
+    }
+    boost::filesystem::path newDirPath(dir);
+
+    if(! boost::filesystem::exists(newDirPath))
+         boost::filesystem::create_directory(newDirPath);
+
+    boost::filesystem::path newFilePath(dir + "/" + oldFilePath.leaf().string());
+
+    boost::filesystem::copy_file(oldFilePath,newFilePath);
 }
 
 

@@ -89,6 +89,7 @@ class CConfigurationBase
         size_t atomCount(const CElement &element) const;
         bool contains(const CAtom *atom) const;
         bool contains(const CElement &element) const;
+        void sortAtomsViaElements();
 
         //bond
         void perceiveBonds();

@@ -60,6 +60,7 @@ class CAtom
         inline bool IsElement(const CElement &element) const;
         inline CConfigurationBase* Configuration() const;
         inline size_t index() const;
+        inline void setIndex(const size_t);
 
         //geometry
         CBond* bond(size_t index) const;

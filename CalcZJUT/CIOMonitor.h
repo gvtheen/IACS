@@ -12,18 +12,19 @@ class CIOMonitor
         CIOMonitor(CParameter*);
         virtual ~CIOMonitor();
 
-        void createWorkingPath();
-        void init();
-        void absoluteFilePath(size_t,size_t,std::string&);
-        std::string& currentPath();
-        bool checkExeNecessaryFiles(std::vector<std::string>& files, size_t checkmode);
-        void initWorkingEnvironment(size_t,size_t);
+        void initWorkEnvironment();
+        void setCurrentWorkPathAt(size_t,size_t);
+        std::string currentWorkPath();
+        std::string currentInitPath();
+        void checkExeNecessaryFiles(std::vector<std::string>& files);
 
+        void moveFileToPath(const std::string& file, const std::string& dir);
+        void copyFileToPath(const std::string& file, const std::string& dir);
     protected:
 
     private:
         CParameter* m_pParameter;
-        std::string m_root_WorkingPath;
+        boost::filesystem::path m_root_WorkingPath;
 };
 
 

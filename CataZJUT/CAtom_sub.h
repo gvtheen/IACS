@@ -22,7 +22,10 @@ inline size_t CAtom::index() const
 {
     return this->m_index;
 }
-
+inline void CAtom::setIndex(const size_t index)
+{
+    this->m_index = index;
+}
 
 }
 

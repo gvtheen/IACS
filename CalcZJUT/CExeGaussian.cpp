@@ -26,6 +26,7 @@
 #include <fstream>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include "../GaZJUT/GaUtilityFunction.h"
 #include "CExeVASP.h"
 #include "CModel2DSupport.h"
@@ -50,13 +51,18 @@ namespace CALCZJUT{
 CExeGaussian::CExeGaussian(CParameter* mpara)
 :CExeFitnessInterface(mpara)
 {
-    m_pInputFile =new std::string(m_Parameter->runCmd[m_Parameter->runCmd.size()-1]);
+    m_pInputFile =new std::string("");
+    *m_pInputFile=m_Parameter->sysName+".com";
+    m_pGauParaFileAbsolutePath= new std::string("");
 }
 //
 CExeGaussian::~CExeGaussian()
 {
     if(m_pInputFile!=nullptr)
       delete m_pInputFile;
+
+    if(m_pGauParameterFileAbsolutePath!=nullptr)
+      delete m_pGauParaFileAbsolutePath;
 }
 CExeFitnessInterface* CExeGaussian::clone()
 {
@@ -69,6 +75,23 @@ void CExeGaussian::init()
 {
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="gjf";   //default value;
+
+    std::string old_path_str=m_Parameter->parameterPath();
+    old_path_str = old_path_str+"/"+ m_Parameter->sysName;
+    old_path_str=old_path_str+".com";
+
+    boost::filesystem::path tempPath(old_path_str);
+    if(boost::filesystem::is_regular_file(tempPath))
+        m_pGauParaFileAbsolutePath=tempPath.string();
+    else{
+        tempPath.replace_extension(".gjf");
+        if(boost::filesystem::is_regular_file(tempPath))
+           m_pGauParaFileAbsolutePath=tempPath.string();
+        else{
+           Log::Error<<tempPath.string()<<" file isnot exist! CExeGaussian::init()\n";
+           boost::throw_exception(std::runtime_error("Parameter file isnot exist! CExeGaussian::init()."));//ERROR TREATMENT;
+        }
+    }
 }
 double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
@@ -82,7 +105,16 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
      //transfer gene value to POSCAR file
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
-     m_pIO->output(*m_pInputFile+".gjf"); //.mol file
+
+     // change working path
+     this->m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+     //copy parameter file to current working path
+
+     std::string new_path_str=m_Parameter->currentWorkPath();
+     new_path_str=new_path_str+"/"+*m_pInputFile+".com";
+
+     this->m_Parameter->copyFileToPath(old_path_str,new_path_str);
+     m_pIO->output( new_path_str ); //.mol file
      //
      //Check whether input files is OK?
      CheckInputFile();
@@ -118,7 +150,6 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
      out_filename = out_filename + m_Parameter->output_struct_format;
      tempIO->output(out_filename);
      delete tempIO;
-
 
      return res;
 }

@@ -24,16 +24,46 @@
 namespace CALCZJUT{
 
 CModelPeriodicStruct::CModelPeriodicStruct(CParameter* mPara,
-                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,
                                            size_t index)
 :CModelBase(mPara,index)
 {
-    //ctor
+     this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
 }
 
 CModelPeriodicStruct::~CModelPeriodicStruct()
 {
-    //dtor
+    delete this->m_pPeriodicFramework;
 }
+
+CModelBase* CModelPeriodicStruct::clone()
+{
+    CModelPeriodicStruct* res =  new CModelPeriodicStruct (this->m_pParameter,0);
+
+    res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
+    res->m_IsNeedRandomInit = this->RandomInitState();
+    res->setChemicalFormula(this->chemicalFormula());
+
+    return res;
+}
+void CModelPeriodicStruct::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
+{
+
+}
+void CModelPeriodicStruct::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
+{
+
+}
+void CModelPeriodicStruct::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
+{
+
+}
+void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,
+                                                  double distanceCutOff=1.0)
+{
+
+
+}
+void eliminateFragment(CATAZJUT::CPeriodicFramework*);
+
 
 }

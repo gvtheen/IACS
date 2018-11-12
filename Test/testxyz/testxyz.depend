@@ -1,0 +1,109 @@
+# depslib dependency file v1.0
+1541444645 source:f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\test\readxyz.cpp
+	<iostream>
+	"../CalcZJUT/CIOXyz.h"
+	"../CalcZJUT/CParameter.h"
+	"../CataZJUT/CPeriodicFramework.h"
+
+1539860003 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\calczjut\cioxyz.h
+	<string>
+	"CIOBase.h"
+	"../Util/Bitset.h"
+
+1539860003 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\calczjut\ciobase.h
+	<string>
+	"../Util/Bitset.h"
+	"CParameter.h"
+
+1537983972 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\bitset.h
+	<boost/dynamic_bitset.hpp>
+
+1541431766 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\calczjut\cparameter.h
+	<string>
+	<vector>
+	<map>
+	"../GaZJUT/CGaparameter.h"
+
+1540234829 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\gazjut\cgaparameter.h
+	<string>
+	<map>
+	<vector>
+	"GaDeclaration.h"
+
+1540066293 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\gazjut\gadeclaration.h
+
+1541277890 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\cperiodicframework.h
+	"CConfigurationBase.h"
+
+1541414815 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\cconfigurationbase.h
+	<string>
+	<map>
+	<vector>
+	<boost/range/iterator_range.hpp>
+	<boost/shared_ptr.hpp>
+	<Eigen/Core>
+	<Eigen/Dense>
+	<Eigen/Geometry>
+	"../Util/Point-Vector.h"
+	"../Util/Bitset.h"
+	"CCoordinateSet.h"
+	"../CalcZJUT/CParameter.h"
+	"CatalystUniverseDefine.h"
+	"CConfigurationBase_sub.h"
+
+1538573561 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\point-vector.h
+	<Eigen/Core>
+	<Eigen/Dense>
+
+1537998483 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\ccoordinateset.h
+	"../Util/Point-Vector.h"
+
+1528153634 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\catalystuniversedefine.h
+
+1538159739 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\cconfigurationbase_sub.h
+	<boost/foreach.hpp>
+	"CConfigurationBase.h"
+	"../GaZJUT/GaUtilityFunction.h"
+	"../Util/log.hpp"
+	"CElement.h"
+
+1538601993 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\gazjut\gautilityfunction.h
+	<string>
+	<vector>
+	"GaDeclaration.h"
+	"../Util/Bitset.h"
+
+1538145105 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\log.hpp
+	<string>
+	<iostream>
+	<fstream>
+	"prefixedoutstream.hpp"
+	"nulloutstream.hpp"
+
+1537706838 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\prefixedoutstream.hpp
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cctype>
+	<climits>
+	<cfloat>
+	<cstdint>
+	<stdexcept>
+	<tuple>
+	<utility>
+	"prefixedoutstream_impl.hpp"
+
+1537706676 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\prefixedoutstream_impl.hpp
+	"prefixedoutstream.hpp"
+	<iostream>
+	<sstream>
+
+1537706621 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\util\nulloutstream.hpp
+	<iostream>
+	<streambuf>
+	<string>
+
+1541362249 f:\glzhuang-important\computer_study\design_by_c_plus_plus\gacatalyst\gacatalyst\src\catazjut\celement.h
+	<string>
+	<map>
+

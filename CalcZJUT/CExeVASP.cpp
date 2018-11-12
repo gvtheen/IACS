@@ -55,7 +55,6 @@ CExeVASP::CExeVASP(CParameter* mpara):CExeFitnessInterface(mpara)
 {
     m_pInputFile.push_back(new std::string("INCAR"));
     m_pInputFile.push_back(new std::string("KPOINTS"));
-    m_pInputFile.push_back(new std::string("POSCAR"));
     m_pInputFile.push_back(new std::string("POTCAR"));
 }
 
@@ -75,6 +74,9 @@ void CExeVASP::init()
 {
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="poscar";   //default value;
+
+    this->m_Parameter->checkExeNecessaryFiles(m_pInputFile);
+
 }
 char* CExeVASP::ExeName()
 {
@@ -101,6 +103,9 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
     // if( currGeneration != 0 )
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
+
+     this->m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+
      m_pIO->output("POSCAR");
      //
      //Check whether input files is OK?

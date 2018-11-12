@@ -1,0 +1,158 @@
+########### Input.dat file of GACATALYSIS program ###############
+
+############## Following information is used in General code;
+# System name of computational system. Default, the program will automately 
+# see chemical formula as name of system
+[System_Name] = C3N4
+
+# Evaluator program for search in GA running
+# 1: VASP 
+# 2: GAUSSIAN
+# 3: DMOL
+# 4£ºCASTEP
+# 5£ºLAMMPS
+# 6: DFTB
+[Evaluator_Code] = 1
+
+# Or set evaluator groups
+#
+#[Evaluator_Code_Group]=
+# 1: Energy
+# 2: Force
+# 3£ºBand_gap / HOMO-LUMO gap
+[Evaluator_Criterion]=1
+
+# 1: pure cluster
+# 2: molecule/cluster
+# 3: molecule/2D-support
+# 4£ºmolecule/cluster-2Dsupport
+# 5: peridoc structure
+[Simulation_Mode]=1
+
+# Run command of evaluator program
+[Running_Command]= mpirun -np 28 vasp_std
+
+############## 1st Following information is used in molecule/cluster, molecule/2D-support;
+# structure file of support
+[Support_Structure]= C3N4.car
+
+# structure file of Adsorbent
+[Adsorbent_Structure]= h2o.car
+
+# mixed structure of Adsorbent Support;
+[Adsorbent_Support_Structure]=h2o-C3N4.car
+
+# min,max distance of Adsorbent on the support
+[Distance_Adsorbent_On_Support]= 1.5 3.0
+
+############## 1st Following information is used in pure cluster;
+# command for pure cluster
+# You can give the chemical formula
+[Cluster_Formula]=Pd10
+
+# You can give the input strcture file
+[Cluster_Structure]=Pd10_1.mol  Pd10_2.mol   Pd10_3.mol
+
+############## 2nd Following information is used in GA code;
+# value: 1: min  searching
+#        2: max  searching
+# Default value: 1
+[Search_Mode]=1
+
+##
+## Generation number for GA searching. 
+## Default value is 30
+[Generation_Number] = 30
+
+###******[Population_Size]*********
+## Population Size. 
+## Default value is 20
+[Population_Size] = 20
+
+###******[Select_Mode]*********
+## set select operator:
+## default value: 1
+## 1:  ROULETTE_WHEEL
+## 2:  TOURNAMENT
+## 3:  RANDOM
+## 4:  MIXED
+# Default value: 1
+[Select_Mode]=1
+
+## Crossover Probability of GA searching. 
+## Default value 0.80
+[Cross_Probability]=0.80
+
+###******[Cross_Mode]*********
+#1: SINGLE 
+#2: MULTIPLE 
+#3: UNIFORM_C 
+#4: ARITHMETIC 
+#5: UNARITHMETIC 
+#Default value:    2
+[Cross_Mode]=2
+
+###******[Cross_Number]*********
+## normally, cross operator have 3 modes:
+# 1: single-point cross, 
+# 2: two-point cross 
+# 3: multi-point cross
+##Default value: 2
+[Cross_Number]= 2
+
+###******[Gene_Code]*********
+# coding method for gene: 1: BINARY ; 2:GRAY;  3: REAL
+# Default value:  1
+[Gene_Code]=1
+
+###******[Gene_Formation_Mode]*********
+#1: RANDOM
+#2: FILE              
+# Default value: 1
+[Gene_Formation_Mode]=1
+
+###******[Mutation_Probability]*********
+## Mutation Probability of GA searching. 
+## Default value 0.20
+[Mutation_Probability]=0.20
+
+###******[Mutation_Mode]*********
+# 1:UNIFORM_M
+# 2:BOUNDARY
+# 3:NOUNIFORM
+# 4:GAUSSIAN_M
+# Default value: 1
+[Mutation_Mode]=1
+
+###******[Scaling_Mode]*********
+#1:LINEAR
+#2:SIGMA
+#3:POWER
+# Default value: 1
+[Scaling_Mode]=1
+
+############## 3rd Following information is used in structural code
+## In order to get the crystal plane, identification of chemical bond is very important.
+## default: 0.6 1.15. See help file in Material studio
+[Bond_Tolerance_Factor]=0.6 1.15
+
+## Exclude the bond 
+[Exclude_Bond]= C  Mg
+[Exclude_Bond]= C  Cu
+
+
+#### Add the bond tolerance for specific chemical bond, e.g.  Ti-O bond: 1.81  2.54
+[Bond_Tolerance]= O  Ti  1.81  2.54
+[Bond_Tolerance]= O  Ti  1.81  2.54
+[Bond_Tolerance]= O  Ti  1.81  2.54
+
+
+### format of output file
+## 1: poscar   //.poscar
+## 2: mol      //.mol
+## 3: cif      //.cif
+## 4: car      //.car
+## 5: gjf      //.gjf
+## 6: cell     //.cell
+## 7: xyz      //.xyz
+[Output_Structure_Format]=1

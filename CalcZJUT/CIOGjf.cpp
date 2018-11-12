@@ -18,10 +18,11 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **
 ******************************************************************************/
-#include<fstream>
+#include <fstream>
 #include <boost/algorithm/string.hpp>
-#include<string>
-#include<iostream>
+#include <boost/filesystem.hpp>
+#include <string>
+#include <iostream>
 #include "unistd.h"
 #include "CIOGjf.h"
 #include "../GaZJUT/GaUtilityFunction.h"
@@ -30,6 +31,7 @@
 #include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CConfigurationPrivateData.h"
 #include "../CataZJUT/CConfigurationBase.h"
+#include "../CataZJUT/CAtom.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 
@@ -44,9 +46,29 @@ CIOGjf::CIOGjf(CATAZJUT::CPeriodicFramework* mpa)
 {
     //ctor
 }
-void CIOGjf::output(const std::string& file)
+void CIOGjf::output(const std::string& fileName)
 {
+    assert(m_pPeriodicFramework);
 
+    if( this->m_pPeriodicFramework->m_DimensionalType != CATAZJUT::DEFINED::Molecule )
+    {
+        Log::Error<<"Dimensional Type is error! CIOGjf::output!\n";
+        boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOGjf::output!\n"));
+    }
+    std::string file_Name=fileName;
+
+    std::ofstream out(file_Name.c_str(),std::ios::app);
+    out.setf(std::ios::fixed, std::ios::floatfield);
+    out.precision(10);
+
+    if(out.is_open())
+    {
+       foreach(CAtom* atom_s,m_pPeriodicFramework->atoms()){
+          out<<atom_s->Symbol()<<"        ";
+          out<<atom_s->position().transpose()<<std::endl;
+       }
+    }
+    out.close();
 }
 void CIOGjf::input(std::string file)
 {

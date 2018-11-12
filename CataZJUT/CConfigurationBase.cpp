@@ -149,7 +149,7 @@ std::vector<std::pair<std::string,size_t>>& CConfigurationBase::composition()
     std::map<unsigned char,size_t>* comp = new (std::map<unsigned char,size_t>);
     foreach(const CAtom* atom,atoms())
         (*comp)[atom->AtomNumber()]++;
-    //default, map is sorted by the key;
+    //default, map is sorted by the key ;
 
     for(std::map<unsigned char,size_t>::iterator it=comp->begin();it!=comp->end();it++)
     {
@@ -411,6 +411,26 @@ bool CConfigurationBase::contains(const CElement &element) const
 {
     return std::find(m_Element.begin(),m_Element.end(),element) != m_Element.end();
 }
+// sort atom sequence by atomic number.
+void CConfigurationBase::sortAtomsViaElements()
+{
+    std::sort(m_Atom.begin(),m_Atom.end(),[](CAtom* atom_a, CAtom* atom_b)   \
+              { return atom_a->AtomNumber() < atom_b->AtomNumber();});
+
+    //reset coordinate library!
+    CCartesianCoordinates* tempCoordinate = new CCartesianCoordinates(*m_pCartesian);
+    size_t tmp_index=0;
+    foreach(CAtom* atom_s, this->atoms()){
+       m_pCartesian->setPosition(tmp_index,tempCoordinate->position(atom_s->index()));
+       atom_s->setIndex(tmp_index);
+       tmp_index++;
+    }
+    delete tempCoordinate;
+    // re-construct bond connectivity of whole configuration
+    this->removeBonds(m_pData->bonds);
+    this->perceiveBonds();
+}
+
 
 //bond property
 /*
@@ -819,11 +839,4 @@ CALCZJUT::CParameter *CConfigurationBase::sysParameter()
     return this->m_pParameter;
 }
 
-
-
-
-
-
-
-
-}
+} //namespace CATAZJUT

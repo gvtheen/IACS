@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <boost/filesystem.hpp>
 #include "../GaZJUT/CGaparameter.h"
 namespace GAZJUT{
        class CGaparameter;
@@ -47,6 +48,7 @@ class CParameter
         std::pair<double,double> bondToleranceFactor;
         SIMULATION_MODE simulationMode;
         EVALUATOR_CRITERION  evaluatorCriterion;
+
         // for supported catalyst
         std::string supportStructFile;
         std::string adsorbentStructFile;
@@ -54,18 +56,26 @@ class CParameter
         // for pure cluster
         std::string cluster_Formula;
         std::vector<std::string*> cluster_Input_File;
-
-
+        // for periodic structure
+        std::string periodic_structure_Formula;
+        std::vector<std::string*> periodic_structure_Input_File;
+        std::vector<std::vector<char*>> evaluatorParameterFile;
         std::string output_struct_format;
-
         const char* Backup_Parameter_Folder;
-
         double optimal_gap_value;
 
-//        size_t PopSize()const;
-//        double Pm()const;
-//        double Pc()const;
-//        size_t GeneNum();
+        // set working environment
+    public:
+        void initWorkEnvironment();
+        void setCurrentWorkPathAt(size_t,size_t);
+        std::string currentWorkPath();
+        std::string rootPath();
+        std::string scratchPath();
+        std::string parameterPath();
+        void checkExeNecessaryFiles(std::vector<std::string*>& files);
+
+        void moveFileToPath(const std::string& file, const std::string& dir);
+        void copyFileToPath(const std::string& file, const std::string& dir);
 
     protected:
         // system command
@@ -105,6 +115,8 @@ class CParameter
         std::string *m_pfile;
         GAZJUT::CGaparameter* m_pGAParameter;
         std::map<std::string,cmdFun> m_mapCmdFunc;
+
+        boost::filesystem::path m_root_WorkingPath;
 };
 
 
