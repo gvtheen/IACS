@@ -26,6 +26,7 @@
 #include <fstream>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include "../GaZJUT/GaUtilityFunction.h"
 #include "CExeVASP.h"
 #include "CModel2DSupport.h"
@@ -39,17 +40,14 @@
 #include "../Util/log.hpp"
 #include "../CataZJUT/CBondTolerance.h"
 
-using util::Log;
-
 namespace CATAZJUT{
   class CFragment;
   class CPeriodicFramework;
 }
 
 using util::Point3;
-
+using util::Log;
 namespace CALCZJUT{
-
 
 CExeVASP::CExeVASP(CParameter* mpara):CExeFitnessInterface(mpara)
 {
@@ -63,6 +61,7 @@ CExeVASP::~CExeVASP()
     for(size_t i=0;i<m_pInputFile.size();i++)
         delete m_pInputFile[i];
     m_pInputFile.clear();
+
 }
 
 CExeFitnessInterface* CExeVASP::clone()
@@ -74,8 +73,9 @@ void CExeVASP::init()
 {
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="poscar";   //default value;
-
-    this->m_Parameter->checkExeNecessaryFiles(m_pInputFile);
+    // check whether other parameter files is exist.
+    m_Parameter->checkExeNecessaryFiles(m_pInputFile);
+    m_pParaFileAbsPath=new std::string(m_Parameter->parameterPath());
 
 }
 char* CExeVASP::ExeName()
@@ -100,12 +100,15 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      Log::Info<<" Run VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      //construct new object of CPeriodicFramework class
      //transfer gene value to POSCAR file
-    // if( currGeneration != 0 )
+     // if( currGeneration != 0 )
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
 
-     this->m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
-
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+     //copy parameter files into current path
+     std::string new_path_str=m_Parameter->currentWorkPath();
+     this->m_Parameter->copyFileToPath(*m_pParaFileAbsPath,new_path_str);
+     //output initial structure
      m_pIO->output("POSCAR");
      //
      //Check whether input files is OK?
@@ -121,8 +124,9 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
          ;//wait(NULL);
      //
      //read CONTCAR file;
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
      getRelaxedGeometryCoord();
-     std::string out_filename("CONTCAR_");
+     std::string out_filename("VASP_");
 
      if(IsNormalComplete()==true){
         isNormalExist=true;
@@ -141,7 +145,11 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      // Use the output file format to output structure;
      CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
      out_filename = out_filename + m_Parameter->output_struct_format;
+
+     //change current path
+     this->m_Parameter->setCurrentWorkPathAt(CParameter::SCRATCH);
      tempIO->output(out_filename);
+
      delete tempIO;
 
      return res;

@@ -76,6 +76,8 @@ void CExeDMol::init()
 
     if(m_Parameter->output_struct_format=="")
        m_Parameter->output_struct_format="car";   //default value;
+
+    m_Parameter->checkExeNecessaryFiles(m_pInputFile);
 }
 std::string& CExeDMol::inputFile()const
 {
@@ -105,7 +107,9 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
      //construct new object of CPeriodicFramework class
      //transfer gene value to structure file
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
-     //
+     //change current path
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+     //set outputing object
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
      //write structure in the car file
      m_pIO->output(*(m_pInputFile[0])+".car"); //.car file
@@ -124,8 +128,9 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
          ;//wait(NULL);
      //
      //read CONTCAR file;
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
      getRelaxedGeometryCoord();
-     std::string out_filename("relaxed_");
+     std::string out_filename("dmol_");
 
      if(IsNormalComplete()==true){
         isNormalExist=true;
@@ -143,6 +148,7 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
 
      CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
      out_filename = out_filename + m_Parameter->output_struct_format;
+     this->m_Parameter->setCurrentWorkPathAt(CParameter::SCRATCH);
      tempIO->output(out_filename);
      delete tempIO;
 

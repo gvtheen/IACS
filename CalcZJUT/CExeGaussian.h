@@ -31,7 +31,7 @@ class CExeGaussian:public CExeFitnessInterface
          void setInputFile(const std::string&);
 	protected:
 	     std::string *m_pInputFile;
-	     std::string *m_pGauParaFileAbsolutePath;
+	     std::string *m_pParaFileAbsPath;
 
 };
 

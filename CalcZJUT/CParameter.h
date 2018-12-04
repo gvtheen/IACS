@@ -29,7 +29,10 @@ class CParameter
                              MOL_CLUSTER   =0x203,
                              MOL_2DMATERIAL=0x204,
                       MOL_CLUSTER2DMATERIAL=0x205} SIMULATION_MODE;
-
+        typedef enum EM_P_03{WORK      = 0x301,
+                             PARAMETER = 0x302,
+                             SCRATCH   = 0x303,
+                             MAINPATH  = 0x304}PATH_TYPE;
         CParameter(char* filename);
         virtual ~CParameter();
 
@@ -68,6 +71,7 @@ class CParameter
     public:
         void initWorkEnvironment();
         void setCurrentWorkPathAt(size_t,size_t);
+        void setCurrentWorkPathAt(PATH_TYPE);
         std::string currentWorkPath();
         std::string rootPath();
         std::string scratchPath();

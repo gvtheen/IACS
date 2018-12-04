@@ -53,7 +53,7 @@ CExeGaussian::CExeGaussian(CParameter* mpara)
 {
     m_pInputFile =new std::string("");
     *m_pInputFile=m_Parameter->sysName+".com";
-    m_pGauParaFileAbsolutePath= new std::string("");
+    m_pParaFileAbsPath= new std::string("");
 }
 //
 CExeGaussian::~CExeGaussian()
@@ -61,8 +61,8 @@ CExeGaussian::~CExeGaussian()
     if(m_pInputFile!=nullptr)
       delete m_pInputFile;
 
-    if(m_pGauParameterFileAbsolutePath!=nullptr)
-      delete m_pGauParaFileAbsolutePath;
+    if(m_pParaFileAbsPath!=nullptr)
+      delete m_pParaFileAbsPath;
 }
 CExeFitnessInterface* CExeGaussian::clone()
 {
@@ -82,11 +82,11 @@ void CExeGaussian::init()
 
     boost::filesystem::path tempPath(old_path_str);
     if(boost::filesystem::is_regular_file(tempPath))
-        m_pGauParaFileAbsolutePath=tempPath.string();
+        m_pParaFileAbsPath=tempPath.string();
     else{
         tempPath.replace_extension(".gjf");
         if(boost::filesystem::is_regular_file(tempPath))
-           m_pGauParaFileAbsolutePath=tempPath.string();
+           m_pParaFileAbsPath=tempPath.string();
         else{
            Log::Error<<tempPath.string()<<" file isnot exist! CExeGaussian::init()\n";
            boost::throw_exception(std::runtime_error("Parameter file isnot exist! CExeGaussian::init()."));//ERROR TREATMENT;
@@ -111,9 +111,10 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
      //copy parameter file to current working path
 
      std::string new_path_str=m_Parameter->currentWorkPath();
-     new_path_str=new_path_str+"/"+*m_pInputFile+".com";
 
-     this->m_Parameter->copyFileToPath(old_path_str,new_path_str);
+     this->m_Parameter->copyFileToPath(*m_pParaFileAbsPath,new_path_str);
+
+     new_path_str=new_path_str+"/"+*m_pInputFile+".com";
      m_pIO->output( new_path_str ); //.mol file
      //
      //Check whether input files is OK?
@@ -129,8 +130,9 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
         ;// wait(NULL);
      //
      //read CONTCAR file;
+     this->m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
      getRelaxedGeometryCoord();
-     std::string out_filename("relaxed_");
+     std::string out_filename("gaussian_");
 
      if(IsNormalComplete()==true){
         isNormalExist=true;

@@ -26,6 +26,7 @@ class CExeVASP:public CExeFitnessInterface
 
 	protected:
 		 std::vector<std::string*>   m_pInputFile;
+         std::string *m_pParaFileAbsPath;
 };
 
 

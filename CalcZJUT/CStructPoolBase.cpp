@@ -34,7 +34,10 @@ CStructPoolBase::CStructPoolBase(CParameter* othr)
 
 CStructPoolBase::~CStructPoolBase()
 {
-    //dtor
+     for(size_t i=0;i<m_CalcStructPool.size();i++)
+        if(m_CalcStructPool[i]!=nullptr)
+           delete m_CalcStructPool[i];
+     m_CalcStructPool.clear();
 }
 CModelBase* CStructPoolBase::operator[](size_t index)
 {

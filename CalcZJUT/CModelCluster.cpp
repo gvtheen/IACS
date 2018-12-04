@@ -134,6 +134,7 @@ void CModelCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_st
     util::Point3  center_P;
     double eps=0.1;
     bool modifiedbol=true;
+    size_t less_cycle=0;
     while(modifiedbol)
     {
        modifiedbol=false;
@@ -159,11 +160,16 @@ void CModelCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_st
                 modifiedbol=true;
             }
           }
-
+       less_cycle++;
+       if(less_cycle > 65536){
+          Log::Warn<<"Cycle of function is more than 65536 in CModelCluster::eliminateCloseContacts!"<<std::endl;
+          break;
+       }
     }
 }
 void CModelCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
 {
+    size_t less_cycle;
     if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure
          curr_struct->perceiveFragments();
     if( curr_struct->fragmentNum() > 1 ){
@@ -194,9 +200,15 @@ void CModelCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
                differVect= (differ-1.5)*(maincenter-othercenter).normalized();
                fragment_s->move(differVect);
                // further judge whether two fragments is bonded.
+               less_cycle=0;
                while(mainFragment->isBondTo(fragment_s)!=true){
                    differVect= 0.2*(maincenter-othercenter).normalized();
                    fragment_s->move(differVect);
+                   less_cycle++;
+                   if(less_cycle>65536){
+                      Log::Warn<<"Cycle of function is more than 65536 in CModelCluster::eliminateFragment!"<<std::endl;
+                      break;
+                   }
                }
             }
     }

@@ -443,6 +443,26 @@ void CParameter::setCurrentWorkPathAt(size_t generation,size_t population)
 
     boost::filesystem::current_path(working_path);
 }
+void CParameter::setCurrentWorkPathAt(CParameter::PATH_TYPE mType)
+{
+    boost::filesystem::path working_path;
+    switch(int(mType)){
+       case CParameter::WORK:
+           working_path=m_root_WorkingPath/"work";
+           break;
+       case CParameter::PARAMETER:
+           working_path=m_root_WorkingPath/"parameter";
+           break;
+       case CParameter::SCRATCH:
+           working_path=m_root_WorkingPath/"scratch";
+           break;
+       case CParameter::MAINPATH:
+       default:
+           working_path=m_root_WorkingPath;
+           break;
+    }
+    boost::filesystem::current_path(working_path);
+}
 std::string CParameter::rootPath()
 {
     return this->m_root_WorkingPath.string();
