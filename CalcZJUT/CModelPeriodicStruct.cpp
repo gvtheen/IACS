@@ -92,15 +92,93 @@ void CModelPeriodicStruct::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible
 {
    //
 }
-void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,
+void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,
                                                   double distanceCutOff=1.0)
 {
+    util::Vector3 vect;
+    util::Point3  center_P;
+    double eps=0.1;
+    bool modifiedbol=true;
+    size_t less_cycle=0;
 
+    while(modifiedbol)
+    {
+       modifiedbol=false;
+       // get center pointer of structure
+       center_P = curr_struct->center();
+
+       foreach(CATAZJUT::CAtom* atom_s, curr_struct->atoms())
+          foreach(CATAZJUT::CAtom* atom_m, curr_struct->atoms()){
+            distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
+            if( curr_struct->distance(atom_m,atom_s) < distanceCutOff ){
+                /*
+                  Let this atom move far away from center atom.
+                */
+                if( (center_P - atom_m->position()).norm() > (center_P - atom_s->position()).norm() ){
+                    vect = atom_m->position() - atom_s->position();
+                    vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
+                    curr_struct->moveAtom(atom_m,vect);
+                }else{
+                    vect = atom_s->position() - atom_m->position();
+                    vect = ( distanceCutOff - vect.norm()+eps )*(vect.normalized());
+                    curr_struct->moveAtom(atom_s,vect);
+                }
+                modifiedbol=true;
+            }
+          }
+       less_cycle++;
+       if(less_cycle > 65536){
+          Log::Warn<<"Cycle of function is more than 65536 in CModelCluster::eliminateCloseContacts!"<<std::endl;
+          break;
+       }
+    }
 
 }
-void CModelPeriodicStruct::eliminateFragment(CATAZJUT::CPeriodicFramework* mPeriodicFramework)
+void CModelPeriodicStruct::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
 {
-
+    size_t less_cycle;
+    if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure
+         curr_struct->perceiveFragments();
+    if( curr_struct->fragmentNum() > 1 ){
+        size_t maxCount=0;
+        CATAZJUT::CFragment* mainFragment;
+        foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments()){
+            if(maxCount < fragment_s->atomCount()){
+                maxCount = fragment_s->atomCount();
+                mainFragment = fragment_s;
+            }
+        }
+        //
+        Vector4 mainsphereEquation4, othersphereEquation4;
+        Point3 maincenter,othercenter;
+        double mainR, otherR, differ;
+        Vector3 differVect;
+        //main center, radius of the largest fragment.
+        //all other fragments move toward it.
+        mainsphereEquation4 = util::SphereEquationFromPoints(mainFragment->coordinates());
+        maincenter<<mainsphereEquation4(0,0),mainsphereEquation4(1,0),mainsphereEquation4(2,0);
+        mainR=mainsphereEquation4(3,0);
+        foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments())
+            if(mainFragment!=fragment_s){
+               othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
+               othercenter<<othersphereEquation4(0,0),othersphereEquation4(1,0),othersphereEquation4(2,0);
+               otherR=othersphereEquation4(3,0);
+               differ = (maincenter-othercenter).norm() - mainR - otherR;
+               differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+               fragment_s->move(differVect);
+               // further judge whether two fragments is bonded.
+               less_cycle=0;
+               while(mainFragment->isBondTo(fragment_s)!=true){
+                   differVect= 0.2*(maincenter-othercenter).normalized();
+                   fragment_s->move(differVect);
+                   less_cycle++;
+                   if(less_cycle>65536){
+                      Log::Warn<<"Cycle of function is more than 65536 in CModelCluster::eliminateFragment!"<<std::endl;
+                      break;
+                   }
+               }
+            }
+    }
 }
 
 

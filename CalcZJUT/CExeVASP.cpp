@@ -119,6 +119,7 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
          Log::Error<<"Building new process is error! CalcuRawFit_CExeVASP"<<std::endl;
          boost::throw_exception(std::runtime_error("Building new process is error! Check the file: Error_information.txt."));//ERROR TREATMENT;
      }else if(pid==0){
+
          //run VASP program
      }else
          ;//wait(NULL);

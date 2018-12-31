@@ -187,9 +187,11 @@ void CModel2DSupport::eliminateCloseContacts(double distanceCutOff)
     Vector3 vect;
     double eps=0.01;
     bool modifiedbol=true;
+    size_t cycle_p=0;
     while(modifiedbol)
     {
        modifiedbol=false;
+       cycle_p++;
        foreach(CATAZJUT::CAtom* atom_s, m_pSupport->atoms())
           foreach(CATAZJUT::CAtom* atom_m, m_pAdsorbMolecule->atoms()){
             distanceCutOff = (atom_s->CovalentRadius() + atom_m->CovalentRadius())*0.6;
@@ -200,6 +202,10 @@ void CModel2DSupport::eliminateCloseContacts(double distanceCutOff)
                 modifiedbol=true;
             }
         }
+      if(cycle_p>=65536){
+         Log::Warn<<"Cycle of function is more than 65536 in CModel2DSupport::eliminateCloseContacts!"<<std::endl;
+         break;
+      }
     }
 }
 void CModel2DSupport::getGeneValuefromStruct(std::vector<double>& geneRealValue)
