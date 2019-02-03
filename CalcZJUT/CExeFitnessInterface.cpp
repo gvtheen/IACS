@@ -83,27 +83,25 @@ CIOBase* CExeFitnessInterface::IO()const
 {
     return this->m_pIO;
 }
-CIOBase* getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
+void CExeFitnessInterface::getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework,CIOBase* resultIO)
 {
     std::vector<std::string> vectstr;
     boost::algorithm::split(vectstr,file_name,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
     boost::algorithm::trim(vectstr[1]);
     if(vectstr[1]=="mol")
-        return new CIOMol(currentPeriodicFramework);
+        resultIO = new CIOMol(currentPeriodicFramework);
     else if(vectstr[1]=="car")
-        return new CIOCar(currentPeriodicFramework);
+        resultIO = new CIOCar(currentPeriodicFramework);
     else if(vectstr[1]=="poscar")
-        return new CIOPoscar(currentPeriodicFramework);
+        resultIO = new CIOPoscar(currentPeriodicFramework);
     else if(vectstr[1]=="gjf")
-        return new CIOGjf(currentPeriodicFramework);
+        resultIO = new CIOGjf(currentPeriodicFramework);
     else if(vectstr[1]=="cif")
-        return new CIOCif(currentPeriodicFramework);
+        resultIO = new CIOCif(currentPeriodicFramework);
     else if(vectstr[1]=="cell")
-        return new CIOCellFile(currentPeriodicFramework);
+        resultIO = new CIOCellFile(currentPeriodicFramework);
     else
-        ;
-
-    return nullptr;
+        resultIO = nullptr;
 }
 
 }

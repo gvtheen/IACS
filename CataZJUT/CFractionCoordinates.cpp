@@ -24,6 +24,9 @@
 #include "CPeriodicFramework.h"
 #include "Geometry.h"
 #include "CUnitCell.h"
+#include "../Util/log.hpp"
+
+using util::Log;
 namespace CATAZJUT{
 
 CFractionCoordinates::CFractionCoordinates()
@@ -348,7 +351,7 @@ CFractionCoordinates  CFractionCoordinates::operator - (const CFractionCoordinat
 const Point3& CFractionCoordinates::operator[](size_t index) const
 {
       if(index >= this->m_coordinates.size()){
-        Log::Error<<"Index exceed the size of vector in CFractionCoordinates::operator!!!"<<endl;
+        Log::Error<<"Index exceed the size of vector in CFractionCoordinates::operator!!!"<<std::endl;
         boost::throw_exception(std::runtime_error("Index exceed the size of vector in CFractionCoordinates::operator!!!"));
       }
       return m_coordinates[index];

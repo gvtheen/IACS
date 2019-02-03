@@ -16,6 +16,7 @@ class CIOhdf5
     protected:
 
     private:
+        CATAZJUT::CPeriodicFramework* currentPeriodicFramework;
 };
 
 

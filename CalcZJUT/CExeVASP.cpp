@@ -105,6 +105,7 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
 
      m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+
      //copy parameter files into current path
      std::string new_path_str=m_Parameter->currentWorkPath();
      this->m_Parameter->copyFileToPath(*m_pParaFileAbsPath,new_path_str);
@@ -144,7 +145,8 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      }
 
      // Use the output file format to output structure;
-     CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
+     CIOBase* tempIO;
+     this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
 
      //change current path
@@ -152,6 +154,7 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      tempIO->output(out_filename);
 
      delete tempIO;
+     //release IO memory!
 
      return res;
 }

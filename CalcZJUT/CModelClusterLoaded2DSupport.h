@@ -31,7 +31,7 @@ class CModelClusterLoaded2DSupport:public CModelBase
                             C_AXIS=0x40AD,
                           NONE_DIR=0x40AE}LATT_DIRECTION;
 
-        CModelClusterLoaded2DSupport(CParameter*,CATAZJUT::CPeriodicFramework**);
+        CModelClusterLoaded2DSupport(CParameter*,CATAZJUT::CPeriodicFramework**,size_t);
         virtual ~CModelClusterLoaded2DSupport();
 
         CModelBase* clone();   //clone function

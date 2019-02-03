@@ -240,7 +240,7 @@ void CGpopulation::setPopNum(size_t popnum)
         util::Log::Error<<"Population num is less than 0! CGpopulation_setPopNum!\n";
         boost::throw_exception(std::runtime_error("Population num is less than 0! CGpopulation_setPopNum!\n"));
     }
-    (*m_pObjGaparameter)["Population"]=std::to_string(popnum);
+    m_pObjGaparameter->setKeyValue("Population",std::to_string(popnum));
 
 }
 std::vector <GeneVAR>& CGpopulation::GeneVARArray()

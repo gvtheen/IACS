@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include "unistd.h"
+#include "foreach.h"
 #include "CIOGjf.h"
 #include "../GaZJUT/GaUtilityFunction.h"
 #include "../CataZJUT/CPeriodicFramework.h"
@@ -38,7 +39,9 @@
 using util::Log;
 using util::Point3;
 using util::Point3i;
-
+namespace CATAZJUT{
+   class CAtom;
+}
 namespace CALCZJUT{
 
 CIOGjf::CIOGjf(CATAZJUT::CPeriodicFramework* mpa)
@@ -63,7 +66,7 @@ void CIOGjf::output(const std::string& fileName)
 
     if(out.is_open())
     {
-       foreach(CAtom* atom_s,m_pPeriodicFramework->atoms()){
+       foreach(CATAZJUT::CAtom* atom_s,m_pPeriodicFramework->atoms()){
           out<<atom_s->Symbol()<<"        ";
           out<<atom_s->position().transpose()<<std::endl;
        }

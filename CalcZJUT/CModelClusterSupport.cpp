@@ -52,14 +52,14 @@ CModelClusterSupport::CModelClusterSupport(CParameter* mPara,
 }
 CModelBase* CModelClusterSupport::clone()
 {
-   CModelClusterSupport* res = new CModelClusterSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
+   CModelClusterSupport* res = new CModelClusterSupport(this->m_pParameter,
+                                                        this->m_ppBackupPeriodicFramework,0);
    res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
    res->createMoleAdsorb(this->MoleAdsorbBit());
    res->createSupport(this->SupportBit());
    res->setRandomInitState(this->RandomInitState());
    res->setCrystalPlanes(this->crystalPlanes());
    return res;
-
 }
 CModelClusterSupport::~CModelClusterSupport()
 {

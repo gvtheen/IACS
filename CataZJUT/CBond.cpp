@@ -86,6 +86,10 @@ bool CBond::is(CBond::BondOrderType order) const
     else
         return false;
 }
+double CBond::length() const
+{
+    return this->m_pConfiguration->distance(this->atom1(),this->atom2());
+}
 //other atom <------- atom
 Vector3 CBond::bondVector(const CAtom* atom)const
 {

@@ -81,6 +81,8 @@ CModelBase* CModelCluster::clone()
 
 void CModelCluster::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
+     size_t index=0;
+     Point3 tempPoint;
      if( realValueOfgene.size()%3 != 0 ){
         Log::Error<<"The size() of realValueofGene is error! CModelCluster::setGeneValueToStruct!\n";
         boost::throw_exception(std::runtime_error("The size() of realValueofGene is error! CModelCluster::setGeneValueToStruct!"));
@@ -88,8 +90,6 @@ void CModelCluster::setGeneValueToStruct(const std::vector<double>& realValueOfg
      if(realValueOfgene.size()==0)
        goto RETURN_Label;
 
-      size_t index=0;
-      Point3 tempPoint;
       if(this->m_pParameter->currentGenerationNum()>0){
           try{
              foreach(CATAZJUT::CAtom* atom_s, this->m_pPeriodicFramework->atoms()){

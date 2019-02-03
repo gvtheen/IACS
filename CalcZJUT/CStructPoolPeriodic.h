@@ -21,7 +21,10 @@ class CStructPoolPeriodic:public CStructPoolBase
 
     protected:
 
+
     private:
+        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut,
+                                            std::vector<std::pair<std::string,size_t>>&);
 };
 
 

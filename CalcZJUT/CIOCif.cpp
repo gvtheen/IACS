@@ -95,11 +95,11 @@ void CIOCif::output(const std::string& file_name)
 
        // Here donot delete temp pointer.
        CATAZJUT::CCartesianCoordinates* temp = m_pPeriodicFramework->coordinates();
-       CATAZJUT::CFractionCoordinates *res = temp->toFractionCoordinates();
+       CATAZJUT::CFractionCoordinates *res = temp->toFractionCoordinates(m_pPeriodicFramework);
        std::vector<std::pair<std::string,size_t>> tempComposition = m_pPeriodicFramework->composition();
        std::map<std::string,size_t> label_Map;
        for(size_t i=0;i<tempComposition.size();i++)
-           label_Map[tempComposition[i]->first] = 1;
+           label_Map[tempComposition[i].first] = 1;
 
        Point3 pos;
        foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms()){
@@ -153,7 +153,7 @@ void CIOCif::input(std::string filename)
             boost::algorithm::trim(str);
           }
           m_pPeriodicFramework->unitcell()->fromCellPara(celldata[0],celldata[1],celldata[2],
-                                                         celldata[3],celldata[4],celldata[5]);
+                                                         celldata[3],celldata[4],celldata[5],'p');
           while(1){
              std::getline(*in,str,'\n');
              boost::algorithm::trim(str);
@@ -195,12 +195,12 @@ Bitset CIOCif::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE mode
      //check whether the file is exist.
      if(access(file.c_str(),F_OK) != 0 ){
            Log::Error<<file <<" file is no exist! CIOCellFile::input"<<std::endl;
-           boost::throw_exception(std::runtime_error(filename + "file is no exist! Check the file CIOCellFile::input!"));
+           boost::throw_exception(std::runtime_error(file + "file is no exist! Check the file CIOCellFile::input!"));
      }
       // check the file format
      if(boost::algorithm::contains(file,".cell")==0){
-           Log::Error<<filename <<" file is no cell format! CIOCellFile::input"<<std::endl;
-           boost::throw_exception(std::runtime_error(filename + "file is no no cell format! Check the file CIOCellFile::input!"));
+           Log::Error<<file<<" file is no cell format! CIOCellFile::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(file + "file is no no cell format! Check the file CIOCellFile::input!"));
      }
      size_t n1 = m_pPeriodicFramework->atomCount();
      this->input(file);

@@ -69,9 +69,9 @@ void CIOXyz::output(const std::string& file)
         boost::throw_exception(std::runtime_error("Periodic structure is not saved as xyz file! CIOXyz::output!"));
     }
     //check file format
-    if(boost::algorithm::contains(filename,".xyz")==0){
-           Log::Error<<filename <<" file is no xyz format! CIOXyz::output"<<std::endl;
-           boost::throw_exception(std::runtime_error(filename + "file is no no xyz format! Check the file!"));
+    if(boost::algorithm::contains(file,".xyz")==0){
+           Log::Error<<file <<" file is no xyz format! CIOXyz::output"<<std::endl;
+           boost::throw_exception(std::runtime_error(file + "file is no no xyz format! Check the file!"));
     }
 
     std::ofstream out(file,std::ios::app);
@@ -90,16 +90,19 @@ void  CIOXyz::input(std::string file)
 {
      assert(m_pPeriodicFramework);
 
-     if (file=="")
-         file=m_pPeriodicFramework->;
+     if (file==""){
+        file=m_pPeriodicFramework->formula();
+        file=file + ".xyz";
+     }
+
 
      if(access(file.c_str(),F_OK) != 0 ){
            Log::Error<<file <<" file is no exist! input_CIOXyz!\n";
            boost::throw_exception(std::runtime_error("XYZ file is no exist! Check the file: input_CIOXyz."));
       }
-      if(boost::algorithm::contains(filename,".xyz")==0){
-           Log::Error<<filename <<" file is no xyz format! CIOXyz::input"<<std::endl;
-           boost::throw_exception(std::runtime_error(filename + "file is no no xyz format! Check the code CIOXyz::input!"));
+      if(boost::algorithm::contains(file,".xyz")==0){
+           Log::Error<<file <<" file is no xyz format! CIOXyz::input"<<std::endl;
+           boost::throw_exception(std::runtime_error(file + "file is no no xyz format! Check the code CIOXyz::input!"));
       }
       std::ifstream *in;
       std::string str;

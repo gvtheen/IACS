@@ -52,7 +52,6 @@ CGAEngine::CGAEngine(CALCZJUT::CParameter* para)
 
 CGAEngine::~CGAEngine()
 {
-    delete m_pFitnessCalculator;
     delete m_pCurrentPopulation;
     delete this->m_pStructurePool;
     for(size_t i=0;i<m_GeneticOperator.size();i++)

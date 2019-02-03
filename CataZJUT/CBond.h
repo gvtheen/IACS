@@ -25,7 +25,7 @@ class CBond
         virtual ~CBond();
 
         Point3 Center() const;
-        double Length() const;
+        double length() const;
         CAtom* atom(size_t index) const;
         CAtom* atom1() const;
         CAtom* atom2() const;

@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "../GaZJUT/GaUtilityFunction.h"
 #include "CExeVASP.h"
 #include "CModel2DSupport.h"
@@ -82,11 +83,11 @@ void CExeGaussian::init()
 
     boost::filesystem::path tempPath(old_path_str);
     if(boost::filesystem::is_regular_file(tempPath))
-        m_pParaFileAbsPath=tempPath.string();
+        m_pParaFileAbsPath=new std::string(tempPath.string());
     else{
         tempPath.replace_extension(".gjf");
         if(boost::filesystem::is_regular_file(tempPath))
-           m_pParaFileAbsPath=tempPath.string();
+           m_pParaFileAbsPath= new std::string(tempPath.string());
         else{
            Log::Error<<tempPath.string()<<" file isnot exist! CExeGaussian::init()\n";
            boost::throw_exception(std::runtime_error("Parameter file isnot exist! CExeGaussian::init()."));//ERROR TREATMENT;
@@ -148,7 +149,8 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
         Log::Info<<"InNormally Finish Gaussian calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
-     CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
+     CIOBase* tempIO;
+     this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
      tempIO->output(out_filename);
      delete tempIO;

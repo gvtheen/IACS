@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include "CGraygene.h"
 #include "../Util/CRandomgenerator.h"
-#include "../Util/utilFunction.hpp"
+#include "../Util/utilFunction.h"
 #include "../Util/log.hpp"
 
 namespace GAZJUT{

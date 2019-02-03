@@ -244,9 +244,9 @@ void CBondTolerance::setBondOrderType(CBond* mthBond)
         double coventL1,coventL2;
         coventL1=mthBond->atom1()->CovalentRadius();
         coventL2=mthBond->atom2()->CovalentRadius();
-        if(mthBond->Length() > (coventL1+coventL2-0.2))
+        if(mthBond->length() > (coventL1+coventL2-0.2))
             mthBond->setBondOrder(CBond::Single);
-        else if(mthBond->Length()<=(coventL1+coventL2-0.2) && (mthBond->Length()>(coventL1+coventL2-0.3)))
+        else if(mthBond->length()<=(coventL1+coventL2-0.2) && (mthBond->length()>(coventL1+coventL2-0.3)))
             mthBond->setBondOrder(CBond::Double);
         else
             mthBond->setBondOrder(CBond::Triple);

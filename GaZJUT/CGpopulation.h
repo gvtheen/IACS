@@ -40,7 +40,7 @@ class CGpopulation
 
         void modifyPopulation(std::vector <CGenome*>,size_t pos);
 		//operator function
-		CGenome* operator[](const size_t);             //return   pointer of genome of x th
+		CGenome* operator[](size_t);             //return   pointer of genome of x th
         double   operator[](std::string );          //return   minraw, maxraw, minfit,maxfit of population
     public:
         CGaparameter            *m_pObjGaparameter;

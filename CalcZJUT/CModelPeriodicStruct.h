@@ -2,6 +2,9 @@
 #define CModelPeriodicStruct_H
 #include "CModelBase.h"
 
+namespace CATAZJUT{
+   class CPeriodicFramework;
+}
 
 namespace CALCZJUT{
 

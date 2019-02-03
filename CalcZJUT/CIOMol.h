@@ -1,5 +1,5 @@
-#ifndef CIOCAR_H
-#define CIOCAR_H
+#ifndef CIOMOL_H
+#define CIOMOL_H
 
 #include <string>
 #include "CIOBase.h"
@@ -29,4 +29,4 @@ class CIOMol:public CIOBase
 };
 
 }
-#endif 
+#endif

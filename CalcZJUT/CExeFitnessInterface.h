@@ -22,7 +22,7 @@ class CExeFitnessInterface
 		 CExeFitnessInterface(CParameter*);
 		 virtual ~CExeFitnessInterface();
 		//virtual function:  interface function
-		 virtual CExeFitnessInterface* clone();
+		 virtual CExeFitnessInterface* clone()=0;
 		 virtual void init();
 		 virtual double CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist);
          virtual void ConvOrigToRawScore(std::vector<double>&);
@@ -34,7 +34,7 @@ class CExeFitnessInterface
          void setIO(CIOBase* m_IO);
          CIOBase* IO()const;
 
-         CIOBase* getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework);
+         void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework,CIOBase* ios);
 
 //		 virtual void   outputResult()=0;
 

@@ -146,7 +146,8 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
         Log::Info<<"InNormally Finish DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
-     CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
+     CIOBase* tempIO;
+     this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
      this->m_Parameter->setCurrentWorkPathAt(CParameter::SCRATCH);
      tempIO->output(out_filename);

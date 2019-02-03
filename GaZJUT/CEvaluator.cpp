@@ -48,6 +48,7 @@ CEvaluator::CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>  *myEvaluato
 {
     // sample evaluator
     this->m_pEvaluatorPool = myEvaluatorPool;
+    this->m_currentEvaluator=nullptr;
     // sample structural pool
     this->m_pStructurePool = myStructPool;
     // sample evaluator monitor!
@@ -68,7 +69,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    // calculate the fitness of each genome in population
 
    //put the 1st evaluator into current evaluator.
-   CALCZJUT::CExeFitnessInterface* currentEvaluator = (*m_pEvaluatorPool)[0];
+   m_currentEvaluator= (*m_pEvaluatorPool)[0];
    for(size_t i=0;i<pop_num;i++)
    {
       //clear all content of DecValueOfGenome
@@ -77,14 +78,14 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
       ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
 
       //sett i th structure to evaluator
-      currentEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
+      m_currentEvaluator->setCalcModeStruct((*m_pStructurePool)[i]);
 
       #ifdef DEBUG
          (*m_pStructurePool)[i]->outputStructureToFile();
       #endif // DEBUG
 
       // Run evaluator, obtained raw value.
-      OrigScoreMap[i] = currentEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
+      OrigScoreMap[i] = m_currentEvaluator->CalcuRawFit(DecValueOfGenome,i,runstate);
       /** \brief
        *  \OrigScoreMap:    build the map relation between pop index and orig. Value;
        */
@@ -108,7 +109,7 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    OrigScoreVect.resize(pop_num);
    for(size_t i=0;i<pop_num;i++)
       OrigScoreVect[i] = OrigScoreMap[i];
-   currentEvaluator->ConvOrigToRawScore(OrigScoreVect);
+   m_currentEvaluator->ConvOrigToRawScore(OrigScoreVect);
    for(size_t i=0;i<pop_num;i++)
       ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
    // After one cycle calculation, output some structure and computational value.
@@ -139,8 +140,11 @@ void CEvaluator::standardOutput(std::map <size_t, double>& mapIndexScore)
 }
 void CEvaluator::standardOutput( CGpopulation* CurrentPopulation )
 {
+   assert(m_currentEvaluator);
+   assert(m_pStructurePool);
+
    Log::Output<<"Computational results in "<<m_pStructurePool->m_pParameter->currentGenerationNum();
-   Log::Output<<" th generation by using " << m_pEvaluator->ExeName()<<std::endl;
+   Log::Output<<" th generation by using " << this->m_currentEvaluator->ExeName()<<std::endl;
    Log::Output<<"-------------------------------------------------------------------"<<std::endl;
    for(size_t i=0;i<CurrentPopulation->popNum();i++){
        switch((int)(m_pStructurePool->m_pParameter->evaluatorCriterion)){

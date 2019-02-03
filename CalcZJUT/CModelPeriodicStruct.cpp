@@ -24,6 +24,14 @@
 #include "../Util/foreach.h"
 #include "../Util/Bitset.h"
 #include "../Util/Point-Vector.h"
+#include "../Util/utilFunction.h"
+#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CAtom.h"
+#include "../CataZJUT/CFragment.h"
+
+using util::Log;
+using util::Point3;
+using util::Vector4;
 
 namespace CALCZJUT{
 
@@ -51,15 +59,17 @@ CModelBase* CModelPeriodicStruct::clone()
 }
 void CModelPeriodicStruct::setGeneValueToStruct(const std::vector<double>& realValueOfgene)
 {
-    if( realValueOfgene.size()%3 != 0 ){
+     size_t index=0;
+     Point3 tempPoint;
+
+     if( realValueOfgene.size()%3 != 0 ){
         Log::Error<<"The size() of realValueofGene is error! CModelPeriodicStruct::setGeneValueToStruct!\n";
         boost::throw_exception(std::runtime_error("The size() of realValueofGene is error! CModelPeriodicStruct::setGeneValueToStruct!"));
      }
      if(realValueOfgene.size()==0)
         goto RETURN_Label;
 
-      size_t index=0;
-      Point3 tempPoint;
+
       if(this->m_pParameter->currentGenerationNum()>0){
           try{
              foreach(CATAZJUT::CAtom* atom_s, this->m_pPeriodicFramework->atoms()){
@@ -73,6 +83,7 @@ void CModelPeriodicStruct::setGeneValueToStruct(const std::vector<double>& realV
              boost::throw_exception(std::runtime_error(e.what()));
           }
       }
+
 RETURN_Label:
     ;
 }
@@ -93,7 +104,7 @@ void CModelPeriodicStruct::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible
    //
 }
 void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,
-                                                  double distanceCutOff=1.0)
+                                                  double distanceCutOff)
 {
     util::Vector3 vect;
     util::Point3  center_P;

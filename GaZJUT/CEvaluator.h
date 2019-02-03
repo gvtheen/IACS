@@ -50,6 +50,7 @@ class CEvaluator:public CGaOperatorBase
         void standardOutput(CGpopulation*);
     private:
 	    std::vector<CALCZJUT::CExeFitnessInterface*>      *m_pEvaluatorPool;
+	                  CALCZJUT::CExeFitnessInterface      *m_currentEvaluator;
 	                        CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;
 	                                          Bitset       pop_run_state;

@@ -62,6 +62,7 @@ class CParameter
         // for periodic structure
         std::string periodic_structure_Formula;
         std::vector<std::string*> periodic_structure_Input_File;
+
         std::vector<std::vector<char*>> evaluatorParameterFile;
         std::string output_struct_format;
         const char* Backup_Parameter_Folder;

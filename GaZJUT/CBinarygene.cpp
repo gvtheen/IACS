@@ -22,7 +22,7 @@
 #include "CBinarygene.h"
 #include "../Util/CRandomgenerator.h"
 #include "../Util/log.hpp"
-#include "../Util/utilFunction.hpp"
+#include "../Util/utilFunction.h"
 namespace GAZJUT{
 
 CBinarygene::CBinarygene():CGenebase()

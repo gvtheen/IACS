@@ -45,8 +45,8 @@ using CATAZJUT::constants::Pi;
 namespace CALCZJUT{
 
 CModelClusterLoaded2DSupport::CModelClusterLoaded2DSupport(CParameter* mParameter,
-                                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework)
-:CModelBase(mParameter)
+                                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,size_t index)
+:CModelBase(mParameter,index)
 {
     m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mParameter);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
@@ -72,7 +72,8 @@ CModelClusterLoaded2DSupport::~CModelClusterLoaded2DSupport()
 
 CModelBase* CModelClusterLoaded2DSupport::clone()
 {
-    CModelClusterLoaded2DSupport* res= new CModelClusterLoaded2DSupport(this->m_pParameter,this->m_ppBackupPeriodicFramework);
+    CModelClusterLoaded2DSupport* res= new CModelClusterLoaded2DSupport(this->m_pParameter,
+                                                                        this->m_ppBackupPeriodicFramework,0);
     res->setPeriodicFramekwork(this->periodicFramework());
     // four types moieties
     res->createMoleAdsorb(this->MoleAdsorbBit());

@@ -455,7 +455,7 @@ CCartesianCoordinates& CCartesianCoordinates::operator=(const CCartesianCoordina
 Point3& CCartesianCoordinates::operator[](size_t index)
 {
     if(index>=this->m_coordinates.size()){
-      Log::Error<<"Index exceed the size of vector in CCartesianCoordinates::operator!!!"<<endl;
+      Log::Error<<"Index exceed the size of vector in CCartesianCoordinates::operator!!!"<<std::endl;
       boost::throw_exception(std::runtime_error("Index exceed the size of vector in CCartesianCoordinates::operator!!!"));
     }
     return m_coordinates[index];

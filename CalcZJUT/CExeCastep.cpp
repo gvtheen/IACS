@@ -87,7 +87,8 @@ double CExeCastep::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& po
         Log::Info<<"InNormally Finish CASTEP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
-     CIOBase* tempIO = this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework());
+     CIOBase* tempIO;
+     this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
      tempIO->output(out_filename);
      delete tempIO;
@@ -105,6 +106,22 @@ void CExeCastep::ConvOrigToRawScore(std::vector<double>& temporgValue)
 char* CExeCastep::ExeName()
 {
     return "CASTEP";
+}
+void CExeCastep::getRelaxedGeometryCoord()
+{
+
+}
+bool CExeCastep::IsNormalComplete()
+{
+
+}
+double CExeCastep::readFinalEnergy()
+{
+
+}
+CExeFitnessInterface* CExeCastep::clone()
+{
+
 }
 void CExeCastep::CheckInputFile()
 {
