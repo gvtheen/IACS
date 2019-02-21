@@ -78,7 +78,7 @@ void CExeVASP::init()
     m_pParaFileAbsPath=new std::string(m_Parameter->parameterPath());
 
 }
-char* CExeVASP::ExeName()
+std::string CExeVASP::ExeName()
 {
     return "VASP";
 }
@@ -92,7 +92,8 @@ void CExeVASP::ConvOrigToRawScore(std::vector<double>& temporgValue)
 }
 double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
-     pid_t pid;
+      //pid_t pid;
+     size_t pid;   // replaced by last definition
      double res;
 
      size_t currGeneration = m_Parameter->GaParameter()->Curr_Generation;
@@ -145,7 +146,7 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
      }
 
      // Use the output file format to output structure;
-     CIOBase* tempIO;
+     CIOBase* tempIO=nullptr;
      this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
 

@@ -83,7 +83,7 @@ std::string& CExeDMol::inputFile()const
 {
     return *(this->dmol_inputfile);
 }
-char* CExeDMol::ExeName()
+std::string CExeDMol::ExeName()
 {
     return "DMol3";
 }
@@ -98,7 +98,10 @@ void CExeDMol::setInputFile(const std::string& filename)
 }
 double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
-     pid_t pid;
+      //pid_t pid;
+     size_t pid;   // replaced by last definition
+
+
      double res;
      size_t currGeneration =m_Parameter->GaParameter()->Curr_Generation;
 
@@ -146,7 +149,7 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
         Log::Info<<"InNormally Finish DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
-     CIOBase* tempIO;
+     CIOBase* tempIO=nullptr;
      this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
      this->m_Parameter->setCurrentWorkPathAt(CParameter::SCRATCH);

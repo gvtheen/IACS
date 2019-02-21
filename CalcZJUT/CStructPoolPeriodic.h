@@ -4,6 +4,10 @@
 #include "CStructPoolBase.h"
 #include "../GaZJUT/GaDeclaration.h"
 
+namespace CATAZJUT{
+    class CPeriodicFramework;
+}
+
 namespace CALCZJUT{
 
 class CStructPoolPeriodic:public CStructPoolBase

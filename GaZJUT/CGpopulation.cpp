@@ -23,7 +23,7 @@
 #include <algorithm>
 #include "CGpopulation.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 
 namespace GAZJUT{
 

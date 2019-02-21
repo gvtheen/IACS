@@ -32,11 +32,23 @@ CExeLammps::~CExeLammps()
 {
     //dtor
 }
-char* CExeLammps::ExeName()
+double CExeLammps::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalexist)
+{
+    return 0;
+}
+void CExeLammps::ConvOrigToRawScore(std::vector<double>& tmp)
+{
+
+}
+std::string CExeLammps::ExeName()
 {
     return "Lammps";
 }
+CExeFitnessInterface* CExeLammps::clone()
+{
 
+   return nullptr;
+}
 
 
 }// namespace

@@ -222,5 +222,15 @@ void CModelClusterSupport::eliminateCloseContacts(double distanceCutOff)
         }
     }
 }
+Bitset CModelClusterSupport::SupportBit()
+{
+    return this->m_BitbackupSupport;
+}
+Bitset CModelClusterSupport::MoleAdsorbBit()
+{
+    return this->m_BitbackupAdsorbMolecule;
+}
+
+
 
 }

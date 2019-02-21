@@ -21,7 +21,7 @@
 #include "CGaparameter.h"
 #include "GaUtilityFunction.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 //# - Scale methods defaults
 /*CDefScaleLinearMultiplier     = 1.2
 CDefScaleSigmaTruncMultiplier = 2.0

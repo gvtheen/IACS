@@ -21,7 +21,7 @@
 #include <Eigen/Dense>
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "Geometry.h"
 #include "foreach.h"
 #include "Constant.h"

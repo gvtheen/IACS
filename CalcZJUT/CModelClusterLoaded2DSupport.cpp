@@ -316,7 +316,14 @@ void CModelClusterLoaded2DSupport::createSupportPlane()
     // clear space
     delete currentMat;
 }
-
+Bitset CModelClusterLoaded2DSupport::SupportSurfaceBit()
+{
+    return this->m_BitBackupSupportNoCluster;
+}
+Bitset CModelClusterLoaded2DSupport::ClusterBit()
+{
+    return this->m_BitbackupCluster;
+}
 Bitset CModelClusterLoaded2DSupport::SupportBit()
 {
       return this->m_BitbackupSupport;

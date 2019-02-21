@@ -46,7 +46,7 @@ void CExeDFTB::getRelaxedGeometryCoord()
 }
 
 
-char* CExeDFTB::ExeName()
+std::string CExeDFTB::ExeName()
 {
     return "DFTB";
 }

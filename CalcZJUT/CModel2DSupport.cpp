@@ -334,6 +334,9 @@ void CModel2DSupport::perceiveSupportSurface()
     // clear space
     delete currentMat;
 }
+void CModel2DSupport::outputStructureToFile()
+{
 
+}
 
 }

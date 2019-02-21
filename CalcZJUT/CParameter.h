@@ -33,16 +33,7 @@ class CParameter
                              PARAMETER = 0x302,
                              SCRATCH   = 0x303,
                              MAINPATH  = 0x304}PATH_TYPE;
-        CParameter(char* filename);
-        virtual ~CParameter();
 
-        void input();
-        void output();
-        GAZJUT::CGaparameter* GaParameter();
-        size_t currentGenerationNum();
-        size_t popNum();
-
-    public:
         //Parameter of general setting
         std::string sysName;
         std::vector<std::string>   runCmd;
@@ -68,8 +59,17 @@ class CParameter
         const char* Backup_Parameter_Folder;
         double optimal_gap_value;
 
-        // set working environment
     public:
+        CParameter(std::string filename);
+        virtual ~CParameter();
+
+        void input();
+        void output();
+        //
+        GAZJUT::CGaparameter* GaParameter();
+        size_t currentGenerationNum();
+        size_t popNum();
+        // set working environment
         void initWorkEnvironment();
         void setCurrentWorkPathAt(size_t,size_t);
         void setCurrentWorkPathAt(PATH_TYPE);
@@ -78,11 +78,10 @@ class CParameter
         std::string scratchPath();
         std::string parameterPath();
         void checkExeNecessaryFiles(std::vector<std::string*>& files);
-
         void moveFileToPath(const std::string& file, const std::string& dir);
         void copyFileToPath(const std::string& file, const std::string& dir);
 
-    protected:
+    private:
         // system command
         void setSysName(std::string);
         void setRunCmd(std::string);
@@ -111,8 +110,6 @@ class CParameter
         void setCluster_Input_File(std::string);
 
         void setOutput_struct_format(std::string);
-
-    protected:
 
         bool checkIsValidParameters();
 

@@ -19,7 +19,7 @@
 **
 ******************************************************************************/
 #include<cmath>
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "CCrystalPlanes.h"
 #include "../Util/log.hpp"
 

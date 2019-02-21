@@ -191,6 +191,17 @@ void CModelPeriodicStruct::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_
             }
     }
 }
+std::vector<std::pair<std::string,size_t>>& CModelPeriodicStruct::chemicalFormula()
+{
+    if(this->m_chemicalFormula.size()==0)
+        this->m_chemicalFormula = this->m_pPeriodicFramework->composition();
+
+    return this->m_chemicalFormula;
+}
+void CModelPeriodicStruct::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)
+{
+   this->m_chemicalFormula.assign(mth.begin(),mth.end());
+}
 
 
 }

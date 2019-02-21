@@ -18,7 +18,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **
 ******************************************************************************/
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "CStructPoolBase.h"
 #include "../Util/log.hpp"
 

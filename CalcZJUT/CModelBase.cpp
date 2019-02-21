@@ -86,8 +86,7 @@ bool CModelBase::RandomInitState()
 
 std::vector<std::pair<std::string,size_t>>& CModelBase::chemicalFormula()
 {
-     std::vector<std::pair<std::string,size_t>> none_res;
-     return none_res;
+     return this->m_chemicalFormula;
 }
 void CModelBase::setChemicalFormula(const std::vector<std::pair<std::string,size_t>>& mth)
 {

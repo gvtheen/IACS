@@ -23,7 +23,7 @@
 #include "CGraygene.h"
 #include "CBinarygene.h"
 #include "GaUtilityFunction.h"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "../Util/log.hpp"
 
 using util::Log;

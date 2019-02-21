@@ -23,7 +23,7 @@
 #include "CGenome.h"
 #include "GaDeclaration.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "../Util/CRandomgenerator.h"
 using util::Log;
 using namespace GAZJUT;

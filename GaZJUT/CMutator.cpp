@@ -23,7 +23,7 @@
 #include "CMutator.h"
 #include "GaDeclaration.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "../Util/Bitset.h"
 #include "../Util/CRandomgenerator.h"
 

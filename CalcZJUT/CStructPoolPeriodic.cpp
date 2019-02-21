@@ -1,8 +1,17 @@
+#include <boost/algorithm/string.hpp>
 #include "CStructPoolPeriodic.h"
 #include "CModelPeriodicStruct.h"
 #include "CParameter.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../CataZJUT/CPeriodicFramework.h"
+#include "../util/log.hpp"
+#include "CIOBase.h"
+#include "CIOMol.h"
+#include "CIOCar.h"
+#include "CIOGjf.h"
+#include "CIOPoscar.h"
+
+using util::Log;
 
 namespace CALCZJUT{
 
@@ -30,6 +39,21 @@ void CStructPoolPeriodic::init()
        Log::Error<< " Chemical formula or initially structural files is required. CStructPoolPeriodic::init()!\n";
        boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. CStructPoolPeriodic::init()!!\n"));//ERROR TREATMENT;
     }
+}
+void CStructPoolPeriodic::GeneVARRange(std::vector<GeneVAR>&  mht)
+{
+   double maxRadius=0.0;
+   std::vector<GeneVAR> resTemp;
+   for(size_t i=0;i<this->m_CalcStructPool.size();i++){
+        this->m_CalcStructPool[i]->GeneVARRange(resTemp);
+        if(maxRadius > resTemp[0].max)
+            maxRadius = resTemp[0].max;
+   }
+   maxRadius = maxRadius + 1.0;
+   size_t num=this->m_CalcStructPool[0]->m_pPeriodicFramework->size();
+
+   for(size_t i=0;i<3*num;i++)
+      mht.push_back({-1*maxRadius,maxRadius,0.001});
 }
 void CStructPoolPeriodic::Initialization(const std::string& mth)         // initialize from chemical formula
 {
@@ -65,7 +89,7 @@ void CStructPoolPeriodic::Initialization(const std::string& mth)         // init
         RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework(),tempChemFormula);
     tempChemFormula.clear();
 }
-void CStructPoolPeriodic::Initialization(const char* chemicalformulaStr)               // initialize from chemical formula
+void CStructPoolPeriodic::Initialization(const char* mth)               // initialize from chemical formula
 {
      std::string tmp(mth);
      this->Initialization(tmp);

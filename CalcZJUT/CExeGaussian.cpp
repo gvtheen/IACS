@@ -96,7 +96,8 @@ void CExeGaussian::init()
 }
 double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_index, bool& isNormalExist)
 {
-     pid_t pid;
+      //pid_t pid;
+     size_t pid;   // replaced by last definition
      double res;
      //
      size_t currGeneration =m_Parameter->GaParameter()->Curr_Generation;
@@ -149,7 +150,7 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
         Log::Info<<"InNormally Finish Gaussian calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
-     CIOBase* tempIO;
+     CIOBase* tempIO=nullptr;
      this->getIO(m_Parameter->output_struct_format,m_pCalcModeStruct->periodicFramework(),tempIO);
      out_filename = out_filename + m_Parameter->output_struct_format;
      tempIO->output(out_filename);
@@ -165,7 +166,7 @@ void CExeGaussian::ConvOrigToRawScore(std::vector<double>& temporgValue)
     for(size_t i=0;i<tmpValue.size();i++)
          temporgValue[i] = *maxEnergy - tmpValue[i];
 }
-char* CExeGaussian::ExeName()
+std::string CExeGaussian::ExeName()
 {
     return "Gaussian";
 }
@@ -292,6 +293,7 @@ void CExeGaussian::getRelaxedGeometryCoord()
           }
       }catch(const std::ifstream::failure& e){
           Log::Error<<e.what()<<"  see CExeGaussian::readFinalEnergy\n";
+          boost::throw_exception(std::runtime_error("ERROR in reading the file! Check the file:CExeGaussian::readFinalEnergy"));
       }
       in->close();
 }

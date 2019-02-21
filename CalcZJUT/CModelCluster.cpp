@@ -224,7 +224,10 @@ void CModelCluster::setChemicalFormula(const std::vector<std::pair<std::string,s
 {
    this->m_chemicalFormula.assign(mth.begin(),mth.end());
 }
+void CModelCluster::outputStructureToFile()
+{
 
+}
 
 
 }

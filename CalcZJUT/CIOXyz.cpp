@@ -27,7 +27,7 @@
 #include "../CataZJUT/CPeriodicFramework.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
-#include "../GACatalyst.h"
+#include "../IACS.h"
 #include "../Util/foreach.h"
 #include "CIOXyz.h"
 
