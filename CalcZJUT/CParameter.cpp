@@ -36,7 +36,6 @@ using util::strcasecmp;
 namespace CALCZJUT{
 
 CParameter::CParameter(std::string file)
-:m_pfile(new std::string(file))
 {
     //building the connection between cmd and corresponding function
     m_mapCmdFunc["[System_Name]"] = &CParameter::setSysName;
@@ -67,6 +66,7 @@ CParameter::CParameter(std::string file)
     m_mapCmdFunc["[Gene_Formation_Mode]"]=&CParameter::setGene_Formation_Mode;
 
     m_pGAParameter=new GAZJUT::CGaparameter();
+    this->m_pfile=new std::string(file);
 }
 CParameter::~CParameter()
 {
