@@ -20,6 +20,7 @@
 ******************************************************************************/
 #include<fstream>
 #include <iostream>
+#include <iomanip>
 #include <boost/algorithm/string.hpp>
 #include <string>
 #include "unistd.h"
@@ -31,6 +32,7 @@
 #include "../CataZJUT/CBond.h"
 #include "../CataZJUT/CConfigurationPrivateData.h"
 #include "../GaZJUT/GaUtilityFunction.h"
+#include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 
 using util::Log;
@@ -70,18 +72,27 @@ void CIOMol::output(const std::string& fileName)
     if(out.is_open())
     {
         out<<m_pPeriodicFramework->formula()<<std::endl;      //name
-        out<<"GACatalyst program ( the author: Gvtheen )"<<std::endl;
+        out<<"IACS program ( the author: Gui-lin Zhuang )"<<std::endl;
         out<<std::endl;
-        out<<m_pPeriodicFramework->atomCount()<<"  "<<m_pPeriodicFramework->atomCount() \
+        out<<m_pPeriodicFramework->atomCount()<<"  "<<m_pPeriodicFramework->bondCount() \
            <<"  0  0  0  0  0  0  0  0999 V2000"<<std::endl;
+        out.setf(std::ios_base::right, std::ios_base::adjustfield);
+        out.setf(std::ios_base::fixed, std::ios_base::floatfield);
+        out.precision(12);
+        size_t num=0;
         foreach(CATAZJUT::CAtom* atom,m_pPeriodicFramework->atoms())
         {
-           out<<atom->position().transpose()<<" "<<atom->Symbol()<<" " \
-              <<"  0  0  0  0  0  0  0  0  0  0  0  0"<<std::endl;
+           out<<std::setw(16)<<atom->x()<<"  ";
+           out<<std::setw(16)<<atom->y()<<"  ";
+           out<<std::setw(16)<<atom->z()<<"  ";
+           out<<"   "<<atom->Symbol();
+           num++;
+           out<<"   " <<"0  0  0  0  0  0  0  0  0  "<<num<<std::endl;
         }
+
         foreach(CATAZJUT::CBond* bond,m_pPeriodicFramework->bonds())
         {
-           out<<bond->atom1()<<"  "<<bond->atom2()<<"  2  0 "<<std::endl;
+           out<<bond->atom1()->index()+1<<"  "<<bond->atom1()->index()+1<<"  2  0 "<<std::endl;
         }
         out<<"M  END"<<std::endl;
     }

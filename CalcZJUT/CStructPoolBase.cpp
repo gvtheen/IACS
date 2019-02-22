@@ -20,6 +20,7 @@
 ******************************************************************************/
 #include "../IACS.h"
 #include "CStructPoolBase.h"
+#include "CModelBase.h"
 #include "../Util/log.hpp"
 
 using util::Log;

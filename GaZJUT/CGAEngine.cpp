@@ -40,8 +40,11 @@
 #include "../CalcZJUT/CStructPoolBase.h"
 #include "../CalcZJUT/CStructPoolCluster.h"
 #include "../CalcZJUT/CStructPoolSupported.h"
-
+#include "../Util/log.hpp"
+#include "../IACS.h"
+using util::Log;
 using CALCZJUT::CParameter;
+
 namespace GAZJUT{
 
 CGAEngine::CGAEngine(CALCZJUT::CParameter* para)
@@ -66,6 +69,10 @@ CGAEngine::~CGAEngine()
 */
 void CGAEngine::init()
 {
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::init()***********"<< std::endl;
+   #endif
+
    std::vector<std::string> res;
    m_pGaparameter->getKeyValue(res,"Evaluator");
    for(size_t i=0;i<res.size();i++){
@@ -82,7 +89,9 @@ void CGAEngine::init()
        else if(res[i]=="CASTEP")
            m_FitnessCalculator.push_back(new CALCZJUT::CExeCastep(this->m_pParameter));
    }
-
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::init()-2***********"<< std::endl;
+   #endif
    switch ((int)m_pParameter->simulationMode)
    {
        case CParameter::CLUSTER:
@@ -98,6 +107,9 @@ void CGAEngine::init()
        default:
            break;
    }
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::init()-3***********"<< std::endl;
+   #endif
    /*
      Initialize structural pool( read structural file or random identify it)
      Obtain the gene-variable range for the construction of Population object
@@ -108,6 +120,9 @@ void CGAEngine::init()
         m_FitnessCalculator[i]->init();
    // until now, all parameters in object of Gaparameter were set.
    //
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::init()-4***********"<< std::endl;
+   #endif
    m_pCurrentPopulation = new CGpopulation(m_pGaparameter);
 
    // sequence of operators!
@@ -117,10 +132,17 @@ void CGAEngine::init()
    m_GeneticOperator.push_back(new CSelector());
    m_GeneticOperator.push_back(new CCross());
    m_GeneticOperator.push_back(new CMutator());
+
+   #ifdef DEBUG
+      Log::Debug<<"*********** End CGAEngine::init()***********"<< std::endl;
+   #endif
 }
 void CGAEngine::evolve()
 {
    // read the setting generation number
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::evolve()***********"<< std::endl;
+   #endif
    size_t total_pop_num=m_pGaparameter->GenerationNum();
 
    while(true){

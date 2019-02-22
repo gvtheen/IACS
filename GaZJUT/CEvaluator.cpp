@@ -59,6 +59,12 @@ CEvaluator::~CEvaluator()
 }
 void CEvaluator::run(CGpopulation* CurrentPopulation)
 {
+   assert(CurrentPopulation);
+
+   #ifdef DEBUG
+      Log::Debug<<"*********** CEvaluator::run***********"<< std::endl;
+   #endif
+
    bool runstate=false;
    size_t pop_num = CurrentPopulation->popNum();
 

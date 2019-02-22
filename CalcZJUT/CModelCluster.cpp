@@ -57,11 +57,19 @@ namespace CALCZJUT{
 CModelCluster::CModelCluster(CParameter* mPara,size_t index)
 :CModelBase(mPara,index)
 {
+    #ifdef DEBUG
+      Log::Debug<<"***********CModelCluster::CModelCluster***********"<< std::endl;
+    #endif
     CATAZJUT::CConfigurationBase* temp = new CATAZJUT::CConfigurationBase(mPara);
 
     this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(*temp);
+    this->m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
+    this->m_pPeriodicFramework->setCoordinateType(CATAZJUT::DEFINED::Cartesian);
      // In this situation, this->m_pPeriodicFramework->m_pUnitCell is empty pointer NULL;
     delete temp;
+    #ifdef DEBUG
+      Log::Debug<<"****2-*******CModelCluster::CModelCluster***********"<< std::endl;
+    #endif
 
 }
 

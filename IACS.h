@@ -4,9 +4,9 @@
 
 #include <stdexcept>
 #include <boost/throw_exception.hpp>
-#define NDEBUG
+#define DEBUG
 #include "assert.h"
-
+#include <iostream>
 
 
 

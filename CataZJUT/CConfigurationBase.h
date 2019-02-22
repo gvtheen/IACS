@@ -156,6 +156,7 @@ class CConfigurationBase
 
         void setTolerancefactor(std::pair<double,double> &mht);
         void setExcludeBond(std::vector<std::pair<std::string*,std::string*>>&);
+        void setBondOrderType(CBond*);
 
         CALCZJUT::CParameter* sysParameter();
 

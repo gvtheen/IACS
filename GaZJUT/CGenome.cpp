@@ -105,6 +105,9 @@ m_totalgeneofGenome[0]= geneN[0]              // Warnning:    Importantly!!!!!
 }
 void CGenome::getDecValue(std::vector <double>& realValue)
 {
+	#ifdef DEBUG
+      Log::Debug<<"*********** CGenome::getDecValue***********"<< std::endl;
+    #endif
 	if(realValue.size()>0)
        realValue.clear();
 

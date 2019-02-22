@@ -33,7 +33,7 @@ class CBondTolerance
         bool IsBond(const CAtom*,const CAtom*);
 
         void AddBondType(const std::string& _1stAtom,const std::string& _2ndAtom,const double& mind,const double& maxd);
-        void AddBondType(std::string&,std::string&);
+        void AddBondType(const std::string&,const std::string&);
         void AddBondType(const CElement& Elem_1,const CElement& Elem_2,const double& mind,const double& maxd);
         void AddBondType(const CElement& Elem_1,const CElement& Elem_2);
         void RemoveBondType(const std::string&,const std::string&);
@@ -41,8 +41,6 @@ class CBondTolerance
         void setTolerancefactor(const double,const double);
         void setTolerancefactor(std::pair<double,double> &mht);
         void OutputTofile(std::string& outfile);
-
-        void setBondOrderType(CBond*);
 
     protected:
         bool isExcludeBond(const std::string&,const std::string&);

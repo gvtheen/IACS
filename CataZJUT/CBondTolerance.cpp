@@ -31,20 +31,12 @@
 #include "CCoordinateSet.h"
 #include "CBondPrivate.h"
 #include "CBond.h"
+#include "../Util/log.hpp"
 #include "../GaZJUT/GaUtilityFunction.h"
-namespace CATAZJUT{
-/*
 
-*/
-CBondPrivate::CBondPrivate()
-: m_1stAtom(std::string("Dummy")),m_2ndAtom(std::string("Dummy")),m_MinBondLength(-1.0),m_MaxBondLength(-1.0)
-{
-}
-CBondPrivate::~CBondPrivate()
-{
-}
-/*
-*/
+using util::Log;
+namespace CATAZJUT{
+
 CBondTolerance::~CBondTolerance()
 {
     for(size_t i=0; i<this->m_pBondType.size();i++)
@@ -101,7 +93,10 @@ void CBondTolerance::removeElement(CElement& othr)
 int CBondTolerance::IsExistBond(const std::string& _1stAtom,const std::string& _2ndAtom)
 {
     int res= -1;
-    for(size_t i =0;i!=m_pBondType.size();i++)
+//    #ifdef DEBUG
+//         Log::Debug<<"CBondTolerance::IsExistBond"<<std::endl;
+//    #endif
+    for(size_t i =0;i<m_pBondType.size();i++)
         if((m_pBondType[i]->m_1stAtom == _1stAtom && m_pBondType[i]->m_2ndAtom == _2ndAtom)|| \
            (m_pBondType[i]->m_1stAtom == _2ndAtom && m_pBondType[i]->m_2ndAtom == _1stAtom) )
            {
@@ -127,9 +122,16 @@ void CBondTolerance::AddBondType(const std::string& _1stAtom,const std::string& 
         m_pBondType[index]->m_MaxBondLength=maxd;
     }
 }
-void CBondTolerance::AddBondType(std::string& _1stAtom,std::string& _2ndAtom)
+void CBondTolerance::AddBondType(const std::string& _1stAtom,const std::string& _2ndAtom)
 {
+
+//    #ifdef DEBUG
+//         Log::Debug<<"CBondTolerance::AddBondType"<<std::endl;
+//    #endif
     int index = IsExistBond(_1stAtom,_2ndAtom);
+//    #ifdef DEBUG
+//         Log::Debug<<"2-CBondTolerance::AddBondType"<<std::endl;
+//    #endif
     if( index==-1 && isExcludeBond(_1stAtom,_2ndAtom)==false )
     {
         CBondPrivate *temp =new CBondPrivate();
@@ -139,16 +141,33 @@ void CBondTolerance::AddBondType(std::string& _1stAtom,std::string& _2ndAtom)
                        (new CElement(_2ndAtom))->vanDerWaalsRadius();
         temp->m_MinBondLength = vdw_12*this->lower_tolerance_factor;
         temp->m_MaxBondLength = vdw_12*this->upper_tolerance_factor;
+        m_pBondType.push_back(temp);
     }
+//    #ifdef DEBUG
+//         Log::Debug<<"end-CBondTolerance::AddBondType"<<std::endl;
+//    #endif
 }
 bool CBondTolerance::IsBond(const std::string& _1stAtom,const std::string& _2ndAtom,const double& dis)
 {
+//    #ifdef DEBUG
+//         Log::Debug<<"CBondTolerance::IsBond"<<std::endl;
+//    #endif
     int index = IsExistBond(_1stAtom,_2ndAtom);
-    if(index!=-1)
-       return ( m_pBondType.at(index)->m_MinBondLength <= dis && \
-                m_pBondType.at(index)->m_MaxBondLength >= dis );
+    //std::cout<<"CBondTolerance::IsBond: index: "<<index<<std::endl;
+
+    if(index>0 && index < (int)m_pBondType.size())
+       return ( m_pBondType[index]->m_MinBondLength <= dis && \
+                m_pBondType[index]->m_MaxBondLength >= dis );
+
     else if(isExcludeBond(_1stAtom,_2ndAtom)==false){
+//        #ifdef DEBUG
+//         Log::Debug<<"2-CBondTolerance::IsBond"<<std::endl;
+//         std::cout<<"m_pBondType.size():"<<m_pBondType.size()<<std::endl;
+//        #endif
         AddBondType(_1stAtom,_2ndAtom);
+//        #ifdef DEBUG
+//         Log::Debug<<"3-CBondTolerance::IsBond"<<std::endl;
+//        #endif
         int index_2 = m_pBondType.size()-1;
         return ( m_pBondType.at(index_2 )->m_MinBondLength <= dis && \
                  m_pBondType.at(index_2 )->m_MaxBondLength >= dis );
@@ -205,6 +224,9 @@ bool CBondTolerance::isExcludeBond(const std::string& e1,const std::string& e2)
        if( (*(m_pExcludeBond[i].first)==e1 && *(m_pExcludeBond[i].second)==e2 ) || \
            (*(m_pExcludeBond[i].first)==e2 && *(m_pExcludeBond[i].second)==e1 ) )
               return true;
+//    #ifdef DEBUG
+//         Log::Debug<<"CBondTolerance::isExcludeBond"<<std::endl;
+//    #endif
     return false;
 }
 bool CBondTolerance::isExcludeBond(CElement& e1,CElement& e2)
@@ -218,6 +240,9 @@ void CBondTolerance::setTolerancefactor(std::pair<double,double> &mht)
 }
 void CBondTolerance::setTolerancefactor(const double minV,const double maxV)
 {
+//    #ifdef DEBUG
+//      Log::Debug<<"*********** CBondTolerance::setTolerancefactor***********"<< std::endl;
+//    #endif
     this->lower_tolerance_factor=minV;
     this->upper_tolerance_factor=maxV;
     double vdw_12;
@@ -229,31 +254,18 @@ void CBondTolerance::setTolerancefactor(const double minV,const double maxV)
         m_pBondType[i]->m_MinBondLength = vdw_12*this->lower_tolerance_factor;
         m_pBondType[i]->m_MaxBondLength = vdw_12*this->upper_tolerance_factor;
     }
+//    #ifdef DEBUG
+//      Log::Debug<<"2-*********** CBondTolerance::setTolerancefactor***********"<< std::endl;
+//    #endif
 }
 void CBondTolerance::setExcludeBond(std::vector<std::pair<std::string*,std::string*>>& tmp)
 {
     this->m_pExcludeBond.insert(m_pExcludeBond.end(),tmp.begin(),tmp.end());
+//    #ifdef DEBUG
+//      Log::Debug<<"2-*********** CBondTolerance::setExcludeBond***********"<< std::endl;
+//    #endif
 }
-void CBondTolerance::setBondOrderType(CBond* mthBond)
-{
-    if(mthBond->atom1()->maxCoordinationNum()==1 || mthBond->atom1()->maxCoordinationNum()==1)
-        mthBond->setBondOrder(CBond::Single);
-    else if(mthBond->atom1()->element().isTransitionMetal() || mthBond->atom2()->element().isTransitionMetal() )
-        mthBond->setBondOrder(CBond::Single);
-    else if(mthBond->atom1()->element().isPblockElement()&& mthBond->atom2()->element().isPblockElement()){
-        double coventL1,coventL2;
-        coventL1=mthBond->atom1()->CovalentRadius();
-        coventL2=mthBond->atom2()->CovalentRadius();
-        if(mthBond->length() > (coventL1+coventL2-0.2))
-            mthBond->setBondOrder(CBond::Single);
-        else if(mthBond->length()<=(coventL1+coventL2-0.2) && (mthBond->length()>(coventL1+coventL2-0.3)))
-            mthBond->setBondOrder(CBond::Double);
-        else
-            mthBond->setBondOrder(CBond::Triple);
-    }else
-        mthBond->setBondOrder(CBond::Single);
 
-}
 
 
 

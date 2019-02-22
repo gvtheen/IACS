@@ -46,6 +46,7 @@
 #include "CIOGjf.h"
 #include "CIOPoscar.h"
 #include "CStructPoolCluster.h"
+#include "../IACS.h"
 
 using util::Log;
 using util::Bitset;
@@ -56,12 +57,17 @@ namespace CALCZJUT{
 CStructPoolCluster::CStructPoolCluster(CParameter* othr)
 :CStructPoolBase(othr)
 {
+    #ifdef DEBUG
+      Log::Debug<<"*********** CStructPoolCluster::CStructPoolCluster***********"<< std::endl;
+    #endif
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
         this->m_CalcStructPool.push_back(new CModelCluster(this->m_pParameter,i));
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_pParameter->excludeBond);
-        m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_pParameter->bondToleranceFactor);
+       // m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setExcludeBond(m_pParameter->excludeBond);
+       // m_CalcStructPool[m_CalcStructPool.size()-1]->periodicFramework()->setTolerancefactor(m_pParameter->bondToleranceFactor);
     }
-
+    #ifdef DEBUG
+      Log::Debug<<"End*********** CStructPoolCluster::CStructPoolCluster***********"<< std::endl;
+    #endif
 }
 
 CStructPoolCluster::~CStructPoolCluster()
@@ -103,6 +109,9 @@ void CStructPoolCluster::Initialization(const std::string& mth)
     e.g.:   mth = C10 N S10        // delimiter = blank " "
 */
     //dealwith chemical formula by blank
+    #ifdef DEBUG
+      Log::Debug<<"*********** CStructPoolCluster::Initialization***********"<< std::endl;
+    #endif
     std::string str=mth;
     std::vector<std::string> vecStr;
     boost::algorithm::trim(str);
@@ -125,9 +134,16 @@ void CStructPoolCluster::Initialization(const std::string& mth)
             ChemicalStr.second = std::stoi(str);
         tempChemFormula.push_back(ChemicalStr);
     }
+    #ifdef DEBUG
+      Log::Debug<<"*********** 2- CStructPoolCluster::Initialization***********"<< std::endl;
+    #endif
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++)
         RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework(),tempChemFormula);
     tempChemFormula.clear();
+
+    #ifdef DEBUG
+      Log::Debug<<"*********** End CStructPoolCluster::Initialization***********"<< std::endl;
+    #endif
 }
 void CStructPoolCluster::Initialization(const char* mth)
 {      // initialize from chemical formula
@@ -177,6 +193,9 @@ void CStructPoolCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFrame
         res.push_back(new CATAZJUT::CElement(chemFormula[i].first));
         atom_Sum = atom_Sum + chemFormula[i].second;
      }
+     #ifdef DEBUG
+      Log::Debug<<"*********** CStructPoolCluster::RandomBuildFromChemicalFormula***********"<< std::endl;
+     #endif
      size_t cluster_type = ClusterType(res);
      if(cluster_type==1){        //pure metal
         metalClusterPredict(predict_struct,chemFormula);
@@ -222,25 +241,36 @@ void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predi
     }
     // clear all atoms and all bonds;
     predict_struct->clear();
-    covalent_Radius = covalent_Radius/atom_Sum;
-    double bondrange = 2*covalent_Radius*(m_pParameter->bondToleranceFactor.first + \
+    covalent_Radius = covalent_Radius/chemFormula.size();
+    double bondrange = 2.0*covalent_Radius*(m_pParameter->bondToleranceFactor.first + \
                                           m_pParameter->bondToleranceFactor.second)*0.5;
     // determine:  radius, theta, Phi
+//    #ifdef DEBUG
+//        std::cout<<"covalent_Radius:"<<covalent_Radius<<std::endl;
+//        std::cout<<"bondrange:"<<bondrange<<std::endl;
+//     #endif
     basic_coord<< bondrange*std::pow(atom_Sum,1.0/3),180.0,360.0;
     util::CRandomgenerator* myRandomgenerator = new util::CRandomgenerator();
     for(size_t i=0;i<chemFormula.size();i++)
         for(size_t j=0;j<chemFormula[i].second;j++){
                     // using polar coordinate to predict it
-            polar_coord =basic_coord.cwiseProduct(myRandomgenerator->randomVector01(i*j));
+            polar_coord =basic_coord.cwiseProduct(myRandomgenerator->randomVector01((i+2)*(j+3)));
                    // transfer polar coordinate to cartesian coordinate.
             cosTheta= std::cos(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
             sinTheta= std::sin(polar_coord(1)*CATAZJUT::constants::DegreesToRadians);
             cosPhi = std::cos(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             sinPhi = std::sin(polar_coord(2)*CATAZJUT::constants::DegreesToRadians);
             coordinate<<polar_coord(0)*cosTheta*cosPhi,polar_coord(0)*cosTheta*sinPhi,polar_coord(0)*sinTheta;
+//            #ifdef DEBUG
+//               std::cout<<chemFormula[i].first<<j+1<<": "<<coordinate.transpose()<<std::endl;
+//            #endif
             predict_struct->addAtom(chemFormula[i].first,coordinate);
         }
-    //predict_struct->perceiveBonds(); // it is not necessary to perform it.
+     predict_struct->perceiveBonds(); // it is not necessary to perform it.
+//     #ifdef DEBUG
+//        Log::Debug<<"*********** output metalClusterPredict***********"<< std::endl;
+//        this->outPutStructure(predict_struct);
+//     #endif
     this->eliminateFragment(predict_struct);
     this->eliminateCloseContacts(predict_struct);
 }
@@ -309,6 +339,12 @@ void CStructPoolCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* cu
     double eps=0.1;
     bool modifiedbol=true;
     size_t less_cycle=0;
+
+    assert(curr_struct);
+
+//    #ifdef DEBUG
+//      Log::Debug<<"*********** eliminateCloseContacts***********"<< std::endl;
+//    #endif
     while(modifiedbol)
     {
        modifiedbol=false;
@@ -332,14 +368,16 @@ void CStructPoolCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* cu
             }
         }
        less_cycle++;
-       if(less_cycle > 65536){
-          Log::Warn<<"Cycle of function is more than 65536 in CStructPoolCluster::eliminateCloseContacts!"<<std::endl;
+       if(less_cycle > 256){
+          Log::Warn<<"Cycle of function is more than 256 in CStructPoolCluster::eliminateCloseContacts!"<<std::endl;
           break;
        }
     }
 }
 void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
 {
+    assert(curr_struct);
+
     size_t less_cycle;
     if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure
          curr_struct->perceiveFragments();
@@ -351,8 +389,15 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
                 maxCount = fragment_s->atomCount();
                 mainFragment = fragment_s;
             }
+            #ifdef DEBUG
+                  Log::Debug<<"*2- CStructPoolCluster::eliminateFragment:"<<maxCount<< std::endl;
+                  Log::Debug<<"*2- CStructPoolCluster::eliminateFragment:fragmentNum"<<curr_struct->fragmentNum()<< std::endl;
+            #endif
         }
         //
+        #ifdef DEBUG
+           Log::Debug<<"***********3- CStructPoolCluster::eliminateFragment***********"<< std::endl;
+        #endif
         Vector4 mainsphereEquation4, othersphereEquation4;
         Point3 maincenter,othercenter;
         double mainR, otherR, differ;
@@ -362,20 +407,37 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
         mainsphereEquation4 = util::SphereEquationFromPoints(mainFragment->coordinates());
         maincenter<<mainsphereEquation4(0,0),mainsphereEquation4(1,0),mainsphereEquation4(2,0);
         mainR=mainsphereEquation4(3,0);
+        #ifdef DEBUG
+           Log::Debug<<"***********4- CStructPoolCluster::eliminateFragment***********"<< std::endl;
+        #endif
         foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments())
             if(mainFragment!=fragment_s){
-               othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
-               othercenter<<othersphereEquation4(0,0),othersphereEquation4(1,0),othersphereEquation4(2,0);
-               otherR=othersphereEquation4(3,0);
-               differ = (maincenter-othercenter).norm() - mainR - otherR;
-               differVect= (differ-1.5)*(maincenter-othercenter).normalized();
-               fragment_s->move(differVect);
+               if(fragment_s->atomCount()>1){
+                   othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
+                   othercenter<<othersphereEquation4(0,0),othersphereEquation4(1,0),othersphereEquation4(2,0);
+                   otherR=othersphereEquation4(3,0);
+                   differ = (maincenter-othercenter).norm() - mainR - otherR;
+                   differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+                   fragment_s->move(differVect);
+               }else{
+                   othercenter=fragment_s->coordinates()[0];
+                   differ = (maincenter-othercenter).norm() - mainR;
+                   differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+                   fragment_s->move(differVect);
+               }
                // further judge whether two fragments is bonded.
                less_cycle=0;
+               #ifdef DEBUG
+                  Log::Debug<<"***********3- CStructPoolCluster::eliminateFragment***********"<< std::endl;
+               #endif
                while(mainFragment->isBondTo(fragment_s)!=true){
                    differVect= 0.2*(maincenter-othercenter).normalized();
                    fragment_s->move(differVect);
-                   if(less_cycle>65536){
+                   less_cycle++;
+//                   #ifdef DEBUG
+//                     std::cout<<less_cycle<<std::endl;
+//                   #endif // DEBUG
+                   if(less_cycle>256){
                       Log::Warn<<"Cycle of function is more than 65536 in CStructPoolCluster::eliminateFragment!"<<std::endl;
                       break;
                    }
@@ -383,7 +445,13 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
             }
     }
 }
-
+void CStructPoolCluster::outPutStructure(CATAZJUT::CPeriodicFramework* structure)
+{
+    assert(structure);
+    CIOMol* outmol =new CIOMol(structure);
+    outmol->output("Pd10_temp.mol");
+    delete outmol;
+}
 
 
 

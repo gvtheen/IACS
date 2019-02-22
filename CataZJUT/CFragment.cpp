@@ -73,6 +73,7 @@ void CFragment::move(const Vector3& vect_R)
 }
 bool CFragment::isBondTo(const CFragment* otherFragment)
 {
+    assert(otherFragment);
 
     if(this->m_pConfiguration != otherFragment->Configuration())
         return false;

@@ -35,7 +35,7 @@
 using namespace util;
 //std::ostream& Log::cout ;
 
-std::ofstream Log::fcout("GACatalysis.log",std::ios::out);
+std::ofstream Log::fcout("IACS.log",std::ios::out);
 
 PrefixedOutStream Log::Warn(Log::fcout,"[Warn]: ");
 //PrefixedOutStream Log::Warn(std::cout,"[Warn]: ");

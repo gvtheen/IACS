@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include "../IACS.h"
 #include "prefixedoutstream.hpp"
 #include "nulloutstream.hpp"
 

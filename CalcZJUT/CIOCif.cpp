@@ -50,7 +50,7 @@ void CIOCif::output(const std::string& file_name)
 {
     assert(m_pPeriodicFramework);
 
-    if( this->m_pPeriodicFramework->coordinateType() == CATAZJUT::DEFINED::Molecule )
+    if( this->m_pPeriodicFramework->dimensionalType() == CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOCif::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOCif::output!\n"));

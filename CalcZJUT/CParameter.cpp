@@ -40,19 +40,23 @@ CParameter::CParameter(std::string file)
     //building the connection between cmd and corresponding function
     m_mapCmdFunc["[System_Name]"] = &CParameter::setSysName;
     m_mapCmdFunc["[Evaluator_Code]"] = &CParameter::setEvaluator_Code;
-    m_mapCmdFunc["[Evaluator_Benchmark]"] = &CParameter::setEvaluator_Criterion;
+    m_mapCmdFunc["[Simulation_Mode]"] = &CParameter::setSimulationMode;
     m_mapCmdFunc["[Running_Command]"]=&CParameter::setRunCmd;
     m_mapCmdFunc["[Evaluator_Criterion]"]=&CParameter::setEvaluator_Criterion;
+    m_mapCmdFunc["[Search_Mode]"]=&CParameter::setSearch_Mode;
+    m_mapCmdFunc["[Output_Structure_Format]"]=&CParameter::setOutputStructureFormat;
     // fur supported catalyst
     m_mapCmdFunc["[Support_Structure]"]=&CParameter::setSupport_Structure;
     m_mapCmdFunc["[Adsorbent_Structure]"]=&CParameter::setAdsorbent_Structure;
     m_mapCmdFunc["[Adsorbent_Support_Structure]"]=&CParameter::setAdsorbent_Support_Structure;
+    m_mapCmdFunc["[Distance_Adsorbent_On_Support]"]=&CParameter::setDistanceRangeAdsorbentOnSupport;
     // for cluster
     m_mapCmdFunc["[Cluster_Formula]"]=&CParameter::setCluster_Formula;
     m_mapCmdFunc["[Cluster_Structure]"]=&CParameter::setCluster_Input_File;
     // for bond Tolerance
     m_mapCmdFunc["[Bond_Tolerance_Factor]"]=&CParameter::setBond_Tolerance_Factor;
     m_mapCmdFunc["[Exclude_Bond]"]=&CParameter::setExclude_Bond;
+    m_mapCmdFunc["[Bond_Tolerance]"]=&CParameter::setBond_Tolerance;
     // for GA
     m_mapCmdFunc["[Generation_Number]"]=&CParameter::setGenNum;
     m_mapCmdFunc["[Population_Size]"]=&CParameter::setPopSize;
@@ -62,6 +66,7 @@ CParameter::CParameter(std::string file)
     m_mapCmdFunc["[Mutation_Mode]"]=&CParameter::setMutation_Mode;
     m_mapCmdFunc["[Gene_Code]"]=&CParameter::setGene_Code;
     m_mapCmdFunc["[Cross_Mode]"]=&CParameter::setCross_Mode;
+    m_mapCmdFunc["[Cross_Number]"]=&CParameter::setCross_Num;
     m_mapCmdFunc["[Select_Mode]"]=&CParameter::setSelect_Mode;
     m_mapCmdFunc["[Gene_Formation_Mode]"]=&CParameter::setGene_Formation_Mode;
 
@@ -72,29 +77,37 @@ CParameter::~CParameter()
 {
     if(m_pfile!=nullptr)
        delete m_pfile;
+    m_mapCmdFunc.clear();
 }
 
 //**********Public function*********/
 void CParameter::input()
 {
+    Log::Info<<"Reading input file..."<<std::endl;
+
     if(m_pfile==nullptr)
        m_pfile = new std::string("input.dat");
+
     if(access(m_pfile->c_str(),F_OK) != 0 )
       {
          Log::Error<<*m_pfile <<" file is no exist! input_CParameter\n";
-         boost::throw_exception(std::runtime_error(*m_pfile +"input file is no exist! Check the file: Error_information.txt."));
+         boost::throw_exception(std::runtime_error(*m_pfile +"input file is no exist! CParameter::input()."));
       }
-      std::ifstream *in;
+      std::ifstream *in=nullptr;
       std::string str;
       std::vector<std::string> cmd_Str;
       std::vector<std::string> keyValue;
       try{
           in= new std::ifstream(m_pfile->c_str(),std::ifstream::in);
-          in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+          in->exceptions (std::ifstream::badbit );
           #ifdef DEBUG
-            Log::Debug<<"*********** Read input file of "<<m_pfile->c_str()<<"***********"<< std::endl;
+            Log::Debug<<"*********** Read input file of "<<*m_pfile<<"***********"<< std::endl;
           #endif
-          while(!in->eof()){
+          if(in==nullptr || !in->is_open()){
+            Log::Error<<*m_pfile <<" file open with an error! input_CParameter\n";
+            boost::throw_exception(std::runtime_error(*m_pfile +" file open with an error! Check the file: CParameter::input()."));
+          }
+          while( !in->eof()){
             std::getline(*in,str,'\n');
             boost::algorithm::trim(str);
             if(str=="") continue;
@@ -106,7 +119,7 @@ void CParameter::input()
                 boost::algorithm::trim(cmd_Str[i]);
                 if(cmd_Str[i]!="" && i%2==0){
                      #ifdef DEBUG
-                        Log::Debug<< ">>>" <<cmd_Str[i]<< std::endl;
+                        Log::Debug<<cmd_Str[i]<< std::endl;
                      #endif // DEBUG
                      boost::algorithm::split(keyValue,cmd_Str[i],boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
 
@@ -131,9 +144,9 @@ void CParameter::input()
           Log::Error<< e.what() <<"CParameter::input()\n";
           boost::throw_exception(std::runtime_error(std::string(e.what()) + "Check the file: CParameter::input()."));
       }
-      #ifdef DEBUG
-         Log::Debug<<"*********** End read ***********"<< std::endl;
-      #endif
+      in->close();
+      Log::Info<<"END Reading input file"<<std::endl;
+
 }
 void CParameter::output()
 {
@@ -301,6 +314,34 @@ void CParameter::setRunCmd(std::string mtr)
     for(size_t i=0;i<runCmd.size();i++)
         boost::algorithm::trim(runCmd[0]);
 }
+void CParameter::setSimulationMode(std::string mtr)
+{
+     int res=std::stoi(mtr);
+     if (res<1 || res>5 ){
+        Log::Error<<" Simulation mode setting is error!"<<std::endl;
+        boost::throw_exception(std::runtime_error(" Simulation mode setting is error!! CParameter::setSimulationMode!\n"));
+     }
+     switch (res){
+       case 1:
+           this->simulationMode=CParameter::CLUSTER;
+           break;
+       case 2:
+           this->simulationMode=CParameter::MOL_CLUSTER;
+           break;
+       case 3:
+           this->simulationMode=CParameter::MOL_2DMATERIAL;
+           break;
+       case 4:
+           this->simulationMode=CParameter::MOL_CLUSTER2DMATERIAL;
+           break;
+       case 5:
+           this->simulationMode=CParameter::PERIODIC;
+           break;
+       default:
+           this->simulationMode=CParameter::CLUSTER;
+           break;
+     }
+}
 void CParameter::setBond_Tolerance_Factor(std::string mtr)
 {
     std::vector<std::string> vectStr;
@@ -311,7 +352,7 @@ void CParameter::setBond_Tolerance_Factor(std::string mtr)
     }
     bondToleranceFactor.first =std::stod(vectStr[0]);
     bondToleranceFactor.second=std::stod(vectStr[1]);
-    if(bondToleranceFactor.first > bondToleranceFactor.second )
+    if(bondToleranceFactor.first > bondToleranceFactor.second)
     {
         double temp;
         temp = bondToleranceFactor.first;
@@ -327,8 +368,22 @@ void CParameter::setExclude_Bond(std::string mtr)
         Log::Error<<mtr << " command is wrong! setExclude_Bond_CParameter!\n";
         boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setExclude_Bond_CParameter."));
     }
-    excludeBond.push_back(std::pair<std::string*,std::string*>(new std::string(vectStr[0]),\
+    this->excludeBond.push_back(std::pair<std::string*,std::string*>(new std::string(vectStr[0]),\
                                                                new std::string(vectStr[1])));
+}
+void CParameter::setBond_Tolerance(std::string mtr)
+{
+    std::vector<std::string> vectStr;
+    boost::algorithm::split(vectStr,mtr,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+    if(vectStr.size()!=4){
+       Log::Error<<mtr << " command is wrong! setBond_Toleranc!\n";
+       boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setBond_Tolerance."));
+    }
+    double d1=std::stof(vectStr[2]);
+    double d2=std::stof(vectStr[3]);
+    CATAZJUT::CBondPrivate* tmpBondTol=new CATAZJUT::CBondPrivate(vectStr[0],vectStr[1],
+                                                                  d1,d2);
+    this->bondTolerance.push_back(tmpBondTol);
 }
 void CParameter::setEvaluator_Code(std::string mtr)
 {
@@ -396,6 +451,18 @@ void CParameter::setEvaluator_Criterion(std::string mtr)
          Log::Error<< mtr << " command is wrong! setEvaluator_Criterion_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setEvaluator_Criterion."));
      }
+}
+void CParameter::setSearch_Mode(std::string mtr)
+{
+    int res=std::stoi(mtr);
+    if(res !=1 && res !=2 ){
+       Log::Error<< mtr << " command is wrong! CParameter::setSearch_Mode!\n";
+       boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setSearch_Mode."));
+    }
+    if(res==1)
+        this->searchMode=CParameter::MIN;
+    else
+        this->searchMode=CParameter::MAX;
 }
 // Commands for GA Part
 void CParameter::setPopSize(std::string mtr)
@@ -471,6 +538,10 @@ void CParameter::setCross_Mode(std::string mtr)
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setCross_Mode!"));
      }
 }
+void CParameter::setCross_Num(std::string mtr)
+{
+   m_pGAParameter->setKeyValue("[Cross_Number]",mtr);
+}
 void CParameter::setSelect_Mode(std::string mtr)
 {
 /*##
@@ -541,6 +612,59 @@ void CParameter::setCluster_Input_File(std::string str)
 
     for(size_t i=0;i<file_vect.size();i++)
         this->cluster_Input_File.push_back(new std::string(file_vect[i]));
+}
+void CParameter::setDistanceRangeAdsorbentOnSupport(std::string str)
+{
+    std::vector<std::string> str_vect;
+    boost::algorithm::trim(str);
+
+    boost::algorithm::split(str_vect,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+    if(str_vect.size()!=2){
+      Log::Error<< str << " command is wrong! CParameter::setDistanceRangeAdsorbentOnSupport!\n";
+      boost::throw_exception(std::runtime_error(str+ " value format is wrong! Check the file: CParameter::setDistanceRangeAdsorbentOnSupport."));
+    }
+    this->DistRange_Adsorbent_Support.first=std::stof(str_vect[0]);
+    this->DistRange_Adsorbent_Support.second=std::stof(str_vect[1]);
+
+    if(DistRange_Adsorbent_Support.first>DistRange_Adsorbent_Support.second){
+       double tmp= DistRange_Adsorbent_Support.first;
+       DistRange_Adsorbent_Support.first=DistRange_Adsorbent_Support.second;
+       DistRange_Adsorbent_Support.second=tmp;
+    }
+}
+void CParameter::setOutputStructureFormat(std::string mtr)
+{
+   int res=std::stoi(mtr);
+   if(res<1 || res>7){
+     Log::Error<< mtr << " command is wrong! CParameter::setOutputStructureFormat!\n";
+     boost::throw_exception(std::runtime_error(mtr+ " command format is wrong! Check the file: CParameter::setOutputStructureFormat."));
+   }
+   switch(res){
+     case 1:
+         this->output_struct_format="poscar";
+         break;
+     case 2:
+         this->output_struct_format="mol";
+         break;
+     case 3:
+         this->output_struct_format="cif";
+         break;
+     case 4:
+         this->output_struct_format="car";
+         break;
+     case 5:
+         this->output_struct_format="gjf";
+         break;
+     case 6:
+         this->output_struct_format="cell";
+         break;
+     case 7:
+         this->output_struct_format="xyz";
+         break;
+     default:
+         this->output_struct_format="poscar";
+         break;
+   }
 }
 bool CParameter::checkIsValidParameters()
 {

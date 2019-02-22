@@ -8,10 +8,15 @@
 #include <vector>
 #include <map>
 #include <boost/filesystem.hpp>
+#include "../CATAZJUT/CBondPrivate.h"
 #include "../GaZJUT/CGaparameter.h"
 namespace GAZJUT{
-       class CGaparameter;
+   class CGaparameter;
 }
+namespace CATAZJUT{
+   class CBondPrivate;
+}
+
 namespace CALCZJUT{
 
 class CParameter
@@ -25,14 +30,17 @@ class CParameter
                               BAND_GAP=0x103} EVALUATOR_CRITERION;
 
         typedef enum EM_P_02{CLUSTER       =0x201,
-                             PERIODIC      =0x202,
-                             MOL_CLUSTER   =0x203,
-                             MOL_2DMATERIAL=0x204,
-                      MOL_CLUSTER2DMATERIAL=0x205} SIMULATION_MODE;
+                             MOL_CLUSTER   =0x202,
+                             MOL_2DMATERIAL=0x203,
+                      MOL_CLUSTER2DMATERIAL=0x204,
+                                   PERIODIC=0x205} SIMULATION_MODE;
         typedef enum EM_P_03{WORK      = 0x301,
                              PARAMETER = 0x302,
                              SCRATCH   = 0x303,
                              MAINPATH  = 0x304}PATH_TYPE;
+        //minmum or maxmum
+        typedef enum EM_P_04{MIN = 0x401,
+                             MAX = 0x401}SEARCH_MODE;
 
         //Parameter of general setting
         std::string sysName;
@@ -40,13 +48,16 @@ class CParameter
 
         std::vector<std::pair<std::string*,std::string*>> excludeBond;
         std::pair<double,double> bondToleranceFactor;
+        std::vector<CATAZJUT::CBondPrivate*> bondTolerance;
         SIMULATION_MODE simulationMode;
         EVALUATOR_CRITERION  evaluatorCriterion;
+        SEARCH_MODE searchMode;
 
         // for supported catalyst
         std::string supportStructFile;
         std::string adsorbentStructFile;
         std::vector<std::string*> adso_supp_Input_File;
+        std::pair<double,double> DistRange_Adsorbent_Support;
         // for pure cluster
         std::string cluster_Formula;
         std::vector<std::string*> cluster_Input_File;
@@ -88,9 +99,11 @@ class CParameter
         void setSimulationMode(std::string);
         void setEvaluator_Code(std::string);
         void setEvaluator_Criterion(std::string);
+        void setSearch_Mode(std::string);
         // structure command
-        void setBond_Tolerance_Factor(std::string);
+        void setBond_Tolerance_Factor(std::string);   // Cu  O
         void setExclude_Bond(std::string);
+        void setBond_Tolerance(std::string);  // Cu  O  1.21   2.1
         // GA parameters
         void setPopSize(std::string);
         void setPm(std::string);
@@ -100,6 +113,7 @@ class CParameter
         void setMutation_Mode(std::string);
         void setGene_Code(std::string);
         void setCross_Mode(std::string);
+        void setCross_Num(std::string);
         void setSelect_Mode(std::string);
         void setGene_Formation_Mode(std::string);
         //
@@ -108,6 +122,8 @@ class CParameter
         void setAdsorbent_Support_Structure(std::string);
         void setCluster_Formula(std::string);
         void setCluster_Input_File(std::string);
+        void setDistanceRangeAdsorbentOnSupport(std::string);
+        void setOutputStructureFormat(std::string);
 
         void setOutput_struct_format(std::string);
 

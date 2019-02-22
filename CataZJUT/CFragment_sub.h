@@ -5,6 +5,8 @@
 #include "foreach.h"
 #include "Cbond.h"
 #include "CConfigurationBase.h"
+#include "../Util/log.hpp"
+using util::Log;
 
 namespace CATAZJUT{
 
@@ -27,9 +29,12 @@ inline CAtom* CFragment::atom(size_t index) const
      }
      return m_pConfiguration->m_Atom[pos];
 }
-inline std::vector<CAtom *> CFragment::atoms() const
+inline std::vector<CAtom*> CFragment::atoms() const
 {
-      std::vector<CAtom *> atoms;
+      std::vector<CAtom*> atoms;
+      #ifdef DEBUG
+           Log::Debug<<"CFragment::atoms()size:"<<m_bitset.size()<< std::endl;
+      #endif
       for(size_t i=0;i<m_bitset.size();i++)
         if(m_bitset.test(i)==1)   // judge whether m_bitset[i]==1
             atoms.push_back(m_pConfiguration->m_Atom[i]);

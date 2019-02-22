@@ -34,7 +34,7 @@
 #include "CFractionCoordinates.h"
 #include "CBondTolerance.h"
 #include "CConfigurationPrivateData.h"
-
+#include "../Util/log.hpp"
 
 
 /*
@@ -47,6 +47,7 @@ The target of this Configurationbase class:
    (5) control the format of output and input
    (3) build the bridge with work-modes(such as cluster-GA, cluster-molecule-GA and 2D-structure-molecule-GA)
 */
+using util::Log;
 
 namespace CATAZJUT{
 /*
@@ -107,20 +108,35 @@ CConfigurationBase::CConfigurationBase(CConfigurationBase& other)
 
         Three variables were set during the following process addatom, addbond;
      */
+//     #ifdef DEBUG
+//      Log::Debug<<"***********CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//     #endif
+     this->m_pCartesian=nullptr;
+     m_pBondEvaluator = new CBondTolerance(this);
+     this->m_pParameter=other.sysParameter();
+     m_pBondEvaluator->setTolerancefactor(m_pParameter->bondToleranceFactor);
+     m_pBondEvaluator->setExcludeBond(m_pParameter->excludeBond);
 
-     m_pData->name = other.m_pData->name;
-     std::map<const CAtom*,CAtom*> oldToNew;
-     foreach(CAtom* atom, m_Atom)
-          oldToNew[atom]=addAtomCopy(atom);
+     if(other.atomCount()!=0){
+         m_pData->name = other.m_pData->name;
+         std::map<const CAtom*,CAtom*> oldToNew;
+         foreach(CAtom* atom, other.atoms())
+              oldToNew[atom]=this->addAtomCopy(atom);
 
-     foreach(CBond* bond,m_pData->bonds)
-     {
-         //CBone* newBond = addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
-         addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
+         foreach(CBond* bond,other.bonds())
+         {
+             //CBone* newBond = addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
+             this->addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
+         }
+         this->m_CoordinateType = other.coordinateType();
+         this->m_DimensionalType= other.dimensionalType();
+         this->constraintBits = other.constraintBit();
+         oldToNew.clear();
      }
-     this->m_CoordinateType = other.coordinateType();
-     this->m_DimensionalType= other.dimensionalType();
-     this->constraintBits = other.constraintBit();
+
+//     #ifdef DEBUG
+//      Log::Debug<<"***********2-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//     #endif
 }
 CConfigurationBase::~CConfigurationBase()
 {
@@ -184,7 +200,10 @@ CCartesianCoordinates* CConfigurationBase::coordinates()
          if(m_pData->coordinateSets.empty()|| m_pData->coordinateSets.front()->type()\
                                                == CCoordinateSet::None){
             // if no, construct new coordinate
-            m_pCartesian= new CCartesianCoordinates(this,atomCount());
+            m_pCartesian= new CCartesianCoordinates(this);
+            //std::cout<<"size of atomnum:"<<this->atomCount()<<std::endl;
+            //std::cout<<"size of coordinate:"<<this->m_pCartesian->size()<<std::endl;
+
             m_pData->coordinateSets.push_back(boost::make_shared<CCoordinateSet>(m_pCartesian));
 
          }else{
@@ -293,7 +312,7 @@ void CConfigurationBase::addAtom(const std::string& elementName, const Point3& p
 
      //add atomic property into the whole atomic-list.
      //and the m_Atom vector only save this pointer of this m_Element
-     this->m_Element.push_back(std::move(*newElement));
+     this->m_Element.push_back(*newElement);
 
      //add element into bond evaluator for the identification of chemical bonds.
      m_pBondEvaluator->addElement(*newElement);
@@ -310,6 +329,13 @@ void CConfigurationBase::addAtom(const std::string& elementName, const Point3& p
         this->Fractioncoordinates()->append(position);
      else if(m_CoordinateType==CATAZJUT::DEFINED::Cartesian)
         this->coordinates()->append(position);
+
+//     #ifdef DEBUG
+//         Log::Debug<<"atom_"<<m_pCartesian->size()<<":";
+//         Log::Debug<<coordinates()->position(m_pCartesian->size()-1)(0)<<"  ";
+//         Log::Debug<<coordinates()->position(m_pCartesian->size()-1)(1)<<"  ";
+//         Log::Debug<<coordinates()->position(m_pCartesian->size()-1)(2)<< std::endl;
+//     #endif
 }
  void CConfigurationBase::addAtom(const std::string& elementName, const double& x, const double& y, const double& z)
  {
@@ -438,16 +464,26 @@ void CConfigurationBase::sortAtomsViaElements()
 */
 void CConfigurationBase::perceiveBonds()
 {
-    //clear all bonds;
-    removeBonds(m_pData->bonds);
+    assert(this->m_pBondEvaluator);
 
-    for(size_t i=0;i<m_Atom.size();i++)
-        for(size_t j=i+1;i<m_Atom.size();j++)
+    //clear all bonds;
+    if(this->bondCount()!=0)
+      removeBonds(m_pData->bonds);
+
+    for(size_t i=0;i<m_Atom.size()-1;i++)
+        for(size_t j=i+1;j<m_Atom.size();j++)
         {
-            if(m_pBondEvaluator->IsBond(m_Atom[i],m_Atom[j]) == true)
-                // first generate bond and identify bond order
-                m_pBondEvaluator->setBondOrderType(addBond(m_Atom[i],m_Atom[j]));
+            if(m_pBondEvaluator->IsBond(m_Atom[i],m_Atom[j]) == true){
+               // first generate bond and identify bond order
+//               #ifdef DEBUG
+//                  Log::Debug<<"*********** 1-CConfigurationBase::perceiveBonds()***********"<< std::endl;
+//               #endif // DEBU
+                this->setBondOrderType(this->addBond(m_Atom[i],m_Atom[j]));
+            }
         }
+//    #ifdef DEBUG
+//       Log::Debug<<"***********2- CConfigurationBase::perceiveBonds()***********"<< std::endl;
+//    #endif // DEBUG
 }
 
 CBond* CConfigurationBase::addBond(CAtom *a, CAtom *b)
@@ -545,6 +581,31 @@ void CConfigurationBase::clear()
      removeBonds(m_pData->bonds);
      removeAtoms(m_Atom);
 }
+void CConfigurationBase::setBondOrderType(CBond* mthBond)
+{
+    if(mthBond->atom1()->maxCoordinationNum()==1 || mthBond->atom1()->maxCoordinationNum()==1)
+        this->m_pData->bondOrders.push_back(CBond::Single);
+    else if(mthBond->atom1()->element().isTransitionMetal() || mthBond->atom2()->element().isTransitionMetal() )
+        this->m_pData->bondOrders.push_back(CBond::Single);
+    else if(mthBond->atom1()->element().isPblockElement()&& mthBond->atom2()->element().isPblockElement()){
+        double coventL1,coventL2;
+        coventL1=mthBond->atom1()->CovalentRadius();
+        coventL2=mthBond->atom2()->CovalentRadius();
+        if(mthBond->length() > (coventL1+coventL2-0.2))
+            this->m_pData->bondOrders.push_back(CBond::Single);
+        else if(mthBond->length()<=(coventL1+coventL2-0.2) && (mthBond->length()>(coventL1+coventL2-0.3)))
+            this->m_pData->bondOrders.push_back(CBond::Double);
+        else
+            this->m_pData->bondOrders.push_back(CBond::Triple);
+    }else
+        this->m_pData->bondOrders.push_back(CBond::Single);
+//    #ifdef DEBUG
+//       Log::Debug<<"*********** 1-CConfigurationBase::setBondOrderType(CBond* mthBond)***********"<< std::endl;
+//    #endif // DEBU
+
+}
+
+
 void CConfigurationBase::perceiveFragments()
 {
      if(this->isEmpty()==true)

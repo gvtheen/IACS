@@ -41,6 +41,7 @@ class CStructPoolCluster:public CStructPoolBase
                                     std::vector<std::pair<std::string,size_t>>&);
         void mixedClusterPredict(CATAZJUT::CPeriodicFramework*,
                                  std::vector<std::pair<std::string,size_t>>&);
+        void outPutStructure(CATAZJUT::CPeriodicFramework*);
 
     private:
 
