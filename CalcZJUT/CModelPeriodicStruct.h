@@ -3,7 +3,7 @@
 #include "CModelBase.h"
 
 namespace CATAZJUT{
-   class CPeriodicFramework;
+   class CConfigurationBase;
 }
 
 namespace CALCZJUT{
@@ -26,8 +26,8 @@ class CModelPeriodicStruct:public CModelBase
 
     protected:
 
-        void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
-        void eliminateFragment(CATAZJUT::CPeriodicFramework*);
+        void eliminateCloseContacts(CATAZJUT::CConfigurationBase* strut,double distanceCutOff=1.0);
+        void eliminateFragment(CATAZJUT::CConfigurationBase*);
     private:
 };
 

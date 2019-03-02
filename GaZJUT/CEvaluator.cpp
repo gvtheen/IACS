@@ -43,11 +43,11 @@ CEvaluator::CEvaluator()
 {
 
 }
-CEvaluator::CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>  *myEvaluatorPool,
+CEvaluator::CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>  myEvaluatorPool,
                        CALCZJUT::CStructPoolBase *myStructPool)
 {
     // sample evaluator
-    this->m_pEvaluatorPool = myEvaluatorPool;
+    this->m_pEvaluatorPool.assign(myEvaluatorPool.begin(),myEvaluatorPool.end());
     this->m_currentEvaluator=nullptr;
     // sample structural pool
     this->m_pStructurePool = myStructPool;
@@ -67,7 +67,9 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
 
    bool runstate=false;
    size_t pop_num = CurrentPopulation->popNum();
-
+    #ifdef DEBUG
+         Log::Debug<<"1-*********** CEvaluator::run***********"<< std::endl;
+    #endif
    std::vector<double> OrigScoreVect;
    std::vector<double> DecValueOfGenome;
 
@@ -75,12 +77,19 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    // calculate the fitness of each genome in population
 
    //put the 1st evaluator into current evaluator.
-   m_currentEvaluator= (*m_pEvaluatorPool)[0];
+   assert(m_pEvaluatorPool[0]);
+   m_currentEvaluator= m_pEvaluatorPool[0];
+   #ifdef DEBUG
+         Log::Debug<<"2-*********** CEvaluator::run***********"<< std::endl;
+    #endif
    for(size_t i=0;i<pop_num;i++)
    {
       //clear all content of DecValueOfGenome
       DecValueOfGenome.clear();
       // get dec. Value of ith Genome.
+      #ifdef DEBUG
+         Log::Debug<<"3-*********** CEvaluator::run***********"<< std::endl;
+      #endif
       ((*CurrentPopulation)[i])->getDecValue(DecValueOfGenome);
 
       //sett i th structure to evaluator

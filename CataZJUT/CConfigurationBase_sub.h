@@ -45,8 +45,8 @@ inline void CConfigurationBase::checkElement(CElement& currentElement)
 {
    if(!currentElement.isValid())
    {
-       util::Log::Error<<"Atomic label is error! CConfigurationBase_checkElement"<<std::endl;
-       boost::throw_exception(std::runtime_error("Atomic label is error!Check the file: Error_information.txt."));
+       util::Log::Error<<currentElement.symbol()<< " atomic label is error! CConfigurationBase_checkElement"<<std::endl;
+       boost::throw_exception(std::runtime_error("Atomic label is error!Check the file: CConfigurationBase::checkElement."));
    }
 }
 

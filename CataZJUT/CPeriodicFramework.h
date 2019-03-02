@@ -17,16 +17,15 @@ class CCartesianCoordinates;
 //
 
 
-class CPeriodicFramework:public CConfigurationBase
+class CConfigurationBase:public CConfigurationBase
 {
     public:
-        CPeriodicFramework(CALCZJUT::CParameter*);
-        virtual ~CPeriodicFramework();
-        CPeriodicFramework(CPeriodicFramework&);
-        CPeriodicFramework(CConfigurationBase&);
+        CConfigurationBase(CALCZJUT::CParameter*);
+        virtual ~CConfigurationBase();
+        CConfigurationBase(CConfigurationBase&);
+        CConfigurationBase(CConfigurationBase&);
 
-        CPeriodicFramework* clone();
-        virtual CFractionCoordinates* Fractioncoordinates();
+        CConfigurationBase* clone();
         CUnitCell* unitcell();
 
         std::string SymmetrySymbol();

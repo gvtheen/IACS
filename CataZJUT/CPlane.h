@@ -12,6 +12,7 @@ namespace CATAZJUT{
 class CPlane
 {
     public:
+
         CPlane();
         CPlane(Eigen::Vector4d);
         CPlane(Eigen::MatrixXd* currentMat);
@@ -20,10 +21,10 @@ class CPlane
 
         void            CreatePlane(Eigen::MatrixXd* currentMat);
         double          Distance(const Point3&);
-        Eigen::Vector4d Equation();
+        Eigen::Vector4d& Equation();
         void SetEquation(Eigen::Vector4d temp);
 
-        Eigen::Vector3d  NormalLine();
+        Eigen::Vector3d&  NormalLine();
         void SetNormalLine(Eigen::Vector3d temp);
 
         Circle3D        CircleIncludingPoints();
@@ -40,6 +41,9 @@ class CPlane
 
         //Varible
         Eigen::MatrixXd* m_pPointsToPlane;
+
+        void outputPlane();
+        bool operator==(CPlane&);
     protected:
         void            CreateCircleIncludingPoints(Eigen::MatrixXd);
         double          FindDisMax(Eigen::MatrixXd,Point3,int&);

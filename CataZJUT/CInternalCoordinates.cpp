@@ -31,8 +31,8 @@ public:
     CInternalCoordinatesPrivate();
     ~CInternalCoordinatesPrivate();
     //std::size_t size;
-    std::vector<Point3i> *connections;
-    std::vector<Point3>  *coordinates;
+    std::vector<Point3i> connections;
+    std::vector<Point3>  coordinates;
 };
 // definition of CInternalCoordinatesPrivate
 //
@@ -40,14 +40,12 @@ public:
 //
 //
 CInternalCoordinatesPrivate::CInternalCoordinatesPrivate()
-:connections(nullptr),coordinates(nullptr)
 {
 
 }
 CInternalCoordinatesPrivate::~CInternalCoordinatesPrivate()
 {
-     delete connections;
-     delete  coordinates;
+
 }
 /*
 definition of CInternalCoordinates
@@ -58,18 +56,22 @@ definition of CInternalCoordinates
 CInternalCoordinates::CInternalCoordinates()
     : m_data(new CInternalCoordinatesPrivate)
 {
-    m_data->connections = nullptr;
-    m_data->coordinates = nullptr;
+//    m_data->connections = nullptr;
+//    m_data->coordinates = nullptr;
+}
+CInternalCoordinates::CInternalCoordinates(CConfigurationBase *structure)
+: m_data(new CInternalCoordinatesPrivate)
+{
+    this->m_pConfiguration=structure;
 }
 
 /// Creates a new internal coordinate set with \p size rows.
 CInternalCoordinates::CInternalCoordinates(CConfigurationBase *m_conf,size_t size_m)
     : m_data(new CInternalCoordinatesPrivate),m_pConfiguration(m_conf)
 {
-    m_data->connections = new std::vector<Point3i>();
-    m_data->coordinates = new std::vector<Point3>();
-    m_data->connections->insert(m_data->connections->begin(),size_m, Point3i().setZero());
-    m_data->coordinates->insert(m_data->coordinates->begin(),size_m, Point3().setZero());
+
+    m_data->connections.insert(m_data->connections.begin(),size_m, Point3i().setZero());
+    m_data->coordinates.insert(m_data->coordinates.begin(),size_m, Point3().setZero());
 
 }
 
@@ -78,12 +80,10 @@ CInternalCoordinates::CInternalCoordinates(CConfigurationBase *m_conf,size_t siz
 CInternalCoordinates::CInternalCoordinates(const CInternalCoordinates &coordinates)
     : m_data(new CInternalCoordinatesPrivate)
 {
-    //size_t tempsize = coordinates.m_data->connections->size();
-    m_data->connections = new std::vector<Point3i>();
-    m_data->coordinates = new std::vector<Point3>();
+    //size_t tempsize = coordinates.m_data->connections.size();
 
-    m_data->connections->assign(coordinates.m_data->connections->begin(),coordinates.m_data->connections->end());
-    m_data->coordinates->assign(coordinates.m_data->coordinates->begin(),coordinates.m_data->coordinates->end());
+    m_data->connections.assign(coordinates.m_data->connections.begin(),coordinates.m_data->connections.end());
+    m_data->coordinates.assign(coordinates.m_data->coordinates.begin(),coordinates.m_data->coordinates.end());
     m_pConfiguration = coordinates.configuration();
 }
 
@@ -97,7 +97,7 @@ CInternalCoordinates::~CInternalCoordinates()
 /// Returns the number of rows of coordinates.
 size_t CInternalCoordinates::size() const
 {
-    return m_data->connections->size();
+    return m_data->connections.size();
 }
 
 /// Returns \c true if the internal coordinates object contains
@@ -113,7 +113,7 @@ bool CInternalCoordinates::isEmpty() const
 void CInternalCoordinates::setCoordinates(size_t row, double r, double theta, double phi)
 {
     assert(row < size());
-    m_data->coordinates->at(row)<<r,theta,phi;
+    m_data->coordinates[row]<<r,theta,phi;
 }
 
 /// Sets the distance, angle, and torsion at \p row to \p r,
@@ -125,7 +125,7 @@ void CInternalCoordinates::setCoordinatesRadians(size_t row, double r, double th
     double r1 = r;
     double theta1 = theta * CATAZJUT::constants::RadiansToDegrees;
     double phi1 = phi * CATAZJUT::constants::RadiansToDegrees;
-    m_data->coordinates->at(row)<<r1,theta1,phi1;
+    m_data->coordinates[row]<<r1,theta1,phi1;
 }
 void CInternalCoordinates::addInternalCoordinates(size_t a,double r, int b, double theta,int c, double phi)
 {
@@ -145,7 +145,7 @@ Point3 CInternalCoordinates::coordinates(size_t row) const
 {
     assert(row < size());
 
-    return m_data->coordinates->at(row);
+    return m_data->coordinates[row];
 }
 CConfigurationBase* CInternalCoordinates::configuration()const
 {
@@ -156,7 +156,7 @@ CConfigurationBase* CInternalCoordinates::configuration()const
 Point3 CInternalCoordinates::coordinatesRadians(size_t row) const
 {
     assert(row < size());
-    Point3 tmp=m_data->coordinates->at(row);
+    Point3 tmp=m_data->coordinates.at(row);
     tmp[1]=tmp[1]*CATAZJUT::constants::DegreesToRadians;
     tmp[2]=tmp[2]*CATAZJUT::constants::DegreesToRadians;
     return tmp;
@@ -168,7 +168,7 @@ void CInternalCoordinates::setConnections(size_t row, int a, int b, int c)
 {
     assert(row < size());
 
-    m_data->connections->at(row)<<a,b,c;
+    m_data->connections[row]<<a,b,c;
 }
 
 /// Returns the connections for the coordinates at \p row.
@@ -176,7 +176,7 @@ Point3i CInternalCoordinates::connections(size_t row) const
 {
     assert(row < size());
 
-    return m_data->connections->at(row);
+    return m_data->connections[row];
 }
 
 // --- Conversions --------------------------------------------------------- //
@@ -251,15 +251,12 @@ CInternalCoordinates& CInternalCoordinates::operator=(const CInternalCoordinates
         return *this;
     }
 
-    delete m_data->connections;
-    delete m_data->coordinates;
+    //std:size_t tempsize = coordinates.m_data->connections.size();
+//    m_data->connections = new std::vector<Point3i>();
+//    m_data->coordinates = new std::vector<Point3>();
 
-    //std:size_t tempsize = coordinates.m_data->connections->size();
-    m_data->connections = new std::vector<Point3i>();
-    m_data->coordinates = new std::vector<Point3>();
-
-    m_data->connections->assign(coordinates.m_data->connections->begin(),coordinates.m_data->connections->end());
-    m_data->coordinates->assign(coordinates.m_data->coordinates->begin(),coordinates.m_data->coordinates->end());
+    m_data->connections.assign(coordinates.m_data->connections.begin(),coordinates.m_data->connections.end());
+    m_data->coordinates.assign(coordinates.m_data->coordinates.begin(),coordinates.m_data->coordinates.end());
 
     return *this;
 }

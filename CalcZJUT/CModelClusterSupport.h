@@ -28,7 +28,8 @@ class CModelClusterSupport:public CModelBase
                      POLYHEDRON = 0x98126,
                          SPHERE = 0x98127}CLUSTER_MODEL_TYPE;
 
-        CModelClusterSupport(CParameter*,CATAZJUT::CPeriodicFramework**,size_t);
+        CModelClusterSupport(CParameter*,CATAZJUT::CConfigurationBase**,size_t);
+        CModelClusterSupport(CModelClusterSupport&);
         virtual ~CModelClusterSupport();
 
         CModelBase* clone();

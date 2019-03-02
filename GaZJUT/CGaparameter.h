@@ -34,6 +34,7 @@ class CGaparameter
 
         std::vector <GeneVAR>& GeneVAR();
         void                   setGeneVAR(std::vector<GAZJUT::GeneVAR>&);
+
         void                   checkGeneVAR();
         std::string            GeneFile();
         std::string            InputFile();

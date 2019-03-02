@@ -15,6 +15,7 @@ class CInternalCoordinates
 public:
     // construction and destruction
     CInternalCoordinates();
+    CInternalCoordinates(CConfigurationBase *structure);
     CInternalCoordinates(CConfigurationBase *coordinates,size_t size_m);
     CInternalCoordinates(const CInternalCoordinates &coordinates);
     ~CInternalCoordinates();

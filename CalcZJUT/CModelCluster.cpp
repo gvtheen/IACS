@@ -25,7 +25,7 @@
 #include <cstring>
 #include <exception>
 #include <math.h>
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CModelCluster.h"
 #include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
@@ -57,19 +57,19 @@ namespace CALCZJUT{
 CModelCluster::CModelCluster(CParameter* mPara,size_t index)
 :CModelBase(mPara,index)
 {
-    #ifdef DEBUG
-      Log::Debug<<"***********CModelCluster::CModelCluster***********"<< std::endl;
-    #endif
+//    #ifdef DEBUG
+//      Log::Debug<<"***********CModelCluster::CModelCluster***********"<< std::endl;
+//    #endif
     CATAZJUT::CConfigurationBase* temp = new CATAZJUT::CConfigurationBase(mPara);
 
-    this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(*temp);
+    this->m_pPeriodicFramework = new CATAZJUT::CConfigurationBase(*temp);
     this->m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
     this->m_pPeriodicFramework->setCoordinateType(CATAZJUT::DEFINED::Cartesian);
      // In this situation, this->m_pPeriodicFramework->m_pUnitCell is empty pointer NULL;
     delete temp;
-    #ifdef DEBUG
-      Log::Debug<<"****2-*******CModelCluster::CModelCluster***********"<< std::endl;
-    #endif
+//    #ifdef DEBUG
+//      Log::Debug<<"****2-*******CModelCluster::CModelCluster***********"<< std::endl;
+//    #endif
 
 }
 
@@ -80,7 +80,7 @@ CModelCluster::~CModelCluster()
 CModelBase* CModelCluster::clone()
 {
      CModelCluster* res = new CModelCluster(this->m_pParameter,0);
-     res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
+     res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
      res->m_IsNeedRandomInit = this->RandomInitState();
      res->setChemicalFormula(this->chemicalFormula());
 
@@ -98,7 +98,7 @@ void CModelCluster::setGeneValueToStruct(const std::vector<double>& realValueOfg
      if(realValueOfgene.size()==0)
        goto RETURN_Label;
 
-      if(this->m_pParameter->currentGenerationNum()>0){
+      if(this->m_pParameter->currentGenerationNum()>=0){
           try{
              foreach(CATAZJUT::CAtom* atom_s, this->m_pPeriodicFramework->atoms()){
                 tempPoint<<realValueOfgene[index],realValueOfgene[index+1],realValueOfgene[index+2];
@@ -136,7 +136,7 @@ void CModelCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 //   max_radius = max_radius + 0.50;
 //   currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
 }
-void CModelCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
+void CModelCluster::eliminateCloseContacts(CATAZJUT::CConfigurationBase* curr_struct,double distanceCutOff)
 {
     util::Vector3 vect;
     util::Point3  center_P;
@@ -175,7 +175,7 @@ void CModelCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_st
        }
     }
 }
-void CModelCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
+void CModelCluster::eliminateFragment(CATAZJUT::CConfigurationBase* curr_struct)
 {
     size_t less_cycle;
     if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure

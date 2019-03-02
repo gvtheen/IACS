@@ -4,7 +4,7 @@
 #include "CStructPoolBase.h"
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
   class CElement;
 }
 
@@ -21,9 +21,9 @@ class CStructPoolSupported:public CStructPoolBase
 
 
     protected:
-        void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework);
+        void getIO(std::string &file_name,CATAZJUT::CConfigurationBase* currentPeriodicFramework);
     private:
-        CATAZJUT::CPeriodicFramework*  copy_pPeriodicFramework;
+        CATAZJUT::CConfigurationBase*  copy_pPeriodicFramework;
 };
 
 

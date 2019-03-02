@@ -54,7 +54,6 @@ CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
     //until this time, both best genome and worst genome are unknown.
     m_pMinRawGenome  = nullptr;
     m_pMaxRawGenome  = nullptr;
-   m_pObjGaparameter = nullptr;
     m_pMinFitGenome  = nullptr;
     m_pMaxFitGenome  = nullptr;
     m_pMaxOriGenome  = nullptr;

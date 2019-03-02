@@ -22,6 +22,12 @@
 #include <iostream>
 #include "CPlane.h"
 #include "Constant.h"
+#include "../Util/log.hpp"
+#include "../IACS.h"
+
+using util::Log;
+
+
 namespace CATAZJUT{
 
 CPlane::CPlane()
@@ -201,10 +207,10 @@ Point3 CPlane::PointInCircleFromGene(double Height,double Radius_ratio,double An
     Point3 CircleCenter = newPlane->m_pCircleIncludingPoints->col(0);
     return CircleCenter + Radius_ratio*(PointOnCircle - CircleCenter);
 }
-Eigen::Vector4d CPlane::Equation()
+Eigen::Vector4d& CPlane::Equation()
 {
     //if(this->m_pEquation!=nullptr)
-       return *(m_pEquation);
+    return *(m_pEquation);
 }
 void CPlane::SetEquation(Eigen::Vector4d  temp)
 {
@@ -212,7 +218,7 @@ void CPlane::SetEquation(Eigen::Vector4d  temp)
        m_pEquation = new (Eigen::Vector4d);
    *(m_pEquation)=temp;
 }
-Eigen::Vector3d CPlane::NormalLine()
+Eigen::Vector3d& CPlane::NormalLine()
 {
     //if(this->m_pNormalLine!=nullptr)
        return *(m_pNormalLine);
@@ -234,6 +240,40 @@ void CPlane::SetCircleOfIncludingPoints(Circle3D currCircle)
         m_pCircleIncludingPoints = new Circle3D;
     *m_pCircleIncludingPoints = currCircle;
 
+}
+void CPlane::outputPlane()
+{
+    assert(this->m_pEquation);
+
+     Log::Info<<"Plane equation: "<<(*m_pEquation)(0)<<"*x";
+
+     if((*m_pEquation)(1)<0)
+        Log::Output<<"  "<<(*m_pEquation)(1)<<"*y";
+     else
+        Log::Output<<" + "<<(*m_pEquation)(1)<<"*y";
+
+     if((*m_pEquation)(2)<0)
+        Log::Output<<"  "<<(*m_pEquation)(2)<<"*z";
+     else
+        Log::Output<<" + "<<(*m_pEquation)(2)<<"*z";
+
+     if((*m_pEquation)(3)<0)
+        Log::Output<<"  "<<(*m_pEquation)(3)<<" = 0";
+     else
+        Log::Output<<" + "<<(*m_pEquation)(3)<<" = 0";
+
+     Log::Output<<std::endl;
+}
+bool CPlane::operator==(CPlane& other)
+{
+     Eigen::Vector4d diff_vect= *m_pEquation - other.Equation();
+     bool res=true;
+     for(size_t i=0;i<4;i++)
+        if(std::fabs(diff_vect(i))>PLANE_DIFF_CONVERGENCE){
+            res=false;
+            break;
+        }
+    return res;
 }
 CPlane::~CPlane()
 {

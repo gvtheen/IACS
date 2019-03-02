@@ -8,6 +8,10 @@
 #include "assert.h"
 #include <iostream>
 
+#define SIGN_DIGIT_NUMBER 16
+#define SIGN_DIGIT_LENGTH 21
+
+#define PLANE_DIFF_CONVERGENCE 0.2
 
 
 #endif

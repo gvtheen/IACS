@@ -5,14 +5,14 @@
 #include "CIOBase.h"
 
 namespace CATAZJUT{
-   class CPeriodicFramework;;
+   class CConfigurationBase;;
 }
 namespace CALCZJUT{
 
 class CIOCellFile:public CIOBase
 {
     public:
-        CIOCellFile(CATAZJUT::CPeriodicFramework*);
+        CIOCellFile(CATAZJUT::CConfigurationBase*);
         virtual ~CIOCellFile();
 
         void output(const std::string& file);

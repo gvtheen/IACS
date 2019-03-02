@@ -21,8 +21,11 @@
 #include "CModelMoleculeAdsorbent.h"
 #include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CAtom.h"
+#include "../IACS.h"
 #include "../Util/foreach.h"
+#include "../Util/log.hpp"
 
+using util::Log;
 namespace CALCZJUT{
 
 
@@ -31,6 +34,9 @@ CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* m
 :m_pConfiguration(mpConf),m_AtomicBits(molIndexBit)
 {
     assert(m_pConfiguration);
+    #ifdef DEBUG
+        Log::Debug<<"CModelMoleculeAdsorbent::CModelMoleculeAdsorbent" << std::endl;
+    #endif
     foreach(CATAZJUT::CAtom* atom,m_pConfiguration->atoms())
           if(m_AtomicBits.test(atom->index())==1)
              m_Atoms.push_back(atom);

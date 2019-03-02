@@ -11,7 +11,7 @@ namespace CATAZJUT{
          class CConfigurationBase;
          class CAtom;
          class CCartesianCoordinates;
-         class CPeriodicFramework;
+         class CConfigurationBase;
 }
 namespace CALCZJUT{
 
@@ -21,8 +21,8 @@ class CModelSupport
         typedef boost::iterator_range<std::vector<CATAZJUT::CAtom *>::const_iterator> AtomRange;
 
         //construction & deconstruction
-        CModelSupport(CATAZJUT::CPeriodicFramework* mpconf, Bitset& supportBit);
-        CModelSupport(CATAZJUT::CPeriodicFramework* mpconf, std::vector<CATAZJUT::CAtom*> support);
+        CModelSupport(CATAZJUT::CConfigurationBase* mpconf, Bitset& supportBit);
+        CModelSupport(CATAZJUT::CConfigurationBase* mpconf, std::vector<CATAZJUT::CAtom*> support);
 
         virtual ~CModelSupport();
 
@@ -30,7 +30,7 @@ class CModelSupport
         bool isEmpty() const;
 
         CATAZJUT::CConfigurationBase* configuration() const;
-        void setConfiguration(CATAZJUT::CPeriodicFramework*);
+        void setConfiguration(CATAZJUT::CConfigurationBase*);
         CATAZJUT::CCartesianCoordinates* coordinates();
 
         //structure
@@ -40,7 +40,7 @@ class CModelSupport
         size_t atomCount() const;
 
    public:
-        CATAZJUT::CPeriodicFramework*      m_pPeriodicFramework;
+        CATAZJUT::CConfigurationBase*      m_pPeriodicFramework;
         std::vector<CATAZJUT::CAtom*>      m_Atoms;
                                Bitset      m_AtomicBits;
 

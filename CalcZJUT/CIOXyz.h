@@ -8,7 +8,7 @@
 using util::Bitset;
 
 namespace CATAZJUT{
-   class CPeriodicFramework;;
+   class CConfigurationBase;;
 }
 
 namespace CALCZJUT{
@@ -16,7 +16,7 @@ namespace CALCZJUT{
 class CIOXyz:public CIOBase
 {
     public:
-        CIOXyz(CATAZJUT::CPeriodicFramework*);
+        CIOXyz(CATAZJUT::CConfigurationBase*);
         virtual ~CIOXyz();
 
         void output(const std::string& file);

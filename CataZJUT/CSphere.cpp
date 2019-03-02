@@ -31,9 +31,14 @@ CSphere::CSphere()
 {
     //ctor
 }
-CSphere::CSphere(const std::vector<Point3>& currentPoints)
+CSphere::CSphere(const std::vector<Point3,Eigen::aligned_allocator<Point3>>& currentPoints)
 {
-    this->m_PointsMat = currentPoints;
+
+    this->m_Equation<<0,0,0,0;
+
+    for(size_t i=0;i<currentPoints.size();i++)
+        this->m_PointsMat.push_back(currentPoints[i]);
+
 }
 CSphere::CSphere(CSphere& mht)
 {
@@ -52,34 +57,42 @@ void CSphere::CreateSphere()
    double ans  =1e12,eps=1e-12,R,step;
    //CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
 
-   Point3 P_temp;
+
    Point3 P_pos;
    P_pos<<0,0,0;
    size_t pos;
    step=100;
+   #ifdef DEBUG
+                     Log::Debug<<"CSphere::CreateSphere():" <<m_PointsMat.size()<< std::endl;
+   #endif
    while(step>eps)
    {
        pos = maxDist(P_pos);
 
        R = CATAZJUT::Geometry::distance(P_pos,m_PointsMat[pos]);
-       if(step<ans)
-          ans=step;
-       P_pos = P_pos + step*(P_pos - P_temp)/R;
+       if(R<ans)
+          ans=R;
+       if(R==0)
+          R=R+eps;
+       P_pos = P_pos + (step/R)*(m_PointsMat[pos]-P_pos);
        step=step*0.98;
    }
-   m_Equation<<P_pos[0],P_pos[1],P_pos[2],R;
+   #ifdef DEBUG
+                     Log::Debug<<"2-CSphere::CreateSphere():" <<R<< std::endl;
+   #endif
+   //m_Equation<<P_pos[0],P_pos[1],P_pos[2],R;
 }
 /*
     sub method in annealing method
 */
-size_t CSphere::maxDist(Point3 p1)
+size_t CSphere::maxDist(const Point3& p1)
 {
     double res=0,temp;
-    size_t res_index;
+    size_t res_index=0;
     for(size_t i=0;i<m_PointsMat.size();i++)
     {
         temp=CATAZJUT::Geometry::distance(p1,m_PointsMat[i]);
-        if(res>temp)
+        if(temp>res)
         {
             res_index=i;
             res= temp;
@@ -87,7 +100,7 @@ size_t CSphere::maxDist(Point3 p1)
     }
     return res_index;
 }
-Eigen::Vector4d CSphere::Equation()const
+util::Vector4 CSphere::Equation()const
 {
     return this->m_Equation;
 }

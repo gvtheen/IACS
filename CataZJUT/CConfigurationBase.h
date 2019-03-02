@@ -48,6 +48,7 @@ class CFragment;
 class CBondTolerance;
 class CConfigurationPrivateData;
 class CFractionCoordinates;
+class CUnitCell;
 
 // declarazation of class
 class CConfigurationBase
@@ -60,6 +61,7 @@ class CConfigurationBase
 
         CConfigurationBase(CALCZJUT::CParameter*);
         CConfigurationBase(CConfigurationBase&);
+        CConfigurationBase* clone();
         virtual ~CConfigurationBase();
 
         //chemical name
@@ -106,13 +108,14 @@ class CConfigurationBase
         BondRange bonds() const;
         size_t bondCount() const;
         bool contains(const CBond *bond) const;
+        void maxCoordinationNum(std::map<std::string,size_t>&);
 
         bool isBondBetween(const CAtom*, const CAtom*);
         void clear();
 
         CCartesianCoordinates* coordinates();
          CInternalCoordinates* Internalcoordinates();
-         virtual CFractionCoordinates* Fractioncoordinates();
+         CFractionCoordinates* Fractioncoordinates();
 
         void addCoordinateSet(const boost::shared_ptr<CCoordinateSet> &coordinates);
         void addCoordinateSet(CCartesianCoordinates *coordinates);
@@ -120,9 +123,11 @@ class CConfigurationBase
         void addCoordinateSet(CFractionCoordinates *coordinates);
         bool removeCoordinateSet(const boost::shared_ptr<CCoordinateSet> &coordinates);
         boost::shared_ptr<CCoordinateSet> coordinateSet(size_t index) const;
-        boost::shared_ptr<CCoordinateSet> coordinateSet(CCoordinateSet::Type type) const;
+        boost::shared_ptr<CCoordinateSet> coordinateSet(CATAZJUT::DEFINED::CoordinateType type);
         CoordinateSetRange coordinateSets() const;
+        void stickCoordinateSet(CATAZJUT::DEFINED::CoordinateType type);
         size_t coordinateSetCount() const;
+        int coordinateSetIndex(CATAZJUT::DEFINED::CoordinateType type)const;
 
         //constraint
 
@@ -160,6 +165,9 @@ class CConfigurationBase
 
         CALCZJUT::CParameter* sysParameter();
 
+        CUnitCell* unitcell();
+        std::string SymmetrySymbol();
+
     protected:
         CConfigurationPrivateData *m_pData;
              CALCZJUT::CParameter *m_pParameter;
@@ -168,9 +176,9 @@ class CConfigurationBase
         friend class CBond;
         friend class CBondTolerance;
         friend class CCartesianCoordinates;
+        friend class CFractionCoordinates;
         friend class CSphere;
         friend class CFragment;
-        friend class CPeriodicFramework;
 
         friend class CALCZJUT::CModelClusterSupport;
         //output
@@ -189,16 +197,18 @@ class CConfigurationBase
         friend class CALCZJUT::CExeLammps;
         friend class CALCZJUT::CExeFitnessInterface;
 
-        mutable CCartesianCoordinates       *m_pCartesian;
+        mutable CCartesianCoordinates       *m_pCartesian=nullptr;
         //mutable CInternalCoordinates        *m_pInternal;
 
         std::vector<CElement>                m_Element;          // contain the chemical property of all atoms
         std::vector<CAtom*>                  m_Atom;             // contain the behavior of all atoms
-        CBondTolerance                      *m_pBondEvaluator;   //
+        CBondTolerance                      *m_pBondEvaluator=nullptr;   //
         // type of coordinate
         CATAZJUT::DEFINED::CoordinateType    m_CoordinateType;
         // type of dimensional
         CATAZJUT::DEFINED::DimensionalType   m_DimensionalType;
+
+                                CUnitCell    *m_pUnitCell=nullptr;
 
         std::vector<std::pair<std::string,size_t>> m_Composition;
 

@@ -3,7 +3,7 @@
 #include "CModelPeriodicStruct.h"
 #include "CParameter.h"
 #include "../GaZJUT/CGaparameter.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../util/log.hpp"
 #include "CIOBase.h"
 #include "CIOMol.h"
@@ -127,7 +127,7 @@ void CStructPoolPeriodic::Initialization(const std::vector<std::string*>& inputf
                                      this->m_CalcStructPool[i]->chemicalFormula());
     }
 }
-void CStructPoolPeriodic::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut,
+void CStructPoolPeriodic::RandomBuildFromChemicalFormula(CATAZJUT::CConfigurationBase* strut,
                                             std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
 

@@ -24,7 +24,7 @@
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CCrystalPlanes.h"
 #include "../CataZJUT/CSphere.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/Constant.h"
 #include "../Util/Bitset.h"
 #include "../Util/foreach.h"
@@ -39,27 +39,58 @@ using CATAZJUT::constants::Pi;
 namespace CALCZJUT{
 
 CModelClusterSupport::CModelClusterSupport(CParameter* mPara,
-                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,
+                                           CATAZJUT::CConfigurationBase** copy_ppPeriodicFramework,
                                            size_t index)
 :CModelBase(mPara,index)
 {
-    m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
+    m_pPeriodicFramework = new CATAZJUT::CConfigurationBase(mPara);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
     m_pSupport = nullptr;
     m_pAdsorbMolecule = nullptr;
     m_pCrystalPlanes = nullptr;
     m_ClusterModelPerceived = false;
+    m_ClusterModelType=CModelClusterSupport::POLYHEDRON;
+}
+CModelClusterSupport::CModelClusterSupport(CModelClusterSupport& obj)
+:CModelBase(obj)
+{
+   #ifdef DEBUG
+        Log::Debug<<"CModelClusterSupport::CModelClusterSupport()" << std::endl;
+   #endif // DEBU
+   this->createSupport(obj.SupportBit());
+   this->createMoleAdsorb(obj.MoleAdsorbBit());
+    #ifdef DEBUG
+        Log::Debug<<"1-CModelClusterSupport::CModelClusterSupport()" << std::endl;
+   #endif // DEBU
+   if(obj.crystalPlanes()!=nullptr)
+     this->setCrystalPlanes(obj.crystalPlanes());
+   this->setRandomInitState(obj.RandomInitState());
+
+   #ifdef DEBUG
+        Log::Debug<<"2-CModelClusterSupport::CModelClusterSupport()" << std::endl;
+   #endif // DEBU
 }
 CModelBase* CModelClusterSupport::clone()
 {
-   CModelClusterSupport* res = new CModelClusterSupport(this->m_pParameter,
-                                                        this->m_ppBackupPeriodicFramework,0);
-   res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
-   res->createMoleAdsorb(this->MoleAdsorbBit());
-   res->createSupport(this->SupportBit());
-   res->setRandomInitState(this->RandomInitState());
-   res->setCrystalPlanes(this->crystalPlanes());
-   return res;
+//   #ifdef DEBUG
+//        Log::Debug<<"CModelClusterSupport::clone()" << std::endl;
+//   #endif // DEBU
+//   CModelClusterSupport* res = new CModelClusterSupport(this->m_pParameter,
+//                                                        this->m_ppBackupPeriodicFramework,0);
+//   if(!this->m_GeneVAR.empty())
+//     res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
+//   #ifdef DEBUG
+//        Log::Debug<<"2-CModelClusterSupport::clone()" << std::endl;
+//   #endif // DEBU
+//   res->createMoleAdsorb(this->MoleAdsorbBit());
+//   res->createSupport(this->SupportBit());
+//   #ifdef DEBUG
+//        Log::Debug<<"3-CModelClusterSupport::clone()" << std::endl;
+//   #endif // DEBU
+//   res->setRandomInitState(this->RandomInitState());
+//   res->setCrystalPlanes(this->crystalPlanes());
+//   return res;
+      return new CModelClusterSupport(*this);
 }
 CModelClusterSupport::~CModelClusterSupport()
 {
@@ -69,12 +100,14 @@ CModelClusterSupport::~CModelClusterSupport()
 void CModelClusterSupport::createSupport(const Bitset& mht)
 {
    assert(m_pPeriodicFramework);
+
    m_BitbackupSupport = mht;
    m_pSupport= new CModelSupport(this->m_pPeriodicFramework,m_BitbackupSupport);
 }
 void CModelClusterSupport::createMoleAdsorb(const Bitset& mht)
 {
    assert(m_pPeriodicFramework);
+
    m_BitbackupAdsorbMolecule = mht;
    m_pAdsorbMolecule = new CModelMoleculeAdsorbent(this->m_pPeriodicFramework,m_BitbackupAdsorbMolecule);
 }
@@ -98,7 +131,7 @@ void CModelClusterSupport::setGeneValueToStruct(const std::vector<double>& realV
         goto RETURN_Label;
     }
     if(realValueOfgene.size()==0)
-       goto RETURN_Label;
+        goto RETURN_Label;
 
    if(m_ClusterModelType==CModelClusterSupport::POLYHEDRON){
      //get coordinate of gravity center of adsorbing molecule.
@@ -127,7 +160,7 @@ void CModelClusterSupport::setGeneValueToStruct(const std::vector<double>& realV
      this->eliminateCloseContacts();
    }
 RETURN_Label:
-    ;
+    ;// Nothing is done.
 }
 void CModelClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGeneRealValue)
 {
@@ -180,26 +213,53 @@ void CModelClusterSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible
 }
 void CModelClusterSupport::perceiveClusterModel()
 {
+    #ifdef DEBUG
+                     Log::Debug<<"CModelClusterSupport::perceiveClusterModel()" << std::endl;
+    #endif // DEBU
+
     if(m_ClusterModelType==CModelClusterSupport::POLYHEDRON){
-        Eigen::MatrixXd *atom_Coordinate =  new (Eigen::MatrixXd)(m_pSupport->atomCount(),3);
+        std::map<std::string,size_t> maxCoordNum;
+        this->m_pPeriodicFramework->maxCoordinationNum(maxCoordNum);
+
+        //Eigen::MatrixXd *atom_Coordinate =  new (Eigen::MatrixXd)(m_pSupport->atomCount(),3);
+        std::vector<Point3> *atom_Coordinate=new std::vector<Point3>();
         size_t index=0;
         Point3 tempP;
+        #ifdef DEBUG
+                     Log::Debug<<"21-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+        #endif // DEBU
         foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms()){
-          tempP = atom_s->position();
-          for(size_t i=0;i<3;i++){
-             (*atom_Coordinate)(index,i) =tempP[i];
-           }
-          index++;
+          if(atom_s->bondCount()<maxCoordNum[atom_s->Symbol()]){
+             atom_Coordinate->push_back(atom_s->position());
+             index++;
+            }
          }
-          this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(atom_Coordinate);
+         #ifdef DEBUG
+                     Log::Debug<<"22-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+         #endif // DEBU
+          this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(*atom_Coordinate);
           this->m_pCrystalPlanes->CreateCrystalPlane();
+          this->m_pCrystalPlanes->outputCrystalPlane();
     }else{  //CModelClusterSupport::SPHERE
-        std::vector<Point3> coordinatePoints;
+        std::vector<Point3,Eigen::aligned_allocator<Point3>> coordinatePoints;
+        #ifdef DEBUG
+                     Log::Debug<<"2-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+        #endif // DEBU
         foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms())
            coordinatePoints.push_back(atom_s->position());
+        #ifdef DEBUG
+                     Log::Debug<<"3-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+                     Log::Debug<<coordinatePoints.size()<<std::endl;
+        #endif // DEBU
         this->m_pSphere = new CATAZJUT::CSphere(coordinatePoints);
+        #ifdef DEBUG
+                     Log::Debug<<"4-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+        #endif // DEBU
         this->m_pSphere->CreateSphere();
     }
+    #ifdef DEBUG
+                     Log::Debug<<"4-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+    #endif // DEBU
 
 }
 void CModelClusterSupport::eliminateCloseContacts(double distanceCutOff)
@@ -207,6 +267,7 @@ void CModelClusterSupport::eliminateCloseContacts(double distanceCutOff)
     Vector3 vect;
     double eps=0.01;
     bool modifiedbol=true;
+    size_t modify_num=0;
     while(modifiedbol)
     {
        modifiedbol=false;
@@ -218,8 +279,11 @@ void CModelClusterSupport::eliminateCloseContacts(double distanceCutOff)
                 vect = (distanceCutOff-vect.norm()+eps)*(vect.normalized());
                 this->m_pAdsorbMolecule->moveBy(vect);
                 modifiedbol=true;
+                modify_num++;
             }
         }
+       if(modify_num>256)
+         break;
     }
 }
 Bitset CModelClusterSupport::SupportBit()

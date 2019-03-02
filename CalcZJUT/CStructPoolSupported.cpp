@@ -24,7 +24,7 @@
 #include <strings.h>
 #include <cstring>
 #include <math.h>
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CModelCluster.h"
 #include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
@@ -94,8 +94,13 @@ void CStructPoolSupported::init()
 
                 this->getIO(*(m_pParameter->adso_supp_Input_File[i]),m_CalcStructPool[i]->periodicFramework());
                 this->m_IO->input(*(m_pParameter->adso_supp_Input_File[i]));
+
                 m_CalcStructPool[i]->periodicFramework()->perceiveBonds();
                 m_CalcStructPool[i]->periodicFramework()->perceiveFragments();
+                this->m_IO->output("moltest-iacs");
+                #ifdef DEBUG
+                     Log::Debug<<"*fragment num:" <<m_CalcStructPool[i]->periodicFramework()->fragmentNum()<< std::endl;
+                #endif // DEBU
                 m1 = m_CalcStructPool[i]->periodicFramework()->fragment(0);
                 m2 = m_CalcStructPool[i]->periodicFramework()->fragment(1);
                if(m1== nullptr || m2 ==nullptr){
@@ -105,17 +110,32 @@ void CStructPoolSupported::init()
                if(m1->atomCount() > m2->atomCount())
                {
                   m_CalcStructPool[i]->createSupport(m1->bitSet());
+                  #ifdef DEBUG
+                     Log::Debug<<"1-CStructPoolSupported::init()" << std::endl;
+                  #endif // DEBU
                   m_CalcStructPool[i]->createMoleAdsorb(m2->bitSet());
                }else{
+                  #ifdef DEBUG
+                     Log::Debug<<"2-CStructPoolSupported::init()" << std::endl;
+                  #endif // DEBU
                   m_CalcStructPool[i]->createSupport(m2->bitSet());
                   m_CalcStructPool[i]->createMoleAdsorb(m1->bitSet());
                }
+               #ifdef DEBUG
+                     Log::Debug<<"CStructPoolSupported::init()" << std::endl;
+               #endif // DEBU
                m_CalcStructPool[i]->setRandomInitState(false);
+               m_CalcStructPool[i]->setIndex(i);
           }
+          this->copy_pPeriodicFramework = m_CalcStructPool[0]->periodicFramework()->clone();
+
           for(size_t i=m_pParameter->adso_supp_Input_File.size();i<m_CalcStructPool.size();i++){
                delete m_CalcStructPool[i];
                m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
                // get support and adsorption molecular, then re-set new structure.
+               #ifdef DEBUG
+                     Log::Debug<<"4-CStructPoolSupported::init()" << std::endl;
+               #endif // DEBU
                m_CalcStructPool[i]->setRandomInitState(true);
                m_CalcStructPool[i]->setIndex(i);
           }
@@ -134,6 +154,8 @@ void CStructPoolSupported::init()
            m_CalcStructPool[0]->createMoleAdsorb(Bit_adsorbent);
            m_CalcStructPool[0]->setRandomInitState(false);
 
+           this->copy_pPeriodicFramework = m_CalcStructPool[0]->periodicFramework()->clone();
+
            for(size_t i=1;i<m_CalcStructPool.size();i++){
                delete m_CalcStructPool[i];
                m_CalcStructPool[i]=m_CalcStructPool[0]->clone();
@@ -142,9 +164,11 @@ void CStructPoolSupported::init()
                m_CalcStructPool[i]->setIndex(i);
            }
      }
-     this->copy_pPeriodicFramework = m_CalcStructPool[0]->periodicFramework()->clone();
+      #ifdef DEBUG
+                     Log::Debug<<"5-CStructPoolSupported::init()" << std::endl;
+      #endif // DEBU
 }
-void CStructPoolSupported::getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework)
+void CStructPoolSupported::getIO(std::string &file_name,CATAZJUT::CConfigurationBase* currentPeriodicFramework)
 {
     std::vector<std::string> vectstr;
     boost::algorithm::split(vectstr,file_name,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);

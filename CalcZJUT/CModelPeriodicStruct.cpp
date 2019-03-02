@@ -25,7 +25,7 @@
 #include "../Util/Bitset.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/utilFunction.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CFragment.h"
 
@@ -39,7 +39,7 @@ CModelPeriodicStruct::CModelPeriodicStruct(CParameter* mPara,
                                            size_t index)
 :CModelBase(mPara,index)
 {
-     this->m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
+     this->m_pPeriodicFramework = new CATAZJUT::CConfigurationBase(mPara);
 }
 
 CModelPeriodicStruct::~CModelPeriodicStruct()
@@ -51,7 +51,7 @@ CModelBase* CModelPeriodicStruct::clone()
 {
     CModelPeriodicStruct* res =  new CModelPeriodicStruct (this->m_pParameter,0);
 
-    res->m_pGeneVAR->assign(this->m_pGeneVAR->begin(),this->m_pGeneVAR->end());
+    res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
     res->m_IsNeedRandomInit = this->RandomInitState();
     res->setChemicalFormula(this->chemicalFormula());
 
@@ -103,7 +103,7 @@ void CModelPeriodicStruct::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible
 {
    //
 }
-void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,
+void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CConfigurationBase* curr_struct,
                                                   double distanceCutOff)
 {
     util::Vector3 vect;
@@ -145,7 +145,7 @@ void CModelPeriodicStruct::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* 
     }
 
 }
-void CModelPeriodicStruct::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
+void CModelPeriodicStruct::eliminateFragment(CATAZJUT::CConfigurationBase* curr_struct)
 {
     size_t less_cycle;
     if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure

@@ -14,7 +14,7 @@ namespace CATAZJUT{
 class CConfigurationBase;
 class CInternalCoordinates;
 class CUnitCell;
-class CPeriodicFramework;
+class CConfigurationBase;
 
 class CCartesianCoordinates
 {
@@ -84,7 +84,7 @@ public:
 
     CInternalCoordinates* toInternalCoordinates();
     std::vector<size_t>   CheckConnection(size_t);
-    CFractionCoordinates* toFractionCoordinates(CPeriodicFramework*);
+    CFractionCoordinates* toFractionCoordinates(CConfigurationBase*);
 
 
 private:

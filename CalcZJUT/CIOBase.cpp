@@ -22,7 +22,7 @@
 
 namespace CALCZJUT{
 
-CIOBase::CIOBase(CATAZJUT::CPeriodicFramework* mbf)
+CIOBase::CIOBase(CATAZJUT::CConfigurationBase* mbf)
 :m_pPeriodicFramework(mbf)
 {
     //ctor
@@ -37,7 +37,7 @@ Bitset CIOBase::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE)
     Bitset a;
     return a;
 }
-void CIOBase::setConfiguration(CATAZJUT::CPeriodicFramework* mbf)
+void CIOBase::setConfiguration(CATAZJUT::CConfigurationBase* mbf)
 {
     this->m_pPeriodicFramework = mbf;
 }

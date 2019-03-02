@@ -129,6 +129,7 @@ class CParameter
 
         bool checkIsValidParameters();
 
+
     private:
         std::string *m_pfile;
         GAZJUT::CGaparameter* m_pGAParameter;

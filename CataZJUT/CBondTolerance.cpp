@@ -124,7 +124,6 @@ void CBondTolerance::AddBondType(const std::string& _1stAtom,const std::string& 
 }
 void CBondTolerance::AddBondType(const std::string& _1stAtom,const std::string& _2ndAtom)
 {
-
 //    #ifdef DEBUG
 //         Log::Debug<<"CBondTolerance::AddBondType"<<std::endl;
 //    #endif
@@ -137,10 +136,10 @@ void CBondTolerance::AddBondType(const std::string& _1stAtom,const std::string& 
         CBondPrivate *temp =new CBondPrivate();
         temp->m_1stAtom = _1stAtom;
         temp->m_2ndAtom = _2ndAtom;
-        double vdw_12= (new CElement(_1stAtom))->vanDerWaalsRadius() + \
-                       (new CElement(_2ndAtom))->vanDerWaalsRadius();
-        temp->m_MinBondLength = vdw_12*this->lower_tolerance_factor;
-        temp->m_MaxBondLength = vdw_12*this->upper_tolerance_factor;
+        double covR_12= (new CElement(_1stAtom))->covalentRadius() + \
+                       (new CElement(_2ndAtom))->covalentRadius();
+        temp->m_MinBondLength = covR_12*this->lower_tolerance_factor;
+        temp->m_MaxBondLength = covR_12*this->upper_tolerance_factor;
         m_pBondType.push_back(temp);
     }
 //    #ifdef DEBUG
@@ -245,14 +244,14 @@ void CBondTolerance::setTolerancefactor(const double minV,const double maxV)
 //    #endif
     this->lower_tolerance_factor=minV;
     this->upper_tolerance_factor=maxV;
-    double vdw_12;
+    double covR_12;
     for(size_t i=0;i<this->m_pBondType.size();i++)
     {
-        vdw_12=(new CElement(m_pBondType[i]->m_1stAtom))->vanDerWaalsRadius() +
-               (new CElement(m_pBondType[i]->m_2ndAtom))->vanDerWaalsRadius();
+        covR_12=(new CElement(m_pBondType[i]->m_1stAtom))->covalentRadius() +
+               (new CElement(m_pBondType[i]->m_2ndAtom))->covalentRadius();
 
-        m_pBondType[i]->m_MinBondLength = vdw_12*this->lower_tolerance_factor;
-        m_pBondType[i]->m_MaxBondLength = vdw_12*this->upper_tolerance_factor;
+        m_pBondType[i]->m_MinBondLength = covR_12*this->lower_tolerance_factor;
+        m_pBondType[i]->m_MaxBondLength = covR_12*this->upper_tolerance_factor;
     }
 //    #ifdef DEBUG
 //      Log::Debug<<"2-*********** CBondTolerance::setTolerancefactor***********"<< std::endl;

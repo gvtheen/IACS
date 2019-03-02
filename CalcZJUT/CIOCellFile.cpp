@@ -30,7 +30,7 @@
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CElement.h"
 #include "../GaZJUT/GaUtilityFunction.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CIOCellFile.h"
 #include "../CataZJUT/CUnitCell.h"
 #include "../CataZJUT/CFractionCoordinates.h"
@@ -40,7 +40,7 @@ using util::Log;
 
 namespace CALCZJUT{
 
-CIOCellFile::CIOCellFile(CATAZJUT::CPeriodicFramework* mpa)
+CIOCellFile::CIOCellFile(CATAZJUT::CConfigurationBase* mpa)
 :CIOBase(mpa)
 {
     //ctor
@@ -171,6 +171,7 @@ void CIOCellFile::input(std::string filename)
           m_pPeriodicFramework->unitcell()->setscalingFactor(1.0);
           //set the coordinate Type
           m_pPeriodicFramework->setCoordinateType(CATAZJUT::DEFINED::Fraction);
+          m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Periodic);
           std::getline(*in,str,'\n');
           std::getline(*in,str,'\n');
           std::getline(*in,str,'\n');

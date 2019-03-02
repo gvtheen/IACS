@@ -3,12 +3,12 @@
 
 namespace CATAZJUT{
 
-class CPeriodicFramework;
+class CConfigurationBase;
 
 class CSpaceGroup
 {
     public:
-        CSpaceGroup(CPeriodicFramework*);
+        CSpaceGroup(CConfigurationBase*);
         virtual ~CSpaceGroup();
 
         char* GetSpaceGroup();
@@ -16,7 +16,7 @@ class CSpaceGroup
     protected:
 
     private:
-        CPeriodicFramework* m_pCPeriodicFramework;
+        CConfigurationBase* m_pCConfigurationBase;
         char* m_pSpaceGroupName;
 };
 

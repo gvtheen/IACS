@@ -8,14 +8,14 @@
 using util::Bitset;
 
 namespace CATAZJUT{
-   class CPeriodicFramework;;
+   class CConfigurationBase;;
 }
 namespace CALCZJUT{
 
 class CIOCif:public CIOBase
 {
     public:
-        CIOCif(CATAZJUT::CPeriodicFramework*);
+        CIOCif(CATAZJUT::CConfigurationBase*);
         virtual ~CIOCif();
 
         void output(const std::string& file);

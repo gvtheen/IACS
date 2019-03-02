@@ -2,7 +2,7 @@
 #include <Eigen/Dense>
 #include <float.h>
 #include "CModel2DSupport.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CModelMoleculeAdsorbent.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
@@ -24,11 +24,11 @@ namespace CALCZJUT{
 
 
 CModel2DSupport::CModel2DSupport(CParameter* mPara,
-                                 CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,
+                                 CATAZJUT::CConfigurationBase** copy_ppPeriodicFramework,
                                  size_t index)
 :CModelBase(mPara,index)
 {
-    m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mPara);
+    m_pPeriodicFramework = new CATAZJUT::CConfigurationBase(mPara);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
     m_latticeDirection = CModel2DSupport::NONE_DIR;
 }
@@ -74,11 +74,11 @@ Bitset CModel2DSupport::MoleAdsorbBit()
 {
    return this->m_BitbackupAdsorbMolecule;
 }
-void CModel2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
+void CModel2DSupport::setPeriodicFramekwork(CATAZJUT::CConfigurationBase* mbf)
 {
     if(this->m_pPeriodicFramework!=nullptr)
         delete this->m_pPeriodicFramework;
-    this->m_pPeriodicFramework=new CATAZJUT::CPeriodicFramework(*mbf);
+    this->m_pPeriodicFramework=new CATAZJUT::CConfigurationBase(*mbf);
     this->m_pAdsorbMolecule->setConfiguration(this->m_pPeriodicFramework);
     this->m_pSupport->setConfiguration(this->m_pPeriodicFramework);
 }

@@ -51,7 +51,6 @@ class CAtom
         double Electronegativity() const;
         double AtomNumber() const;
         int    ExpectedValence() const;
-        int    CoorditionNum ()const;
         double distance(const CAtom *atom) const;
         size_t maxCoordinationNum()const;
         std::string valentConfigurationStr()const;

@@ -34,7 +34,7 @@
 #include "CModelCluster.h"
 #include "CModelClusterSupport.h"
 #include "../CataZJUT/CFragment.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../Util/Point-Vector.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../Util/log.hpp"
@@ -42,7 +42,7 @@
 
 namespace CATAZJUT{
   class CFragment;
-  class CPeriodicFramework;
+  class CConfigurationBase;
 }
 
 using util::Point3;
@@ -76,6 +76,7 @@ void CExeVASP::init()
     // check whether other parameter files is exist.
     m_Parameter->checkExeNecessaryFiles(m_pInputFile);
     m_pParaFileAbsPath=new std::string(m_Parameter->parameterPath());
+    this->m_pIO=new CIOPoscar(nullptr);
 
 }
 std::string CExeVASP::ExeName()
@@ -98,18 +99,31 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
 
      size_t currGeneration = m_Parameter->GaParameter()->Curr_Generation;
 
-     Log::Info<<" Run VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
-     //construct new object of CPeriodicFramework class
+     Log::Info<<" Run VASP calculation of the "<< pop_index+1<< "th Genome in "<< currGeneration+1 <<"th generation!\n";
+     //construct new object of CConfigurationBase class
      //transfer gene value to POSCAR file
      // if( currGeneration != 0 )
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
-     m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);
-
-     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
-
+     #ifdef DEBUG
+       Log::Debug<<"*********** 1-CExeVASP::CalcuRawFit***********"<< std::endl;
+     #endif // DEBU
+     m_pIO->setConfiguration(m_pCalcModeStruct->periodicFramework());
+     #ifdef DEBUG
+       Log::Debug<<"*********** 2-CExeVASP::CalcuRawFit***********"<< std::endl;
+     #endif // DEBU
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum()+1,pop_index+1);
+     #ifdef DEBUG
+       Log::Debug<<"*********** 3-CExeVASP::CalcuRawFit***********"<< std::endl;
+     #endif // DEBU
      //copy parameter files into current path
      std::string new_path_str=m_Parameter->currentWorkPath();
-     this->m_Parameter->copyFileToPath(*m_pParaFileAbsPath,new_path_str);
+     std::string file_path_str;
+     for(size_t i=0;i<this->m_pInputFile.size();i++)
+     {
+         file_path_str=*m_pParaFileAbsPath + "/"+ *(m_pInputFile[i]);
+         this->m_Parameter->copyFileToPath(file_path_str,new_path_str);
+     }
+
      //output initial structure
      m_pIO->output("POSCAR");
      //
@@ -121,28 +135,27 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
          Log::Error<<"Building new process is error! CalcuRawFit_CExeVASP"<<std::endl;
          boost::throw_exception(std::runtime_error("Building new process is error! Check the file: Error_information.txt."));//ERROR TREATMENT;
      }else if(pid==0){
-
          //run VASP program
      }else
          ;//wait(NULL);
      //
      //read CONTCAR file;
-     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum(),pop_index);
+     m_Parameter->setCurrentWorkPathAt(this->m_Parameter->currentGenerationNum()+1,pop_index+1);
      getRelaxedGeometryCoord();
      std::string out_filename("VASP_");
 
-     if(IsNormalComplete()==true){
+     if(this->IsNormalComplete()==true){
         isNormalExist=true;
         res=readFinalEnergy();
         out_filename = out_filename + std::to_string(currGeneration) + \
                    "_" + std::to_string(pop_index);
-        Log::Info<<" Normally finish VASP of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
+        Log::Info<<"Normally finish VASP of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }else{
         isNormalExist=false;
         res=9999999;
         out_filename = out_filename + std::to_string(currGeneration) + \
                    "_" + std::to_string(pop_index);
-        Log::Info<<" InNormally finish VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
+        Log::Info<<"InNormally finish VASP calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
      }
 
      // Use the output file format to output structure;

@@ -5,7 +5,7 @@
 #include "../GaZJUT/GaDeclaration.h"
 
 namespace CATAZJUT{
-    class CPeriodicFramework;
+    class CConfigurationBase;
 }
 
 namespace CALCZJUT{
@@ -27,7 +27,7 @@ class CStructPoolPeriodic:public CStructPoolBase
 
 
     private:
-        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut,
+        void RandomBuildFromChemicalFormula(CATAZJUT::CConfigurationBase* strut,
                                             std::vector<std::pair<std::string,size_t>>&);
 };
 

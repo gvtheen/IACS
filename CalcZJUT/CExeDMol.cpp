@@ -33,7 +33,7 @@
 #include "CModelCluster.h"
 #include "CModelClusterSupport.h"
 #include "../CataZJUT/CFragment.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 #include "../GaZJUT/CGaparameter.h"
@@ -107,7 +107,7 @@ double CExeDMol::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& pop_
 
      Log::Info<<" Run DMol calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
 
-     //construct new object of CPeriodicFramework class
+     //construct new object of CConfigurationBase class
      //transfer gene value to structure file
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      //change current path

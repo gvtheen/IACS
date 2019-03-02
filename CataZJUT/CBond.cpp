@@ -79,6 +79,10 @@ CBond::BondOrderType CBond::bondOrder() const
 {
     return m_pConfiguration->m_pData->bondOrders[this->m_index];
 }
+size_t CBond::bondOrderValue()const
+{
+    return (size_t)(m_pConfiguration->m_pData->bondOrders[this->m_index]);
+}
 bool CBond::is(CBond::BondOrderType order) const
 {
     if(m_pConfiguration->m_pData->bondOrders[this->m_index] == order)

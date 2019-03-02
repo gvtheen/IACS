@@ -29,7 +29,7 @@
 #include "CConfigurationBase.h"
 #include "CFractionCoordinates.h"
 #include "CInternalCoordinates.h"
-#include "CPeriodicFramework.h"
+#include "CConfigurationBase.h"
 #include "CAtom.h"
 #include "CUnitCell.h"
 
@@ -104,8 +104,11 @@ Matrix CCartesianCoordinates::toMatrix() const
 /// Sets the position at \p index to \p position.
 void CCartesianCoordinates::setPosition(size_t index, const Point3 &position)
 {
-    assert(index < size());
-
+    if(index < size()){
+        size_t size_num=this->size();
+       for(size_t i=size_num;i<=index;i++)
+           m_coordinates.push_back(Point3(0,0,0));
+    }
     m_coordinates[index] = position;
 }
 
@@ -118,7 +121,7 @@ void CCartesianCoordinates::setPosition(size_t index, double x, double y, double
 /// Returns the coordinates at \p index.
 Point3 CCartesianCoordinates::position(size_t index) const
 {
-    assert(index < size());
+    assert(index < this->size());
 
     return m_coordinates[index];
 }
@@ -538,7 +541,7 @@ std::vector<size_t>  CCartesianCoordinates::CheckConnection(size_t currentIndex)
        }
    return res;
 }
-CFractionCoordinates* CCartesianCoordinates::toFractionCoordinates(CPeriodicFramework* mPeriodicFramework)
+CFractionCoordinates* CCartesianCoordinates::toFractionCoordinates(CConfigurationBase* mPeriodicFramework)
 {
     if(mPeriodicFramework->dimensionalType()==CATAZJUT::DEFINED::Molecule)
         return nullptr;

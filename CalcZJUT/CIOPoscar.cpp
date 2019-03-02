@@ -19,6 +19,7 @@
 **
 ******************************************************************************/
 #include<iostream>
+#include <iomanip>
 #include "unistd.h"
 #include<fstream>
 #include <boost/algorithm/string.hpp>
@@ -29,7 +30,7 @@
 #include "CIOPoscar.h"
 #include "../CataZJUT/CUnitCell.h"
 #include "CParameter.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CConfigurationPrivateData.h"
@@ -40,7 +41,7 @@ using CATAZJUT::CFractionCoordinates;
 using CATAZJUT::CCartesianCoordinates;
 namespace CALCZJUT{
 
-CIOPoscar::CIOPoscar(CATAZJUT::CPeriodicFramework* mth)
+CIOPoscar::CIOPoscar(CATAZJUT::CConfigurationBase* mth)
 :CIOBase(mth)
 {
 
@@ -74,13 +75,17 @@ void CIOPoscar::input(std::string file)
 {
      assert(m_pPeriodicFramework);
 
+     #ifdef DEBUG
+       Log::Debug<<"*********** CIOPoscar::input***********"<< std::endl;
+     #endif
+
      if (file=="")
          file="POSCAR";
 
      if(access(file.c_str(),F_OK) != 0 )
       {
-           Log::Error<<"POSCAR file is no exist! input_CIOPoscar!\n";
-           boost::throw_exception(std::runtime_error("POSCAR file is no exist! Check the file: Error_information.txt."));
+           Log::Error<<file<<" file is no exist! input_CIOPoscar!\n";
+           boost::throw_exception(std::runtime_error(file + " file is no exist! Check the file: CIOPoscar::input."));
       }
       std::ifstream *in;
       std::string str;
@@ -94,10 +99,17 @@ void CIOPoscar::input(std::string file)
           //// scaling factor
           std::getline(*in,str,'\n');
           boost::algorithm::trim(str);
+          #ifdef DEBUG
+                Log ::Debug<<"Scaling Factor:"<<std::stod(str)<< std::endl;
+          #endif
           m_pPeriodicFramework->unitcell()->setscalingFactor(std::stod(str));
+          #ifdef DEBUG
+            Log::Debug<<"2-*********** CIOPoscar::input***********"<< std::endl;
+          #endif
           // lattice vector
           Vector3 tmpvect;
           std::vector<std::string> vecStr;
+          //std::cout<<m_pPeriodicFramework->unitcell()->unitCellType()<<std::endl;//setCellType(CATAZJUT::DEFINED::Bravais);
           for(size_t i=0;i<3;i++)
           {
               std::getline(*in,str,'\n');
@@ -120,6 +132,10 @@ void CIOPoscar::input(std::string file)
           std::getline(*in,str,'\n');
           boost::algorithm::trim(str);
 
+          #ifdef DEBUG
+             Log::Debug<<"*3-********** CIOPoscar::input***********"<< std::endl;
+          #endif
+
           boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
           for(size_t i=0;i<vecStr.size();i++)
              AtomicNum.push_back(std::stoi(vecStr[i]));
@@ -127,7 +143,7 @@ void CIOPoscar::input(std::string file)
           if(AtomicName.size()!=AtomicNum.size())
           {
                Log::Error<<"Atomic setting of POSCAR is error! input_CIOPoscar!\n";
-               boost::throw_exception(std::runtime_error("Atomic setting is error! Check the file: Error_information.txt."));
+               boost::throw_exception(std::runtime_error("Atomic setting is error! Check the file: CIOPoscar::input"));
           }
           // coordinate mode:  cartesian fraction
           std::getline(*in,str,'\n');
@@ -146,31 +162,48 @@ void CIOPoscar::input(std::string file)
               if(str=="")
                  continue;
               boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
-              if(vecStr.size()==6){
+//              #ifdef DEBUG
+//                Log ::Debug<<str<< std::endl;
+//              #endif
+              if(vecStr.size() >2 ){
                  atom_Number++;
                  tmpvect<<std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]);
+
                  if(m_pPeriodicFramework->coordinateType()==CATAZJUT::DEFINED::Cartesian){
                       // Oblique coordinate cartesian coordinate
                       tmpvect =m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*tmpvect;
-
+                      #ifdef DEBUG
+                           Log ::Debug<<tmpvect(0)<<" "<<tmpvect(1)<<" "<<tmpvect(2)<< std::endl;
+                      #endif
                       index = this->atomicIndex(AtomicNum,atom_Number);
                       m_pPeriodicFramework->addAtom(AtomicName[index],tmpvect);
                  }else{
+
                       index = this->atomicIndex(AtomicNum,atom_Number);
+                      tmpvect=m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*tmpvect;
+//                      #ifdef DEBUG
+//                           Log ::Debug<<tmpvect(0)<<" "<<tmpvect(1)<<" "<<tmpvect(2)<< std::endl;
+//                      #endif
                       m_pPeriodicFramework->addAtom(AtomicName[index],tmpvect);
                  }
 
               }else{
-                 Log::Error<<"Coordinate in POSCAR file is error! input_CIOPoscar!\n";
+                 Log::Error<<"Coordinate in POSCAR file is error! input_CIOPoscar!\n"<<std::endl;
                  boost::throw_exception(std::runtime_error("Coordinate in POSCAR file is error! input_CIOPoscar!\n"));
               }
 
           }
       }catch(const std::ifstream::failure& e){
-          Log::Error<<e.what()<<"Input_CIOPoscar!\n";
-          exit(-1);
+          Log::Error<<e.what()<<"Input_CIOPoscar!\n"<<std::endl;
+          boost::throw_exception(std::runtime_error("Coordinate in POSCAR file is error! input_CIOPoscar!\n"));
       }
       in->close();
+      delete in;
+
+      #ifdef DEBUG
+        //this->output("poscar-test");
+        Log::Debug<<"***********2- CIOPoscar::input***********"<< std::endl;
+      #endif
 }
 size_t CIOPoscar::atomicIndex(std::vector<size_t>& mht,size_t& atomNum)
 {
@@ -182,11 +215,11 @@ size_t CIOPoscar::atomicIndex(std::vector<size_t>& mht,size_t& atomNum)
         num=num + mht[i];
         tmp.push_back(num);
     }
-    for(size_t i=0;i<tmp.size()-1;i++){
+    for(size_t i=0;i<tmp.size();i++){
          if(i==0 && atomNum<=tmp[0]){
             res = 0;
             break;
-         }else if( i > 0 && ( atomNum > tmp[i] && atomNum <=tmp[i+1])){
+         }else if( i > 0 && ( atomNum > tmp[i-1] && atomNum <=tmp[i])){
             res = i;
             break;
          }
@@ -197,16 +230,22 @@ void CIOPoscar::output(const std::string& file)
 {
     assert(m_pPeriodicFramework);
 
+    Point3 tp;
+    #ifdef DEBUG
+       Log::Debug<<"*********** CIOPoscar::output***********"<< std::endl;
+    #endif // DEBU
     if( m_pPeriodicFramework->m_DimensionalType == CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOPoscar::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error!! Check the file: CIOPoscar::output."));
     }
-    m_pPeriodicFramework->sortAtomsViaElements();
 
-    std::ofstream out(file,std::ios::app);
-    out.setf(std::ios::fixed, std::ios::floatfield);
-    out.precision(10);
+    //m_pPeriodicFramework->sortAtomsViaElements();
+
+    std::ofstream out(file,std::ios::out);
+    out.setf(std::ios_base::right, std::ios_base::adjustfield);
+    out.setf(std::ios_base::fixed, std::ios_base::floatfield);
+    out.precision(SIGN_DIGIT_NUMBER);
     if(out.is_open())
     {
        out<<m_pPeriodicFramework->formula()<<std::endl;      //name
@@ -225,28 +264,43 @@ void CIOPoscar::output(const std::string& file)
        out<<std::endl;
        compos.clear();
        //coordinate type: cart direct
-       if(m_pPeriodicFramework->coordinateType()!= CATAZJUT::DEFINED::Fraction)
+       if(m_pPeriodicFramework->coordinateType()== CATAZJUT::DEFINED::Fraction)
        {
            out<<"Direct"<<std::endl;
            CFractionCoordinates* coord = m_pPeriodicFramework->Fractioncoordinates();
-           for(size_t i=0;coord->size();i++)
-               out<<"  "<<coord->position(i).transpose()<<"  T   T   T"<<std::endl;
+
+           for(size_t i=0;i<coord->size();i++){
+               tp=coord->position(i);
+               tp=m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix().inverse()*tp;
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(0)<<"    ";
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(1)<<"    ";
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(2)<<"    ";
+               out<<"  T   T   T"<<std::endl;
+           }
+
            out<<std::endl;
            out<<std::endl;
        }else{
            out<<"Cartesian"<<std::endl;
            CCartesianCoordinates* coord = m_pPeriodicFramework->coordinates();
-           Point3 tmp;
-           for(size_t i=0;coord->size();i++)
+
+           for(size_t i=0;i<coord->size();i++)
            {
-               tmp=m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*(coord->position(i));
-               out<<"  "<<tmp.transpose()<<"  T   T   T"<<std::endl;
+               tp=coord->position(i);
+               tp=m_pPeriodicFramework->unitcell()->NormilizedBravaisMatrix()*tp;
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(0)<<"    ";
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(1)<<"    ";
+               out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(2)<<"    ";
+               out<<"  T   T   T"<<std::endl;
            }
            out<<std::endl;
            out<<std::endl;
        }
        out.close();
     }
+    #ifdef DEBUG
+       Log::Debug<<"3*********** CIOPoscar::output***********"<< std::endl;
+    #endif // DEBU
 }
 
 CIOPoscar::~CIOPoscar()

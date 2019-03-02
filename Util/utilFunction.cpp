@@ -6,20 +6,32 @@
 #include "utilFunction.h"
 #include "../CataZJUT/Geometry.h"
 #include "../GaZJUT/GaDeclaration.h"
+#include "../IACS.h"
+#include "../Util/log.hpp"
 
 using GAZJUT::GeneVAR;
 using util::Bitset;
+using util::Log;
 
 namespace util{
 //
 Vector4 SphereEquationFromPoints(const std::vector<Point3>& coordinate)
 {
    double ans  =1e12,eps=1e-12,R,step,res,temp;
+   Vector4 equation;
 
+   if(coordinate.size()==1){
+      equation<<coordinate[0](0),coordinate[0](1),coordinate[0](2),0.0;
+      return equation;
+   }
+   // coordinate.size()>1
    Point3 P_pos;
    P_pos<<0,0,0;
-   size_t pos;
+   size_t pos=0;
    step=100;
+   #ifdef DEBUG
+           Log::Debug<<"***********util::SphereEquationFromPoints***********"<< std::endl;
+   #endif
    while(step>eps)
    {
        //pos = maxDist(P_pos
@@ -27,7 +39,7 @@ Vector4 SphereEquationFromPoints(const std::vector<Point3>& coordinate)
        for(size_t i=0;i<coordinate.size();i++)
        {
            temp=CATAZJUT::Geometry::distance(P_pos,coordinate[i]);
-           if(res>temp)
+           if(res<temp)
            {
               pos=i;
               res= temp;
@@ -36,10 +48,9 @@ Vector4 SphereEquationFromPoints(const std::vector<Point3>& coordinate)
        R = CATAZJUT::Geometry::distance(P_pos,coordinate[pos]);
        if(step<ans)
           ans=step;
-       P_pos = P_pos + step*(P_pos - coordinate[pos])/R;
+       P_pos = P_pos + step*(P_pos - coordinate[pos])/(R + eps);
        step=step*0.98;
    }
-   Vector4 equation;
    equation<<P_pos[0],P_pos[1],P_pos[2],R;
    return equation;
 }

@@ -9,7 +9,7 @@
 using util::Bitset;
 
 namespace CATAZJUT{
-   class CPeriodicFramework;
+   class CConfigurationBase;
 }
 
 namespace CALCZJUT{
@@ -17,12 +17,15 @@ namespace CALCZJUT{
 class CIOGjf:public CIOBase
 {
     public:
-        CIOGjf(CATAZJUT::CPeriodicFramework*);
+        CIOGjf(CATAZJUT::CConfigurationBase*);
         virtual ~CIOGjf();
 
         void output(const std::string& file);
          void input(std::string file="");
          Bitset input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE);
+         void setCommandlines(const std::vector<std::string>&);
+         std::vector<std::string> Commandlines() const;
+
     protected:
 
     private:

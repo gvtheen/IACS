@@ -25,7 +25,7 @@
 #include <string>
 #include "unistd.h"
 #include "stdlib.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CIOMol.h"
 #include "foreach.h"
 #include "../CataZJUT/CAtom.h"
@@ -45,7 +45,7 @@ namespace CATAZJUT{
 namespace CALCZJUT{
 
 
-CIOMol::CIOMol(CATAZJUT::CPeriodicFramework* mpa)
+CIOMol::CIOMol(CATAZJUT::CConfigurationBase* mpa)
 :CIOBase(mpa)
 {
     //ctor
@@ -68,33 +68,38 @@ void CIOMol::output(const std::string& fileName)
 
     std::ofstream out(file_Name.c_str(),std::ios::out);
     out.setf(std::ios::fixed, std::ios::floatfield);
-    out.precision(10);
+
     if(out.is_open())
     {
         out<<m_pPeriodicFramework->formula()<<std::endl;      //name
         out<<"IACS program ( the author: Gui-lin Zhuang )"<<std::endl;
         out<<std::endl;
-        out<<m_pPeriodicFramework->atomCount()<<"  "<<m_pPeriodicFramework->bondCount() \
-           <<"  0  0  0  0  0  0  0  0999 V2000"<<std::endl;
+        out<<std::setw(3)<<m_pPeriodicFramework->atomCount();
+        out<<std::setw(3)<<m_pPeriodicFramework->bondCount();
+        out<<"  0  0  0  0  0  0  0  0999 V2000"<<std::endl;
         out.setf(std::ios_base::right, std::ios_base::adjustfield);
         out.setf(std::ios_base::fixed, std::ios_base::floatfield);
-        out.precision(12);
         size_t num=0;
+        out.precision(4);
         foreach(CATAZJUT::CAtom* atom,m_pPeriodicFramework->atoms())
         {
-           out<<std::setw(16)<<atom->x()<<"  ";
-           out<<std::setw(16)<<atom->y()<<"  ";
-           out<<std::setw(16)<<atom->z()<<"  ";
-           out<<"   "<<atom->Symbol();
+           out<<std::setw(10)<<atom->x();
+           out<<std::setw(10)<<atom->y();
+           out<<std::setw(10)<<atom->z();
+           out<<" "<<atom->Symbol();
            num++;
-           out<<"   " <<"0  0  0  0  0  0  0  0  0  "<<num<<std::endl;
+           out<<"  " <<"0  2  0  0  0  0  0  0  0";
+           out<<std::setw(3)<<num<<std::endl;
         }
 
         foreach(CATAZJUT::CBond* bond,m_pPeriodicFramework->bonds())
         {
-           out<<bond->atom1()->index()+1<<"  "<<bond->atom1()->index()+1<<"  2  0 "<<std::endl;
+           out<<std::setw(3)<<bond->atom1()->index()+1;
+           out<<std::setw(3)<<bond->atom2()->index()+1;
+           out<<"  "<<bond->bondOrderValue()<<"  0  0  0"<<std::endl;
         }
         out<<"M  END"<<std::endl;
+        out<<std::endl;
     }
      out.close();
 
@@ -123,6 +128,7 @@ void  CIOMol::input(std::string filename)
       }
       std::ifstream *in;
       std::string str;
+      size_t atomicNum;
       try{
           in= new std::ifstream(filename.c_str(),std::ifstream::in);
           in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
@@ -135,23 +141,55 @@ void  CIOMol::input(std::string filename)
           std::getline(*in,str,'\n');   // blank line
 
           std::getline(*in,str,'\n');   //count line
-          boost::algorithm::trim(str);
+          //boost::algorithm::trim(str);   donot trim the blank character
           std::vector<std::string> vecStr;
           boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
 
-          size_t atomicNum=std::stoi(vecStr[0]);
-          for(size_t i=0;i<atomicNum;i++)
-          {
-              std::getline(*in,str,'\n');   //count line
-              boost::algorithm::trim(str);
+          std::string version=vecStr[vecStr.size()-1];
+          boost::algorithm::trim(version);
+
+          if(version=="V2000"){
+              atomicNum=std::stoi(str.substr(0,3));
+              for(size_t i=0;i<atomicNum;i++)
+              {
+                  std::getline(*in,str,'\n');   //count line
+                  boost::algorithm::trim(str);
+                  boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+                  boost::algorithm::trim(vecStr[3]);
+                  m_pPeriodicFramework->addAtom(vecStr[3],std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]));
+              }
+          }else if(version=="V3000"){
+              std::getline(*in,str,'\n');   //M  V30 BEGIN CTAB
+
+              std::getline(*in,str,'\n');   //M  V30 COUNTS 935 4809 0 0 0
               boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
-              boost::algorithm::trim(vecStr[3]);
-              m_pPeriodicFramework->addAtom(vecStr[3],std::stod(vecStr[0]),std::stod(vecStr[1]),std::stod(vecStr[2]));
+              atomicNum=std::stoi(vecStr[3]);
+
+              std::getline(*in,str,'\n');   //M  V30 BEGIN ATOM
+              while(1){
+                 std::getline(*in,str,'\n');
+
+                 if(boost::algorithm::contains(str, "END ATOM")>0)
+                    break;
+
+                 boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+                 if(vecStr.size()!=9){
+                   Log::Error<<filename <<" reading failed! input_CIOMol!\n";
+                   boost::throw_exception(std::runtime_error(filename +" reading failed! input_CIOMol!\n"));
+                 }
+                 boost::algorithm::trim(vecStr[3]);
+                 m_pPeriodicFramework->addAtom(vecStr[3],std::stod(vecStr[4]),std::stod(vecStr[5]),std::stod(vecStr[6]));
+              }
+          }else{
+             Log::Error<<filename <<" reading failed! input_CIOMol!\n";
+             boost::throw_exception(std::runtime_error(filename +" reading failed! input_CIOMol!\n"));
           }
       }catch(const std::ifstream::failure& e){
           Log::Error<<e.what() <<"input_CIOMol!\n";
       }
       in->close();
+
+      m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
 }
 CIOMol::~CIOMol()
 {

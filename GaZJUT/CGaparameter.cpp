@@ -98,7 +98,6 @@ void CGaparameter::defaultInit()
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Cross_Mode]",    "SINGLE"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Cross_Number]",      "2"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Mutation_Mode]",   "UNIFORM_M"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Evaluator_Code]",     "VASP"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Scaling_Mode]",  "LINEAR"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Gene_Code]",     "BINARY"));
     m_mapCmdString->insert(std::pair<std::string,std::string>("[Gene_Formation_Mode]","FILE_INPUT"));
@@ -116,6 +115,9 @@ std::vector <GeneVAR>& CGaparameter::GeneVAR()
 size_t CGaparameter::PopNum()
 {
      std::string keyValue=this->getKeyValue("[Population_Size]");
+//     #ifdef DEBUG
+//         Log::Debug<<"*********** CGaparameter::PopNum***********"<<keyValue<< std::endl;
+//     #endif
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -173,6 +175,9 @@ void CGaparameter::checkGeneVAR()
         {
 	       Log::Error<< "checkGeneVAR! CGaparameter_checkGeneVAR!\n";
            boost::throw_exception(std::runtime_error("Variable value is error! CGaparameter_checkGeneVAR!\n"));
+        }else if(it->accuracy<0.001){
+           Log::Warn<<std::endl;
+           Log::Warn<<"High accuracy of gene variable would result in huge searching space!!!!"<<std::endl;
         }
     }
 }
@@ -340,9 +345,19 @@ void CGaparameter::getKeyValue(std::vector<std::string>& res, const char* key)
         res.clear();
 
     size_t num = m_mapCmdString->count(key);
+//    #ifdef DEBUG
+//      Log::Debug<<"*********** CGaparameter::getKeyValue***********"<<num<< std::endl;
+//
+//      for(it=m_mapCmdString->begin();it!=m_mapCmdString->end();it++)
+//        Log::Debug<<it->first<<" "<<it->second<<std::endl;
+//    #endif
     it = m_mapCmdString->find(key);
     for(size_t i=0;i<num;i++,it++)
         res.push_back(it->second);
+//     #ifdef DEBUG
+//       for(size_t i=0;i<res.size();i++)
+//       Log::Debug<<"*********** CGaparameter::getKeyValue_size***********"<<res[i]<< std::endl;
+//     #endif
 }
 
 

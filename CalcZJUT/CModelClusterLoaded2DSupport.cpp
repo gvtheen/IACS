@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include <math.h>
 #include "CModelClusterLoaded2DSupport.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CModelMoleculeAdsorbent.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
@@ -45,10 +45,10 @@ using CATAZJUT::constants::Pi;
 namespace CALCZJUT{
 
 CModelClusterLoaded2DSupport::CModelClusterLoaded2DSupport(CParameter* mParameter,
-                                                           CATAZJUT::CPeriodicFramework** copy_ppPeriodicFramework,size_t index)
+                                                           CATAZJUT::CConfigurationBase** copy_ppPeriodicFramework,size_t index)
 :CModelBase(mParameter,index)
 {
-    m_pPeriodicFramework = new CATAZJUT::CPeriodicFramework(mParameter);
+    m_pPeriodicFramework = new CATAZJUT::CConfigurationBase(mParameter);
     m_ppBackupPeriodicFramework = copy_ppPeriodicFramework;
     m_latticeDirection = CModelClusterLoaded2DSupport::NONE_DIR;
 
@@ -271,7 +271,7 @@ void CModelClusterLoaded2DSupport::createSupportSurface(const Bitset& mht)
 }
 void CModelClusterLoaded2DSupport::createClusterSphere()
 {
-    std::vector<Point3> clusterCoordinate;
+    std::vector<Point3,Eigen::aligned_allocator<Point3>> clusterCoordinate;
     foreach(CATAZJUT::CAtom* atom,m_pPureSupportSurface->atoms())
         clusterCoordinate.push_back(atom->position());
     this->m_pSphereCluster = new CATAZJUT::CSphere(clusterCoordinate);
@@ -333,11 +333,11 @@ Bitset CModelClusterLoaded2DSupport::MoleAdsorbBit()
       return this->m_BitbackupAdsorbMolecule;
 }
         //overload the father class's function
-void CModelClusterLoaded2DSupport::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
+void CModelClusterLoaded2DSupport::setPeriodicFramekwork(CATAZJUT::CConfigurationBase* mbf)
 {
      if(this->m_pPeriodicFramework!=nullptr)
         delete this->m_pPeriodicFramework;
-     this->m_pPeriodicFramework=new CATAZJUT::CPeriodicFramework(*mbf);
+     this->m_pPeriodicFramework=new CATAZJUT::CConfigurationBase(*mbf);
      this->m_pAdsorbMolecule->setConfiguration(this->m_pPeriodicFramework);
      this->m_pSupport->setConfiguration(this->m_pPeriodicFramework);
 }

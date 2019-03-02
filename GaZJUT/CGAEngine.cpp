@@ -74,7 +74,8 @@ void CGAEngine::init()
    #endif
 
    std::vector<std::string> res;
-   m_pGaparameter->getKeyValue(res,"Evaluator");
+
+   m_pGaparameter->getKeyValue(res,"[Evaluator_Code]");
    for(size_t i=0;i<res.size();i++){
        if(res[i]=="VASP")
            m_FitnessCalculator.push_back(new CALCZJUT::CExeVASP(this->m_pParameter));
@@ -88,6 +89,10 @@ void CGAEngine::init()
            m_FitnessCalculator.push_back(new CALCZJUT::CExeDFTB(this->m_pParameter));
        else if(res[i]=="CASTEP")
            m_FitnessCalculator.push_back(new CALCZJUT::CExeCastep(this->m_pParameter));
+   }
+   if(this->m_FitnessCalculator.size()==0){
+      Log::Error<< "No fitness calculator!! CGAEngine::init()!\n";
+      boost::throw_exception(std::runtime_error("No fitness calculator!!! CGAEngine::init()!\n"));
    }
    #ifdef DEBUG
       Log::Debug<<"*********** CGAEngine::init()-2***********"<< std::endl;
@@ -115,18 +120,28 @@ void CGAEngine::init()
      Obtain the gene-variable range for the construction of Population object
    */
    this->m_pStructurePool->init();
+   //set gene variable range
+   std::vector <GAZJUT::GeneVAR> geneRange;
+   m_pStructurePool->GeneVARRange(geneRange);
+   #ifdef DEBUG
+      Log::Debug<<"*********** CGAEngine::init()-5***********"<< std::endl;
+   #endif
+   this->m_pGaparameter->setGeneVAR(geneRange);
 
+   #ifdef DEBUG
+      Log::Debug<<"m_FitnessCalculator:"<<m_FitnessCalculator.size()<<std::endl;
+   #endif
    for(size_t i=0;i<m_FitnessCalculator.size();i++)
         m_FitnessCalculator[i]->init();
    // until now, all parameters in object of Gaparameter were set.
    //
    #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::init()-4***********"<< std::endl;
+      Log::Debug<<"*********** CGAEngine::init()-6***********"<< std::endl;
    #endif
    m_pCurrentPopulation = new CGpopulation(m_pGaparameter);
 
    // sequence of operators!
-   m_GeneticOperator.push_back(new CEvaluator(&m_FitnessCalculator,m_pStructurePool));
+   m_GeneticOperator.push_back(new CEvaluator(m_FitnessCalculator,m_pStructurePool));
    m_GeneticOperator.push_back(new CFitnessScaling());
    m_GeneticOperator.push_back(new CElist());
    m_GeneticOperator.push_back(new CSelector());

@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include <boost/scoped_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include "CPeriodicFramework.h"
+#include "CConfigurationBase.h"
 #include "CConfigurationPrivateData.h"
 #include "CFractionCoordinates.h"
 #include "CUnitCell.h"
@@ -30,12 +30,12 @@
 
 namespace CATAZJUT{
 
-CPeriodicFramework::CPeriodicFramework(CALCZJUT::CParameter* mpa)
+CConfigurationBase::CConfigurationBase(CALCZJUT::CParameter* mpa)
 :CConfigurationBase(mpa)
 {
     this->m_pUnitCell = new CUnitCell();
 }
-CPeriodicFramework::CPeriodicFramework(CPeriodicFramework& other)
+CConfigurationBase::CConfigurationBase(CConfigurationBase& other)
 :CConfigurationBase(other)
 {
     if(other.dimensionalType()==CATAZJUT::DEFINED::Periodic)
@@ -45,50 +45,30 @@ CPeriodicFramework::CPeriodicFramework(CPeriodicFramework& other)
     }else
         this->m_pUnitCell = nullptr;
 }
-CPeriodicFramework::CPeriodicFramework(CConfigurationBase& other)
+CConfigurationBase::CConfigurationBase(CConfigurationBase& other)
 :CConfigurationBase(other)
 {
        this->m_pUnitCell = nullptr;
 }
-CPeriodicFramework::~CPeriodicFramework()
+CConfigurationBase::~CConfigurationBase()
 {
 
     delete m_pUnitCell;
 }
-CPeriodicFramework* CPeriodicFramework::clone()
+CConfigurationBase* CConfigurationBase::clone()
 {
-    return new CPeriodicFramework(*this);
+    return new CConfigurationBase(*this);
 }
-CUnitCell* CPeriodicFramework::unitcell()
+CUnitCell* CConfigurationBase::unitcell()
 {
+    if(this->m_pUnitCell==nullptr)
+        this->m_pUnitCell=new CUnitCell();
+
     return this->m_pUnitCell;
 }
 
-CFractionCoordinates* CPeriodicFramework::Fractioncoordinates()
-{
-    int returnindex=-1;
-    if(m_pData->coordinateSets.empty()|| m_pData->coordinateSets.front()->type()\
-                                               == CCoordinateSet::None){
-            // if no, construct new coordinate
-            CFractionCoordinates* temp_Internal = new CFractionCoordinates(this,atomCount());
-            m_pData->coordinateSets.push_back(boost::make_shared<CCoordinateSet>(temp_Internal));
-            returnindex = 0;
-    }else{
-        for(size_t i=0;i<m_pData->coordinateSets.size();i++)
-          if(m_pData->coordinateSets[i]->type() == CCoordinateSet::Fraction){
-             returnindex = i;
-             break;
-          }
-        if(returnindex == -1)
-        {
-            CFractionCoordinates* temp_Internal= new CFractionCoordinates(this,atomCount());
-            m_pData->coordinateSets.push_back(boost::make_shared<CCoordinateSet>(temp_Internal));
-            returnindex = m_pData->coordinateSets.size() - 1;
-        }
-    }
-    return m_pData->coordinateSets[returnindex]->fractionCoordinates();
-}
-std::string CPeriodicFramework::SymmetrySymbol()
+
+std::string CConfigurationBase::SymmetrySymbol()
 {
     if(m_pParameter->simulationMode==CALCZJUT::CParameter::CLUSTER ||
        m_pParameter->simulationMode == CALCZJUT::CParameter::MOL_CLUSTER ){
@@ -105,7 +85,7 @@ std::string CPeriodicFramework::SymmetrySymbol()
         return res;
     }
 }
-void CPeriodicFramework::perceiveBonds()
+void CConfigurationBase::perceiveBonds()
 {
     CConfigurationBase::perceiveBonds();
 }

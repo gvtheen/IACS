@@ -10,7 +10,7 @@ using GAZJUT::GeneVAR;
 
 namespace CATAZJUT
 {
-class CPeriodicFramework;
+class CConfigurationBase;
 }
 namespace CALCZJUT
 {
@@ -21,6 +21,7 @@ class CModelBase
 {
 public:
     CModelBase(CParameter*,size_t);
+    CModelBase(CModelBase&);
     virtual ~CModelBase();
 
     virtual CModelBase* clone()=0;
@@ -37,8 +38,8 @@ public:
     virtual void outputStructureToFile();
 
     void standardOutput(size_t type=0);
-    CATAZJUT::CPeriodicFramework* periodicFramework();
-    void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework*);
+    CATAZJUT::CConfigurationBase* periodicFramework();
+    void setPeriodicFramekwork(CATAZJUT::CConfigurationBase*);
 
     void setRandomInitState(const bool&);
     bool RandomInitState();
@@ -48,10 +49,10 @@ public:
 
 public:
     CParameter             *m_pParameter;
-    std::vector<GeneVAR>   *m_pGeneVAR;
+    std::vector<GeneVAR>    m_GeneVAR;
 
-    CATAZJUT::CPeriodicFramework*          m_pPeriodicFramework;
-    CATAZJUT::CPeriodicFramework**         m_ppBackupPeriodicFramework;
+    CATAZJUT::CConfigurationBase*          m_pPeriodicFramework;
+    CATAZJUT::CConfigurationBase**         m_ppBackupPeriodicFramework;
 
     std::vector<std::pair<std::string,size_t>>    m_chemicalFormula;
     bool          m_IsNeedRandomInit;

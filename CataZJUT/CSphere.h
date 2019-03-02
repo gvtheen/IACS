@@ -1,7 +1,7 @@
 #ifndef CSPHERE_H
 #define CSPHERE_H
-#include <Eigen/Dense>
 #include <vector>
+#include <Eigen/StdVector>
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 
@@ -14,7 +14,7 @@ class CSphere
 {
     public:
         CSphere();
-        CSphere(const std::vector<Point3>&);
+        CSphere(const std::vector<Point3,Eigen::aligned_allocator<Point3>>&);
         CSphere(CSphere&);
 
         CSphere* Clone();
@@ -24,7 +24,7 @@ class CSphere
 //        CConfigurationBase* configuration()const;
         double  Radius() const;
         Point3  SphereCenter() const;
-        Eigen::Vector4d Equation()const;
+        util::Vector4 Equation()const;
 
         Point3  toPolarCoordinate(const Point3&);
 
@@ -33,14 +33,16 @@ class CSphere
 
         void output();
     protected:
-        size_t maxDist(Point3);
+        size_t maxDist(const Point3&);
         bool checkPointIs(const Point3&,const Point3&);
     private:
 
-        std::vector<Point3>  m_PointsMat;
+        util::Vector4 m_Equation;
+
+        std::vector<Point3,Eigen::aligned_allocator<Point3>>  m_PointsMat;
         //sphere (x-x0)**2 + (y-y0)**2 + (z-z0)**2 =R0**2;
         // x0=m_Equation[0]; y0=m_Equation[1];z0=m_Equation[2];R=m_Equation[3]
-        Eigen::Vector4d m_Equation;
+
 };
 
 

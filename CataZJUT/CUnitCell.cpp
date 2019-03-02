@@ -22,14 +22,15 @@
 #include <Eigen/Dense>
 #include "CUnitCell.h"
 #include "Geometry.h"
+#include "../IACS.h"
 namespace CATAZJUT{
 
 CUnitCell::CUnitCell()
+:m_type(CATAZJUT::DEFINED::Bravais)
 {
     this->m_a<<0,0,0;
     this->m_b<<0,0,0;
     this->m_c<<0,0,0;
-    this->m_type=Bravais;
     this->m_ScalingFactor=1.0;
 }
 CUnitCell::CUnitCell(Vector3 &a, Vector3 &b, Vector3 &c, double Scaling=1.0)
@@ -37,7 +38,7 @@ CUnitCell::CUnitCell(Vector3 &a, Vector3 &b, Vector3 &c, double Scaling=1.0)
     this->m_a = a;
     this->m_b = b;
     this->m_c = c;
-    this->m_type=Bravais;
+    this->m_type=CATAZJUT::DEFINED::Bravais;
     this->m_ScalingFactor=Scaling;
 }
 CUnitCell::CUnitCell(CUnitCell &othr)
@@ -45,8 +46,8 @@ CUnitCell::CUnitCell(CUnitCell &othr)
     this->m_a = othr.avec();
     this->m_b = othr.bvec();
     this->m_c = othr.cvec();
-    this->m_type = othr.m_type;
-    this->m_ScalingFactor =othr.m_ScalingFactor;
+    this->m_type = othr.unitCellType();
+    this->m_ScalingFactor =othr.scalingFactor();
 }
 CUnitCell::~CUnitCell()
 {
@@ -112,6 +113,10 @@ void CUnitCell::setscalingFactor(const double& m)
 {
     this->m_ScalingFactor = m;
 }
+CATAZJUT::DEFINED::UnitcellType CUnitCell::unitCellType()
+{
+    return this->m_type;
+}
 void CUnitCell::setVec(const size_t index, const Vector3& m)
 {
     switch(index)
@@ -129,6 +134,10 @@ void CUnitCell::setVec(const size_t index, const Vector3& m)
             break;
     }
 }
+void CUnitCell::setCellType(CATAZJUT::DEFINED::UnitcellType _type)
+{
+    this->m_type=_type;
+}
 /*
 transtion matrix A
 ax   bx   cx
@@ -138,18 +147,26 @@ az   bz   cz
 Eigen::Matrix<double, 3, 3> CUnitCell::MatrixOfBravaisLattice()
 {
     Eigen::Matrix<double, 3, 3> tmpMat;
-    if(m_type==Bravais){
+//    if(this->m_type==CATAZJUT::DEFINED::Bravais){
+//        std::cout<<"OK,OK!"<<std::endl;
+//    }
+    if(this->m_type==CATAZJUT::DEFINED::Bravais){
         tmpMat.col(0)=m_a;
         tmpMat.col(1)=m_b;
         tmpMat.col(2)=m_c;
         tmpMat = tmpMat*m_ScalingFactor;
+
+        //std::cout<<"Bravais:"<<tmpMat<<std::endl;
+
         return tmpMat;
     }else{
-        CUnitCell* tempCell=std::move(this->toBravais());
+        CUnitCell* tempCell=this->toBravais();
+
         tmpMat.col(0)=(tempCell->scalingFactor())*tempCell->avec();
         tmpMat.col(1)=(tempCell->scalingFactor())*tempCell->bvec();
         tmpMat.col(2)=(tempCell->scalingFactor())*tempCell->cvec();
         delete tempCell;
+        //std::cout<<"no Bravais:"<<avec()<<std::endl;
         return tmpMat;
     }
 
@@ -165,11 +182,11 @@ Eigen::Matrix<double, 3, 3> CUnitCell::NormilizedBravaisMatrix()
 }
 CUnitCell* CUnitCell::toReciprocal()
 {
-    if(this->m_type==Reciprocal)
+    if(this->m_type==CATAZJUT::DEFINED::Reciprocal)
         return this;
     else{
         CUnitCell *tempUnitCell = new CUnitCell();
-        tempUnitCell->m_type = Reciprocal;
+        tempUnitCell->m_type = CATAZJUT::DEFINED::Reciprocal;
         tempUnitCell->m_ScalingFactor = 1/m_ScalingFactor;
 
         Eigen::MatrixXd *BravaisMat = new (Eigen::MatrixXd)(3,3);
@@ -189,11 +206,11 @@ CUnitCell* CUnitCell::toReciprocal()
 }
 CUnitCell* CUnitCell::toBravais()
 {
-    if(this->m_type==Bravais)
+    if(this->m_type==CATAZJUT::DEFINED::Bravais)
         return this;
     else{
         CUnitCell *tempUnitCell = new CUnitCell();
-        tempUnitCell->m_type = Bravais;
+        tempUnitCell->m_type = CATAZJUT::DEFINED::Bravais;
         tempUnitCell->m_ScalingFactor = 1/m_ScalingFactor;
 
         Eigen::MatrixXd *ReciprocalMat = new (Eigen::MatrixXd)(3,3);
@@ -213,43 +230,43 @@ CUnitCell* CUnitCell::toBravais()
 }
 bool CUnitCell::operator == (CUnitCell& othr)
 {
-    if(this->m_type != othr.m_type)
+    if(this->m_type != othr.unitCellType())
         return false;
     return (m_a == othr.avec()) && (m_b == othr.bvec()) && \
            (m_c == othr.cvec()) && (m_ScalingFactor == othr.scalingFactor()) ;
 }
-CUnitCell::CRYSTALSYSTEM CUnitCell::crystalSystem(double a,double b,double c,double alfa,double beta,double gama)
+CATAZJUT::DEFINED::CrystalSystemType CUnitCell::crystalSystem(double a,double b,double c,double alfa,double beta,double gama)
 {
     if(isEqual(alfa,90.0) && isEqual(beta,90.0) && isEqual(gama,90.0)){
         if(isEqual(a,b,0.1) && isEqual(a,c,0.1))
-            return CUnitCell::Cubic;
+            return CATAZJUT::DEFINED::Cubic;
         else if(isEqual(a,b,0.1) && !isEqual(b,c,0.1))
-            return CUnitCell::Tetragonal;
+            return CATAZJUT::DEFINED::Tetragonal;
         else if(!isEqual(a,b,0.1)&& !isEqual(c,b,0.1)&& !isEqual(a,c,0.1))
-            return CUnitCell::Orthorhombic;
+            return CATAZJUT::DEFINED::Orthorhombic;
     }else if(isEqual(alfa,90.0) && isEqual(beta,90.0) && isEqual(gama,120.0)
              && isEqual(a,b,0.1) && !isEqual(c,b,0.1))
-             return CUnitCell::Hexagonal;
+             return CATAZJUT::DEFINED::Hexagonal;
      else if(isEqual(a,b,0.1) && isEqual(a,c,0.1)&& isEqual(alfa,beta)
              && isEqual(gama,beta)&& !isEqual(gama,90.0))
-             return CUnitCell::Trigonal;
+             return CATAZJUT::DEFINED::Trigonal;
      else if(!isEqual(a,b,0.1)&& !isEqual(c,b,0.1)&& !isEqual(a,c,0.1)
              && isEqual(alfa,90.0) && isEqual(beta,90.0) && !isEqual(gama,90.0))
-             return CUnitCell::Monoclinic;
+             return CATAZJUT::DEFINED::Monoclinic;
      else
-             return CUnitCell::Triclinic;
+             return CATAZJUT::DEFINED::Triclinic;
 
-     return CUnitCell::ERROR;
+     return CATAZJUT::DEFINED::ERROR;
 }
-CUnitCell::CRYSTALSYSTEM CUnitCell::crystalSystem()
+CATAZJUT::DEFINED::CrystalSystemType CUnitCell::crystalSystem()
 {
     return crystalSystem(a(),b(),c(),alfa(),beta(),gama());
 }
 bool CUnitCell::orthoCoordinateSystem()
 {
-    return crystalSystem()== CUnitCell::Cubic      ||
-           crystalSystem()== CUnitCell::Tetragonal ||
-           crystalSystem()== CUnitCell::Orthorhombic;
+    return crystalSystem()== CATAZJUT::DEFINED::Cubic      ||
+           crystalSystem()== CATAZJUT::DEFINED::Tetragonal ||
+           crystalSystem()== CATAZJUT::DEFINED::Orthorhombic;
 }
 bool CUnitCell::isEqual(double m, double n,double error)
 {
@@ -257,11 +274,11 @@ bool CUnitCell::isEqual(double m, double n,double error)
 }
 void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, double beta1, double gama1,char labellattice)
 {
-    CUnitCell::CRYSTALSYSTEM   system_res = crystalSystem(a1,b1,c1,alfa1,beta1,gama1);
+    CATAZJUT::DEFINED::CrystalSystemType   system_res = crystalSystem(a1,b1,c1,alfa1,beta1,gama1);
     double cosA,sinA,cosB,sinB,cosC;
 
     switch(system_res){
-        case CUnitCell::Triclinic:
+        case CATAZJUT::DEFINED::Triclinic:
               if(labellattice=='p' || labellattice =='P'){
                  cosA = std::cos(alfa1*CATAZJUT::constants::DegreesToRadians);
                  sinA = std::sin(alfa1*CATAZJUT::constants::DegreesToRadians);
@@ -277,7 +294,7 @@ void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, doubl
                  m_c<<0,       0,      c1;
               }
               break;
-        case CUnitCell::Monoclinic:
+        case CATAZJUT::DEFINED::Monoclinic:
             cosB = std::cos(beta1*CATAZJUT::constants::DegreesToRadians);
             sinB = std::sin(beta1*CATAZJUT::constants::DegreesToRadians);
             if(labellattice=='p' || labellattice =='P'){
@@ -290,7 +307,7 @@ void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, doubl
                 m_c<<c1*cosB,      0,  c1*sinB;
             }
             break;
-        case CUnitCell::Orthorhombic:
+        case CATAZJUT::DEFINED::Orthorhombic:
             if(labellattice=='P' || labellattice =='p'){
                 orthosimpleLattice(a1,b1,c1);
             }else if(labellattice=='I' || labellattice =='i'){
@@ -303,7 +320,7 @@ void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, doubl
                 m_c<<0,  0,      c1;
             }
             break;
-        case CUnitCell::Trigonal:
+        case CATAZJUT::DEFINED::Trigonal:
             if(labellattice=='R' || labellattice =='r'){
               cosA = std::cos(alfa1*CATAZJUT::constants::DegreesToRadians);
               double alta,kesai;
@@ -314,21 +331,21 @@ void CUnitCell::fromCellPara(double a1, double b1, double c1,double alfa1, doubl
                 m_c<< 0.5*alta*std::sqrt(3.0),  -0.5*alta, kesai;
             }
             break;
-        case CUnitCell::Hexagonal:
+        case CATAZJUT::DEFINED::Hexagonal:
             if(labellattice=='P' || labellattice =='p'){
                 m_a<<-0.5*a1*std::sqrt(3.0), -0.5*a1, 0;
                 m_b<< 0, a1, 0;
                 m_c<< 0, 0,  c1;
             }
             break;
-        case CUnitCell::Tetragonal:
+        case CATAZJUT::DEFINED::Tetragonal:
             if(labellattice=='P' || labellattice =='p'){
                 orthosimpleLattice(a1,b1,c1);
             }else if(labellattice=='I' || labellattice =='i'){
                 orthobodyLattice(a1,b1,c1);
             }
             break;
-        case CUnitCell::Cubic:
+        case CATAZJUT::DEFINED::Cubic:
             if(labellattice=='P' || labellattice =='p'){
                 orthosimpleLattice(a1,b1,c1);
             }else if(labellattice=='I' || labellattice =='i'){

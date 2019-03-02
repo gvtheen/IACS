@@ -14,7 +14,7 @@ using util::Point3i;
 using GAZJUT::GeneVAR;
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
   class CConfigurationBase;
   class CAtom;
   class CElement;
@@ -44,8 +44,8 @@ class CModelCluster:public CModelBase
         void outputStructureToFile();
     protected:
 
-        void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
-        void eliminateFragment(CATAZJUT::CPeriodicFramework*);
+        void eliminateCloseContacts(CATAZJUT::CConfigurationBase* strut,double distanceCutOff=1.0);
+        void eliminateFragment(CATAZJUT::CConfigurationBase*);
 
     private:
 

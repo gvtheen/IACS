@@ -31,16 +31,30 @@ CCrystalPlanes::CCrystalPlanes()
 {
     //ctor
 }
-CCrystalPlanes::CCrystalPlanes(Eigen::MatrixXd *tempPoints,double m_Value)
+CCrystalPlanes::CCrystalPlanes(std::vector<Point3>& tmpVec,double m_Value)
 {
-    m_PointsMat = *tempPoints;
+    assert(tmpVec.size()>0);
+
+    m_PointsMat= new Eigen::MatrixXd(tmpVec.size(),3);
+    for(size_t i=0;i<tmpVec.size();i++){
+         (*m_PointsMat)(i,0)=tmpVec[i](0);
+         (*m_PointsMat)(i,1)=tmpVec[i](1);
+         (*m_PointsMat)(i,2)=tmpVec[i](2);
+    }
+
     mDistance_Cutoff = m_Value;
 }
 CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)
 {
+   #ifdef DEBUG
+        Log::Debug<<"CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)" << std::endl;
+   #endif // DEBU
    this->SetDistanceCutoff(tmpCryPlane.DistanceCutoff());
    this->SetPointsMat(tmpCryPlane.PointsOfMat());
    this->SetLatticPlane(tmpCryPlane.LatticePlane());
+   #ifdef DEBUG
+        Log::Debug<<"2-CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)" << std::endl;
+   #endif
 }
 CCrystalPlanes* CCrystalPlanes::Clone()
 {
@@ -57,14 +71,21 @@ void CCrystalPlanes::SetLatticPlane(std::vector<CPlane*> &mpt)
     for(size_t i=0;i<mpt.size();i++)
         this->m_Plane.push_back(new CPlane(*(mpt[i])));
 }
-Eigen::MatrixXd& CCrystalPlanes::PointsOfMat()
+Eigen::MatrixXd* CCrystalPlanes::PointsOfMat()
 {
     return this->m_PointsMat;
 }
-void CCrystalPlanes::SetPointsMat(Eigen::MatrixXd& tmpMatPoint)
+void CCrystalPlanes::SetPointsMat(Eigen::MatrixXd* tmpMatPoint)
 {
+    size_t num=tmpMatPoint->rows();
 
-    m_PointsMat = tmpMatPoint;
+    m_PointsMat = new Eigen::MatrixXd(num,3);
+    for(size_t i=0;i<num;i++)
+    {
+       (*m_PointsMat)(i,0)= (*tmpMatPoint)(i,0);
+       (*m_PointsMat)(i,1)= (*tmpMatPoint)(i,1);
+       (*m_PointsMat)(i,2)= (*tmpMatPoint)(i,2);
+    }
 }
 void CCrystalPlanes::SetDistanceCutoff(double mValue)
 {
@@ -93,13 +114,15 @@ size_t CCrystalPlanes::crystalPlaneNum()
 void CCrystalPlanes::CreateCrystalPlane()
 {
     int rowN;
-    rowN = m_PointsMat.rows();
+    rowN = m_PointsMat->rows();
     std::vector<bool> matIndex;
     for(int i=0;i<rowN;i++)
         matIndex.push_back(false);
 
     Eigen::MatrixXd *pointsMat = new (Eigen::MatrixXd)(3,3);
-
+    #ifdef DEBUG
+                     Log::Debug<<"CCrystalPlanes::CreateCrystalPlane() ROWN:"<<rowN << std::endl;
+    #endif // DEBU
     std::vector<size_t> selectedPoints;
     int Num=0;
 
@@ -110,7 +133,7 @@ void CCrystalPlanes::CreateCrystalPlane()
        if(matIndex.at(i)!=true)
        {
           selectedPoints.push_back(i);
-          (*pointsMat).row(Num)=m_PointsMat.row(i);
+          (*pointsMat).row(Num)=m_PointsMat->row(i);
           Num++;
        }
        if( Num == 3 ){
@@ -131,12 +154,14 @@ void CCrystalPlanes::CreateCrystalPlane()
                int start = pointsMat->rows();
                for(size_t j=0;j<selectedPoints.size();j++){
                   matIndex.at(selectedPoints[j])= true;
-                  tempMat->row(start+j) = m_PointsMat.row(selectedPoints[j]);
+                  tempMat->row(start+j) = m_PointsMat->row(selectedPoints[j]);
                }
                m_PointsInIndividualPlanes.push_back(tempMat);
                m_Plane.push_back(newPlane);
                //clear the content of selectedPoints.
                selectedPoints.clear();
+
+               delete tempMat;
            }else
                delete newPlane;
            Num=0;
@@ -155,30 +180,40 @@ bool CCrystalPlanes::IsOnLine(Eigen::MatrixXd& mMat)
    else
       return false;
 }
-bool CCrystalPlanes::CheckIsPlane(CPlane tempPlane,std::vector<size_t> &pIindex,std::vector<bool>& matIndex)
+bool CCrystalPlanes::CheckIsPlane(CPlane& tempPlane,std::vector<size_t> &pIindex,std::vector<bool>& matIndex)
 {
-     int rowN = m_PointsMat.rows();
+     int rowN = m_PointsMat->rows();
      Point3 temP;
      bool res=true;
      double temp_value;
      std::vector<size_t> AddPInthePlane;
+     double convergence=0.1,Last_Distance=0;
+
      for(int i=0;i<rowN;i++)
      {
          if(matIndex.at(i)==true)
              continue;
 
-               temP = m_PointsMat.row(i);
+               temP = m_PointsMat->row(i);
          temp_value = tempPlane.Distance(temP);
-         if(temp_value > 0.5 || std::fabs(temp_value) > this->mDistance_Cutoff )
+
+         if(std::fabs(temp_value) >=convergence )
          {
-              res = false;
-              break;
-         }
-         if(std::fabs(temp_value) <= 0.5)
-              AddPInthePlane.push_back(i);
+            if(Last_Distance==0)
+               Last_Distance=temp_value;
+            else if(Last_Distance*temp_value<0){
+               res=false;
+               break;
+            }
+         }else
+            AddPInthePlane.push_back(i);
+
      }
+
      if( res == true )
         pIindex.insert(pIindex.end(),AddPInthePlane.begin(),AddPInthePlane.end());
+     else
+        AddPInthePlane.clear();
 
      return res;
 }
@@ -214,6 +249,17 @@ void CCrystalPlanes::RemoveColumn(Eigen::MatrixXd& matrix, size_t colToRemove)
 
     matrix.conservativeResize(numRows,numCols);
 }
+void CCrystalPlanes::outputCrystalPlane()
+{
+    assert(m_Plane.size()>0);
+
+    Log::Info<<"*******Crystal Plane Equations output*******"<<std::endl;
+
+    for(size_t i=0;i<this->m_Plane.size();i++)
+        this->m_Plane[i]->outputPlane();
+
+    Log::Info<<"*******End Crystal Plane Equations*******"<<std::endl;
+}
 CCrystalPlanes::~CCrystalPlanes()
 {
 //        if(m_PointsMat.rows()!=0)
@@ -230,6 +276,8 @@ CCrystalPlanes::~CCrystalPlanes()
                 delete m_PointsInIndividualPlanes[i];
             m_PointsInIndividualPlanes.clear();
         }
+        if(m_PointsMat!=nullptr)
+            delete m_PointsMat;
 }
 
 

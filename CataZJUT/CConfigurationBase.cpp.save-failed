@@ -695,20 +695,13 @@ void CConfigurationBase::setBondOrderType(CBond* mthBond)
 //    #endif // DEBU
 
 }
-void CConfigurationBase::maxCoordinationNum(std::map<std::string,size_t>& max_Coord_Num_Map)
+std::map<std::string,size_t>& CConfigurationBase::maxCoordinationNum()
 {
-      std::map<std::string,size_t>::iterator it;
+      std::map<std::string,size_t> max_Coord_Num_Map;
+      foreach(const CAtom* atoms,this->atom()){
 
-      foreach(const CAtom* atoms,this->m_Atom){
-          it=max_Coord_Num_Map.find(atoms->Symbol());
-          if(it==max_Coord_Num_Map.end())
-            max_Coord_Num_Map.insert(std::pair<std::string,size_t>
-                                     (atoms->Symbol(),atoms->bondCount()));
-          else{
-            if(it->second < atoms->bondCount())
-                it->second=atoms->bondCount();
-          }
       }
+
 }
 
 

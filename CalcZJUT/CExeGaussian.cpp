@@ -37,7 +37,7 @@
 #include "CExeGaussian.h"
 #include "../CataZJUT/CFragment.h"
 #include "../CataZJUT/CElement.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../Util/Point-Vector.h"
 #include "../GaZJUT/CGaparameter.h"
 #include "../Util/log.hpp"
@@ -103,7 +103,7 @@ double CExeGaussian::CalcuRawFit(std::vector<double>& RealValueOfGenome,size_t& 
      size_t currGeneration =m_Parameter->GaParameter()->Curr_Generation;
 
      Log::Info<<" Run Gaussian calculation of the "<< pop_index<< "th Genome in "<< currGeneration <<"th generation!\n";
-     //construct new object of CPeriodicFramework class
+     //construct new object of CConfigurationBase class
      //transfer gene value to POSCAR file
      m_pCalcModeStruct->setGeneValueToStruct(RealValueOfGenome);
      m_pIO->setConfiguration(m_pCalcModeStruct->m_pPeriodicFramework);

@@ -24,7 +24,7 @@
 #include <strings.h>
 #include <cstring>
 #include <math.h>
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CModelCluster.h"
 #include "CParameter.h"
 #include "../CataZJUT/CConfigurationBase.h"
@@ -45,6 +45,9 @@
 #include "CIOCar.h"
 #include "CIOGjf.h"
 #include "CIOPoscar.h"
+#include "CIOXyz.h"
+#include "CIOCif.h"
+#include "CIOCellFile.h"
 #include "CStructPoolCluster.h"
 #include "../IACS.h"
 
@@ -77,6 +80,8 @@ CStructPoolCluster::~CStructPoolCluster()
 
 void CStructPoolCluster::init()
 {
+    Log::Info<<"Initialize structural pools of cluster model..."<<std::endl;
+
     if(this->m_pParameter->cluster_Input_File.size()!=0){
         this->Initialization(m_pParameter->cluster_Input_File);
     }else if(this->m_pParameter->cluster_Formula!=""){
@@ -152,6 +157,10 @@ void CStructPoolCluster::Initialization(const char* mth)
 }
 void CStructPoolCluster::Initialization(const std::vector<std::string*>& inputfiles)  // initialize from exit
 {
+   #ifdef DEBUG
+      Log::Debug<<"*********** CStructPoolCluster::Initialization***********"<< std::endl;
+   #endif
+
    std::string str;
    std::vector<std::string> vecStr;
    CIOBase* inputIO;
@@ -159,32 +168,54 @@ void CStructPoolCluster::Initialization(const std::vector<std::string*>& inputfi
    for(size_t i=0;i<inputfiles.size();i++){
        str=*(inputfiles[i]);
        boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);
-       if(boost::iequals(vecStr[1],"gjf"))
-          inputIO = new CIOGjf(this->m_CalcStructPool[pos]->periodicFramework());
-       else if(boost::iequals(vecStr[1],"car"))
-          inputIO = new CIOCar(this->m_CalcStructPool[pos]->periodicFramework());
-       else if(boost::iequals(vecStr[1],"mol"))
-          inputIO = new CIOMol(this->m_CalcStructPool[pos]->periodicFramework());
-       else if(boost::iequals(vecStr[1],"poscar")==0)
-          inputIO = new CIOPoscar(this->m_CalcStructPool[pos]->periodicFramework());
-       else{
-          Log::Error<<vecStr[i] << " file is not supported by cluster model! Initialization_CModelCluster\n";
-          boost::throw_exception(std::runtime_error(vecStr[i]+ " file is not supported by cluster model! Initialization_CModelCluster!"));
+       if(vecStr.size()==1){
+          if(boost::iequals(vecStr[0],"poscar"))
+            inputIO = new CIOPoscar(this->m_CalcStructPool[pos]->periodicFramework());
+           else{
+            Log::Error<<str<< " file is not supported by cluster model! Initialization_CModelCluster\n";
+            boost::throw_exception(std::runtime_error(str+ " file is not supported by cluster model! Initialization_CModelCluster!"));
+          }
+       }else if(vecStr.size()>=2){
+           // have extend name of file name.
+           size_t extend_Name_Index=vecStr.size()-1;
+
+           if(boost::iequals(vecStr[extend_Name_Index],"gjf"))
+              inputIO = new CIOGjf(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"car"))
+              inputIO = new CIOCar(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"mol"))
+              inputIO = new CIOMol(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"poscar"))
+              inputIO = new CIOPoscar(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"xyz"))
+              inputIO = new CIOXyz(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"cif"))
+              inputIO = new CIOCif(this->m_CalcStructPool[pos]->periodicFramework());
+           else if(boost::iequals(vecStr[extend_Name_Index],"cell"))
+              inputIO = new CIOCellFile(this->m_CalcStructPool[pos]->periodicFramework());
+           else{
+              Log::Error<<str << " file is not supported by cluster model! Initialization_CModelCluster\n";
+              boost::throw_exception(std::runtime_error(str + " file is not supported by cluster model! Initialization_CModelCluster!"));
+           }
        }
        // read structure and save m_PopuPeriodicFramework[pos++]
        inputIO->input(str);
+       // delete the object
+       delete inputIO;
 
-       m_CalcStructPool[pos]->setChemicalFormula( m_CalcStructPool[pos]->periodicFramework()->composition() );
+       m_CalcStructPool[pos]->setChemicalFormula(m_CalcStructPool[pos]->periodicFramework()->composition());
        pos++;
    }
-
+   #ifdef DEBUG
+      Log::Debug<<"***********2- CStructPoolCluster::Initialization***********"<< std::endl;
+   #endif
    for(size_t i=pos;i<this->m_pParameter->GaParameter()->PopNum();i++){
       this->m_CalcStructPool[i]->setChemicalFormula(this->m_CalcStructPool[0]->chemicalFormula());
       RandomBuildFromChemicalFormula(this->m_CalcStructPool[i]->periodicFramework(),
                                      this->m_CalcStructPool[i]->chemicalFormula());
       }
 }
-void CStructPoolCluster::RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* predict_struct,
+void CStructPoolCluster::RandomBuildFromChemicalFormula(CATAZJUT::CConfigurationBase* predict_struct,
                                                             std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
      std::vector<CATAZJUT::CElement*> res;
@@ -225,7 +256,7 @@ size_t CStructPoolCluster::ClusterType(std::vector<CATAZJUT::CElement*>& mht)
     return 0;
 }
 // for metal clusters
-void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+void CStructPoolCluster::metalClusterPredict(CATAZJUT::CConfigurationBase* predict_struct,
                                                  std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     util::Vector3 polar_coord, basic_coord;
@@ -273,9 +304,10 @@ void CStructPoolCluster::metalClusterPredict(CATAZJUT::CPeriodicFramework* predi
 //     #endif
     this->eliminateFragment(predict_struct);
     this->eliminateCloseContacts(predict_struct);
+    this->outPutStructure(predict_struct);
 }
 // nonmetal compounds
-void CStructPoolCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+void CStructPoolCluster::nonMetalClusterPredict(CATAZJUT::CConfigurationBase* predict_struct,
                                                     std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     std::vector<std::pair<CATAZJUT::CElement*,size_t>> chemicalelement;
@@ -327,12 +359,12 @@ void CStructPoolCluster::nonMetalClusterPredict(CATAZJUT::CPeriodicFramework* pr
 
 }
 // nonmetal-metal cluster
-void CStructPoolCluster::mixedClusterPredict(CATAZJUT::CPeriodicFramework* predict_struct,
+void CStructPoolCluster::mixedClusterPredict(CATAZJUT::CConfigurationBase* predict_struct,
                                              std::vector<std::pair<std::string,size_t>>& chemFormula)
 {
     //GACatalysis(nousing)
 }
-void CStructPoolCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* curr_struct,double distanceCutOff)
+void CStructPoolCluster::eliminateCloseContacts(CATAZJUT::CConfigurationBase* curr_struct,double distanceCutOff)
 {
     util::Vector3 vect;
     util::Point3  center_P;
@@ -374,16 +406,18 @@ void CStructPoolCluster::eliminateCloseContacts(CATAZJUT::CPeriodicFramework* cu
        }
     }
 }
-void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_struct)
+void CStructPoolCluster::eliminateFragment(CATAZJUT::CConfigurationBase* curr_struct)
 {
     assert(curr_struct);
 
     size_t less_cycle;
     if(! curr_struct->fragmentsPerceived())    // analysize the fragments of the whole structure
          curr_struct->perceiveFragments();
+
+    CATAZJUT::CFragment* mainFragment=nullptr;
+
     if( curr_struct->fragmentNum() > 1 ){
         size_t maxCount=0;
-        CATAZJUT::CFragment* mainFragment;
         foreach(CATAZJUT::CFragment* fragment_s, curr_struct->fragments()){
             if(maxCount < fragment_s->atomCount()){
                 maxCount = fragment_s->atomCount();
@@ -391,7 +425,7 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
             }
             #ifdef DEBUG
                   Log::Debug<<"*2- CStructPoolCluster::eliminateFragment:"<<maxCount<< std::endl;
-                  Log::Debug<<"*2- CStructPoolCluster::eliminateFragment:fragmentNum"<<curr_struct->fragmentNum()<< std::endl;
+                  Log::Debug<<"*2- CStructPoolCluster::eliminateFragment:fragmentNum:"<<curr_struct->fragmentNum()<< std::endl;
             #endif
         }
         //
@@ -405,8 +439,9 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
         //main center, radius of the largest fragment.
         //all other fragments move toward it.
         mainsphereEquation4 = util::SphereEquationFromPoints(mainFragment->coordinates());
-        maincenter<<mainsphereEquation4(0,0),mainsphereEquation4(1,0),mainsphereEquation4(2,0);
-        mainR=mainsphereEquation4(3,0);
+        maincenter<<mainsphereEquation4(0),mainsphereEquation4(1),mainsphereEquation4(2);
+        mainR=mainsphereEquation4(3);
+
         #ifdef DEBUG
            Log::Debug<<"***********4- CStructPoolCluster::eliminateFragment***********"<< std::endl;
         #endif
@@ -414,15 +449,15 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
             if(mainFragment!=fragment_s){
                if(fragment_s->atomCount()>1){
                    othersphereEquation4 = util::SphereEquationFromPoints(fragment_s->coordinates());
-                   othercenter<<othersphereEquation4(0,0),othersphereEquation4(1,0),othersphereEquation4(2,0);
-                   otherR=othersphereEquation4(3,0);
+                   othercenter<<othersphereEquation4(0),othersphereEquation4(1),othersphereEquation4(2);
+                   otherR=othersphereEquation4(3);
                    differ = (maincenter-othercenter).norm() - mainR - otherR;
-                   differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+                   differVect= (differ-1.5)*((maincenter-othercenter).normalized());
                    fragment_s->move(differVect);
                }else{
                    othercenter=fragment_s->coordinates()[0];
                    differ = (maincenter-othercenter).norm() - mainR;
-                   differVect= (differ-1.5)*(maincenter-othercenter).normalized();
+                   differVect= (differ-1.5)*((maincenter-othercenter).normalized());
                    fragment_s->move(differVect);
                }
                // further judge whether two fragments is bonded.
@@ -438,14 +473,14 @@ void CStructPoolCluster::eliminateFragment(CATAZJUT::CPeriodicFramework* curr_st
 //                     std::cout<<less_cycle<<std::endl;
 //                   #endif // DEBUG
                    if(less_cycle>256){
-                      Log::Warn<<"Cycle of function is more than 65536 in CStructPoolCluster::eliminateFragment!"<<std::endl;
+                      Log::Warn<<"Cycle of function is more than 256 in CStructPoolCluster::eliminateFragment!"<<std::endl;
                       break;
                    }
                }
             }
     }
 }
-void CStructPoolCluster::outPutStructure(CATAZJUT::CPeriodicFramework* structure)
+void CStructPoolCluster::outPutStructure(CATAZJUT::CConfigurationBase* structure)
 {
     assert(structure);
     CIOMol* outmol =new CIOMol(structure);

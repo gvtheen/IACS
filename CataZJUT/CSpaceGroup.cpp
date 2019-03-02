@@ -1,7 +1,7 @@
 #include "CSpaceGroup.h"
 #include "../Util/foreach.h"
 #include "CAtom.h"
-#include "CPeriodicFramework.h"
+#include "CConfigurationBase.h"
 #include "CUnitCell.h"
 #include "../Spacegroup/spglib.h"
 #include "../Util/log.hpp"
@@ -12,8 +12,8 @@ using util::Log;
 
 namespace CATAZJUT{
 
-CSpaceGroup::CSpaceGroup(CPeriodicFramework* mbf)
-:m_pCPeriodicFramework(mbf)
+CSpaceGroup::CSpaceGroup(CConfigurationBase* mbf)
+:m_pCConfigurationBase(mbf)
 {
     //ctor
     m_pSpaceGroupName = new char[21];
@@ -38,7 +38,7 @@ char* CSpaceGroup::GetSpaceGroup()
 //  };
   //int types[] = {1, 1, 2, 2, 2, 2};
   int num_spg, num_atom;
-  num_atom = this->m_pCPeriodicFramework->atomCount();
+  num_atom = this->m_pCConfigurationBase->atomCount();
 
   lattice = (double(*)[3])(new double[3*3]);
   /*
@@ -47,7 +47,7 @@ ax   bx   cx
 ay   by   cy
 az   bz   cz
 */
-  Eigen::Matrix<double, 3, 3> Latt = m_pCPeriodicFramework->unitcell()->MatrixOfBravaisLattice();
+  Eigen::Matrix<double, 3, 3> Latt = m_pCConfigurationBase->unitcell()->MatrixOfBravaisLattice();
   Latt.transpose();
   for(size_t i=0;i<3;i++)
       for(size_t j=0;j<3;j++)
@@ -56,10 +56,10 @@ az   bz   cz
   int *types = new int[num_atom];
   size_t index=0;
   position =(double(*)[3])(new double[3*num_atom]);
-  std::vector<std::pair<std::string,size_t>> composition = m_pCPeriodicFramework->composition();
+  std::vector<std::pair<std::string,size_t>> composition = m_pCConfigurationBase->composition();
 
   Point3 pos;
-  foreach(CAtom* atom, this->m_pCPeriodicFramework->atoms()){
+  foreach(CAtom* atom, this->m_pCConfigurationBase->atoms()){
     for(size_t i=0;i<composition.size();i++)
        if(atom->Symbol() == composition[i].first ){
            types[index] = i+1;
@@ -80,7 +80,7 @@ az   bz   cz
   if ( num_spg > 0 )
     return m_pSpaceGroupName;
    else{
-    Log::Error<<"Space group could not be found.\n"<<std::endl;
+    Log::Error<<"Space group could not be found."<<std::endl;
     return nullptr;
   }
 
@@ -91,11 +91,11 @@ bool CSpaceGroup::Find_primitive()
    double (*position)[3];
 
    int  num_atom;
-   num_atom = this->m_pCPeriodicFramework->atomCount();
+   num_atom = this->m_pCConfigurationBase->atomCount();
 
    lattice = (double(*)[3])(new double[3*3]);
 
-   Eigen::Matrix<double, 3, 3> Latt = m_pCPeriodicFramework->unitcell()->MatrixOfBravaisLattice();
+   Eigen::Matrix<double, 3, 3> Latt = m_pCConfigurationBase->unitcell()->MatrixOfBravaisLattice();
    Latt.transpose();
    for(size_t i=0;i<3;i++)
       for(size_t j=0;j<3;j++)
@@ -104,10 +104,10 @@ bool CSpaceGroup::Find_primitive()
    int *types = new int[num_atom];
    size_t index=0;
    position =(double(*)[3])(new double[3*num_atom]);
-   std::vector<std::pair<std::string,size_t>> composition = m_pCPeriodicFramework->composition();
+   std::vector<std::pair<std::string,size_t>> composition = m_pCConfigurationBase->composition();
 
    Point3 pos;
-   foreach(CAtom* atom, this->m_pCPeriodicFramework->atoms()){
+   foreach(CAtom* atom, this->m_pCConfigurationBase->atoms()){
     for(size_t i=0;i<composition.size();i++)
        if(atom->Symbol() == composition[i].first ){
            types[index] = i+1;
@@ -123,18 +123,18 @@ bool CSpaceGroup::Find_primitive()
   num_primitive_atom = spg_find_primitive(lattice, position, types, num_atom, symprec);
 
   if (num_primitive_atom != 0){
-      m_pCPeriodicFramework->clear();
+      m_pCConfigurationBase->clear();
       for(size_t i=0;i<3;i++){
          pos<<lattice[i][0],lattice[i][1],lattice[i][2];
-         m_pCPeriodicFramework->unitcell()->setVec(i,pos);
+         m_pCConfigurationBase->unitcell()->setVec(i,pos);
       }
-      m_pCPeriodicFramework->unitcell()->setscalingFactor(1.0);
+      m_pCConfigurationBase->unitcell()->setscalingFactor(1.0);
 
       for(int i=0;i<num_primitive_atom;i++){
          pos<<position[i][0],position[i][1],position[i][2];
-         m_pCPeriodicFramework->addAtom(composition[types[i]-1].first,pos);
+         m_pCConfigurationBase->addAtom(composition[types[i]-1].first,pos);
       }
-      m_pCPeriodicFramework->perceiveBonds();
+      m_pCConfigurationBase->perceiveBonds();
       return true;
   }else
       return false;

@@ -21,7 +21,7 @@
 #include<cmath>
 #include "CFractionCoordinates.h"
 #include "CCartesianCoordinates.h"
-#include "CPeriodicFramework.h"
+#include "CConfigurationBase.h"
 #include "Geometry.h"
 #include "CUnitCell.h"
 #include "../Util/log.hpp"
@@ -34,12 +34,12 @@ CFractionCoordinates::CFractionCoordinates()
 {
 }
 //
-CFractionCoordinates::CFractionCoordinates(CPeriodicFramework* mPeriodicFramework)
+CFractionCoordinates::CFractionCoordinates(CConfigurationBase* mPeriodicFramework)
   :m_pPeriodicFramework(mPeriodicFramework)
 {
 }
 //
-CFractionCoordinates::CFractionCoordinates(CPeriodicFramework* mconf,size_t size_m)
+CFractionCoordinates::CFractionCoordinates(CConfigurationBase* mconf,size_t size_m)
 :m_pPeriodicFramework(mconf)
 {
    this->m_coordinates.insert(this->m_coordinates.begin(),size_m,Point3().setZero());
@@ -69,11 +69,11 @@ bool CFractionCoordinates::isEmpty() const
     return m_coordinates.empty();
 }
 // setting and return the periodic framework
-void CFractionCoordinates::setPeriodicFramework(CPeriodicFramework* tempPeridFramekwork)
+void CFractionCoordinates::setPeriodicFramework(CConfigurationBase* tempPeridFramekwork)
 {
     m_pPeriodicFramework = tempPeridFramekwork;
 }
-CPeriodicFramework* CFractionCoordinates::PeriodicFramework() const
+CConfigurationBase* CFractionCoordinates::PeriodicFramework() const
 {
     return this->m_pPeriodicFramework;
 }
@@ -81,7 +81,12 @@ CPeriodicFramework* CFractionCoordinates::PeriodicFramework() const
 //
 void CFractionCoordinates::setPosition(size_t index, const Point3 &position)
 {
-    m_coordinates[index]=position;
+    if(index < size()){
+        size_t size_num=this->size();
+       for(size_t i=size_num;i<=index;i++)
+           m_coordinates.push_back(Point3(0,0,0));
+    }
+    m_coordinates[index] = position;
 }
 void CFractionCoordinates::setPosition(size_t index, double x, double y, double z)
 {
@@ -107,6 +112,10 @@ double CFractionCoordinates::value(size_t row, size_t column) const
 }
 void CFractionCoordinates::append(const Point3 &position)
 {
+//    #ifdef DEBUG
+//        Log ::Debug<<"CFractionCoordinates::append "<<position(0)<<std::endl;
+//    #endif
+    //assert(this->m_coordinates);
     m_coordinates.push_back(position);
 }
 void CFractionCoordinates::append(double x, double y, double z)
@@ -286,7 +295,9 @@ CCartesianCoordinates* CFractionCoordinates::toCartesianCoordinates() const
        Point3 temP = std::move(toCartesian(i));
        temp_CartesianCoordinates->append(temP);
    }
-
+   #ifdef DEBUG
+     Log ::Debug<<"CFractionCoordinates::toCartesianCoordinates() "<<std::endl;
+   #endif
    return temp_CartesianCoordinates;
 }
 //

@@ -7,7 +7,7 @@
 using GAZJUT::GeneVAR;
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
   class CElement;
 }
 
@@ -28,20 +28,20 @@ class CStructPoolCluster:public CStructPoolBase
         void Initialization(const std::vector<std::string*>& inputfiles);     // initialize from exit structure
 
     protected:
-        void RandomBuildFromChemicalFormula(CATAZJUT::CPeriodicFramework* strut,
+        void RandomBuildFromChemicalFormula(CATAZJUT::CConfigurationBase* strut,
                                             std::vector<std::pair<std::string,size_t>>&);
-        void eliminateCloseContacts(CATAZJUT::CPeriodicFramework* strut,double distanceCutOff=1.0);
-        void eliminateFragment(CATAZJUT::CPeriodicFramework*);
+        void eliminateCloseContacts(CATAZJUT::CConfigurationBase* strut,double distanceCutOff=1.0);
+        void eliminateFragment(CATAZJUT::CConfigurationBase*);
         size_t ClusterType(std::vector<CATAZJUT::CElement*>&);
 
         //predicting methods: sphere,
-        void metalClusterPredict(CATAZJUT::CPeriodicFramework*,
+        void metalClusterPredict(CATAZJUT::CConfigurationBase*,
                                  std::vector<std::pair<std::string,size_t>>&);
-        void nonMetalClusterPredict(CATAZJUT::CPeriodicFramework*,
+        void nonMetalClusterPredict(CATAZJUT::CConfigurationBase*,
                                     std::vector<std::pair<std::string,size_t>>&);
-        void mixedClusterPredict(CATAZJUT::CPeriodicFramework*,
+        void mixedClusterPredict(CATAZJUT::CConfigurationBase*,
                                  std::vector<std::pair<std::string,size_t>>&);
-        void outPutStructure(CATAZJUT::CPeriodicFramework*);
+        void outPutStructure(CATAZJUT::CConfigurationBase*);
 
     private:
 

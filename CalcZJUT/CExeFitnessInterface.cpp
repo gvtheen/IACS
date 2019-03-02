@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include <boost/algorithm/string.hpp>
 #include "CExeFitnessInterface.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "CParameter.h"
 #include "../CataZJUT/CFragment.h"
 #include "CModelCluster.h"
@@ -83,7 +83,7 @@ CIOBase* CExeFitnessInterface::IO()const
 {
     return this->m_pIO;
 }
-void CExeFitnessInterface::getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework,CIOBase* resultIO)
+void CExeFitnessInterface::getIO(std::string &file_name,CATAZJUT::CConfigurationBase* currentPeriodicFramework,CIOBase* resultIO)
 {
     std::vector<std::string> vectstr;
     boost::algorithm::split(vectstr,file_name,boost::algorithm::is_any_of("."),boost::algorithm::token_compress_on);

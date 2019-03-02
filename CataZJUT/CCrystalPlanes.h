@@ -17,19 +17,19 @@ class CCrystalPlanes
 {
     public:
         CCrystalPlanes();
-        CCrystalPlanes(Eigen::MatrixXd*,double m_Value=2.8);
+        CCrystalPlanes(std::vector<Point3>&,double m_Value=2.8);
         CCrystalPlanes(CCrystalPlanes&);
         virtual ~CCrystalPlanes();
 
         CCrystalPlanes* Clone();
         void CreateCrystalPlane();
-        bool CheckIsPlane(CPlane,std::vector<size_t>&,std::vector<bool>&);
+        bool CheckIsPlane(CPlane&,std::vector<size_t>&,std::vector<bool>&);
 
         void SetLatticPlane(std::vector<CPlane*>&);
         std::vector<CPlane*>& LatticePlane();
 
-        Eigen::MatrixXd& PointsOfMat();
-        void SetPointsMat(Eigen::MatrixXd&);
+        Eigen::MatrixXd* PointsOfMat();
+        void SetPointsMat(Eigen::MatrixXd*);
 
         size_t crystalPlaneNum();
 
@@ -40,16 +40,18 @@ class CCrystalPlanes
 
         CPlane* operator[](size_t index);
 
+        void outputCrystalPlane();
+
     protected:
         void RemoveRow(Eigen::MatrixXd&, size_t);
         void RemoveColumn(Eigen::MatrixXd&, size_t);
         bool IsOnLine(Eigen::MatrixXd&);
 
     private:
-              Eigen::MatrixXd  m_PointsMat;
-         std::vector<CPlane*>  m_Plane;
-std::vector<Eigen::MatrixXd*>  m_PointsInIndividualPlanes;
-                        double mDistance_Cutoff;
+              Eigen::MatrixXd*  m_PointsMat;
+         std::vector<CPlane*>   m_Plane;
+std::vector<Eigen::MatrixXd*>   m_PointsInIndividualPlanes;
+                        double  mDistance_Cutoff;
 };
 
 }

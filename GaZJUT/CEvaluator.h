@@ -31,7 +31,7 @@ class CEvaluator:public CGaOperatorBase
                         OPTIMAL_GAP = 0x9232A
 	                 }OPT_TYPE;
 		CEvaluator();
-		CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>*,
+		CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>,
                    CALCZJUT::CStructPoolBase*);
 		~CEvaluator();
 
@@ -49,7 +49,7 @@ class CEvaluator:public CGaOperatorBase
         void standardOutput(std::map <size_t, double>&);
         void standardOutput(CGpopulation*);
     private:
-	    std::vector<CALCZJUT::CExeFitnessInterface*>      *m_pEvaluatorPool;
+	    std::vector<CALCZJUT::CExeFitnessInterface*>      m_pEvaluatorPool;
 	                  CALCZJUT::CExeFitnessInterface      *m_currentEvaluator;
 	                        CALCZJUT::CStructPoolBase     *m_pStructurePool;
 	                //CALCZJUT::CParameter     *m_pParameter;

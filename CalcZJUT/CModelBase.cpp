@@ -21,7 +21,7 @@
 #include <string>
 #include <sstream>
 #include "CModelBase.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CatalystUniverseDefine.h"
 #include "../CataZJUT/CUnitCell.h"
 #include "../CataZJUT/CAtom.h"
@@ -40,7 +40,16 @@ CModelBase::CModelBase(CParameter* temParameter,size_t index)
 {
     m_IsNeedRandomInit=true;
 }
+CModelBase::CModelBase(CModelBase& obj)
+{
+   this->m_pParameter=obj.m_pParameter;
 
+    #ifdef DEBUG
+        Log::Debug<<"CModelBase::CModelBase(CModelBase& obj)" << std::endl;
+    #endif // DEBU
+   this->m_pPeriodicFramework=new CATAZJUT::CConfigurationBase(*(obj.m_pPeriodicFramework));
+   this->m_ppBackupPeriodicFramework=obj.m_ppBackupPeriodicFramework;
+}
 CModelBase::~CModelBase()
 {
     //dtor
@@ -49,11 +58,11 @@ void CModelBase::init()
 {
 
 }
-CATAZJUT::CPeriodicFramework* CModelBase::periodicFramework()
+CATAZJUT::CConfigurationBase* CModelBase::periodicFramework()
 {
     return m_pPeriodicFramework;
 }
-void CModelBase::setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf)
+void CModelBase::setPeriodicFramekwork(CATAZJUT::CConfigurationBase* mbf)
 {
     m_pPeriodicFramework = mbf;
 }

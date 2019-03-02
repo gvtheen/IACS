@@ -1,8 +1,11 @@
 #ifndef CCOORDINATESET_H
 #define CCOORDINATESET_H
 #include "../Util/Point-Vector.h"
+#include "CatalystUniverseDefine.h"
 
 using util::Point3;
+using CATAZJUT::DEFINED::CoordinateType;
+
 
 namespace CATAZJUT{
 
@@ -13,14 +16,6 @@ class CFractionCoordinates;
 class CCoordinateSet
 {
 public:
-    // enumerations
-    enum Type {
-        None=0,
-        Cartesian=1,
-        Internal=2,
-        Fraction=3
-    };
-
     // construction and destruction
     CCoordinateSet();
     explicit CCoordinateSet(CCartesianCoordinates *coordinates);
@@ -30,7 +25,7 @@ public:
     ~CCoordinateSet();
 
     // properties
-    Type type() const;
+    CATAZJUT::DEFINED::CoordinateType type() const;
     size_t size() const;
     bool isEmpty() const;
     void setCoordinates(CCartesianCoordinates *coordinates);
@@ -46,7 +41,7 @@ public:
     CCoordinateSet& operator=( CCoordinateSet &other );
 
 private:
-    Type m_type;
+    CATAZJUT::DEFINED::CoordinateType m_type;
     union {
         CCartesianCoordinates *m_cartesianCordinates;
         CInternalCoordinates  *m_internalCoordinates;

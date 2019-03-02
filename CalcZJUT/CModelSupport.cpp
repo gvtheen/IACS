@@ -20,21 +20,31 @@
 ******************************************************************************/
 #include "CModelSupport.h"
 #include "../CataZJUT/CConfigurationBase.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../Util/foreach.h"
 #include "../CataZJUT/CAtom.h"
+#include "../IACS.h"
+
+#include "../Util/log.hpp"
+
+using util::Log;
+
 namespace CALCZJUT{
 
-CModelSupport::CModelSupport(CATAZJUT::CPeriodicFramework* mpconf, Bitset& supportBit)
+CModelSupport::CModelSupport(CATAZJUT::CConfigurationBase* mpconf, Bitset& supportBit)
 :m_pPeriodicFramework(mpconf),m_AtomicBits(supportBit)
 {
+     assert(mpconf);
+     #ifdef DEBUG
+        Log::Debug<<"CModelSupport::CModelSupport" << std::endl;
+     #endif
       for(size_t i=0;i<m_AtomicBits.size();i++)
          if(m_AtomicBits.test(i)==1){
-            this->m_Atoms.push_back(m_pPeriodicFramework->m_Atom[i]);
+            this->m_Atoms.push_back(m_pPeriodicFramework->atom(i));
          }
 }
-CModelSupport::CModelSupport(CATAZJUT::CPeriodicFramework* mpconf, std::vector<CATAZJUT::CAtom*> support)
+CModelSupport::CModelSupport(CATAZJUT::CConfigurationBase* mpconf, std::vector<CATAZJUT::CAtom*> support)
 :m_pPeriodicFramework(mpconf),m_Atoms(support)
 {
       m_AtomicBits.resize(m_pPeriodicFramework->atomCount(),false);
@@ -71,7 +81,7 @@ CATAZJUT::CConfigurationBase* CModelSupport::configuration() const
     return this->m_pPeriodicFramework;
 }
 
-void CModelSupport::setConfiguration(CATAZJUT::CPeriodicFramework* mbf)
+void CModelSupport::setConfiguration(CATAZJUT::CConfigurationBase* mbf)
 {
     this->m_pPeriodicFramework=mbf;
     for(size_t i=0;i<m_AtomicBits.size();i++)

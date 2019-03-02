@@ -12,7 +12,7 @@ using util::Point3;
 using util::Vector3;
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
   class CPlane;
   class CSphere;
 
@@ -31,7 +31,7 @@ class CModelClusterLoaded2DSupport:public CModelBase
                             C_AXIS=0x40AD,
                           NONE_DIR=0x40AE}LATT_DIRECTION;
 
-        CModelClusterLoaded2DSupport(CParameter*,CATAZJUT::CPeriodicFramework**,size_t);
+        CModelClusterLoaded2DSupport(CParameter*,CATAZJUT::CConfigurationBase**,size_t);
         virtual ~CModelClusterLoaded2DSupport();
 
         CModelBase* clone();   //clone function
@@ -55,7 +55,7 @@ class CModelClusterLoaded2DSupport:public CModelBase
         Bitset ClusterBit();
         Bitset SupportSurfaceBit();
         //overload the father class's function
-        void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf);
+        void setPeriodicFramekwork(CATAZJUT::CConfigurationBase* mbf);
 
         LATT_DIRECTION latticeDirection();
         void setLatticeDirection(LATT_DIRECTION);

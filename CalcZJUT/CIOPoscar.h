@@ -5,7 +5,7 @@
 #include "Bitset.h"
 
 namespace CATAZJUT{
-   class CPeriodicFramework;
+   class CConfigurationBase;
 }
 
 namespace CALCZJUT{
@@ -14,7 +14,7 @@ class CIOBase;
 class CIOPoscar:public CIOBase
 {
     public:
-        CIOPoscar(CATAZJUT::CPeriodicFramework*);
+        CIOPoscar(CATAZJUT::CConfigurationBase*);
         virtual ~CIOPoscar();
 
         void output(const std::string& file);

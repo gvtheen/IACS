@@ -23,11 +23,12 @@
 #include <boost/filesystem.hpp>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "unistd.h"
 #include "foreach.h"
 #include "CIOGjf.h"
 #include "../GaZJUT/GaUtilityFunction.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CConfigurationPrivateData.h"
@@ -35,6 +36,7 @@
 #include "../CataZJUT/CAtom.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
+#include "../IACS.h"
 
 using util::Log;
 using util::Point3;
@@ -44,7 +46,7 @@ namespace CATAZJUT{
 }
 namespace CALCZJUT{
 
-CIOGjf::CIOGjf(CATAZJUT::CPeriodicFramework* mpa)
+CIOGjf::CIOGjf(CATAZJUT::CConfigurationBase* mpa)
 :CIOBase(mpa)
 {
     //ctor
@@ -53,23 +55,39 @@ void CIOGjf::output(const std::string& fileName)
 {
     assert(m_pPeriodicFramework);
 
+    Point3 tp;
+
     if( this->m_pPeriodicFramework->m_DimensionalType != CATAZJUT::DEFINED::Molecule )
     {
         Log::Error<<"Dimensional Type is error! CIOGjf::output!\n";
         boost::throw_exception(std::runtime_error("Dimensional Type is error! CIOGjf::output!\n"));
     }
+    if(this->m_Commandline.size()==0){
+        Log::Error<<"Computational setting is not included! CIOGjf::output!\n";
+        boost::throw_exception(std::runtime_error("Computational setting is not included! CIOGjf::output!\n"));
+    }
     std::string file_Name=fileName;
 
     std::ofstream out(file_Name.c_str(),std::ios::app);
-    out.setf(std::ios::fixed, std::ios::floatfield);
-    out.precision(10);
+    out.setf(std::ios_base::right, std::ios_base::adjustfield);
+    out.setf(std::ios_base::fixed, std::ios_base::floatfield);
+    out.precision(SIGN_DIGIT_NUMBER);
 
     if(out.is_open())
     {
+       for(size_t i=0;i<this->m_Commandline.size();i++)
+           out<<this->m_Commandline[i]<<std::endl;
+
        foreach(CATAZJUT::CAtom* atom_s,m_pPeriodicFramework->atoms()){
+          tp=atom_s->position();
           out<<atom_s->Symbol()<<"        ";
-          out<<atom_s->position().transpose()<<std::endl;
+          out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(0)<<"    ";
+          out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(1)<<"    ";
+          out<<std::setw(SIGN_DIGIT_LENGTH)<<tp(2)<<"    ";
+          out<<std::endl;
        }
+       out<<std::endl;
+       out<<std::endl;
     }
     out.close();
 }
@@ -83,7 +101,7 @@ void CIOGjf::input(std::string file)
       std::ifstream *in;
       std::string str;
       try{
-         in= new std::ifstream("POSCAR",std::ifstream::in);
+         in= new std::ifstream(file.c_str(),std::ifstream::in);
          in->exceptions ( std::ifstream::failbit | std::ifstream::badbit );
 
          // gaussian command lines
@@ -100,15 +118,22 @@ void CIOGjf::input(std::string file)
          m_Commandline.push_back(" ");
 
          // comment
+         size_t blanklineNum=0;
          while(true)
          {
              std::getline(*in,str,'\n');
              boost::algorithm::trim(str);
+             blanklineNum++;
              if(str=="")
                 break;
              else
                 m_Commandline.push_back(str);
          }
+         if(blanklineNum==1){
+            Log::Error<<file<<" file format is error! input_CIOGjf!\n";
+            boost::throw_exception(std::runtime_error(file + " file format is error!input_CIOGjf!"));
+         }
+
          // blank line
          m_Commandline.push_back(" ");
          // charge multiplicity
@@ -121,6 +146,7 @@ void CIOGjf::input(std::string file)
          boost::algorithm::trim(str);
          std::vector<std::string> vecStr;
          boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
+
          m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
 
          if(vecStr.size()==1){
@@ -174,8 +200,8 @@ void CIOGjf::input(std::string file)
                   coord<<std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]);
                   m_pPeriodicFramework->addAtom(vecStr[0],coord);
                 }else{
-                  Log::Error<<"gjf file has wrong format! input_CIOGjf!\n";
-                  boost::throw_exception(std::runtime_error("gjf file has wrong format! input_CIOGjf!\n"));
+                  Log::Error<<file<<" file has wrong format! input_CIOGjf!\n";
+                  boost::throw_exception(std::runtime_error(file+" file has wrong format! input_CIOGjf!\n"));
                 }
             }
          }else if(vecStr.size()==5){
@@ -199,18 +225,18 @@ void CIOGjf::input(std::string file)
                   m_Constranit.push_back(std::stoi(vecStr[1]));
                   m_pPeriodicFramework->addAtom(vecStr[0],coord);
                 }else{
-                  Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
-                  boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
+                  Log::Error<<file<<" file has wrong format!input_CIOGjf!\n";
+                  boost::throw_exception(std::runtime_error(file+" file has wrong format!input_CIOGjf!\n"));
                 }
             }
          }else{
-            Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
-            boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
+            Log::Error<<file<<" file has wrong format!input_CIOGjf!\n";
+            boost::throw_exception(std::runtime_error(file+" file has wrong format!input_CIOGjf!\n"));
          }
 
       }catch(const std::ifstream::failure& e){
-          Log::Error<<"gjf file has wrong format!input_CIOGjf!\n";
-          boost::throw_exception(std::runtime_error("gjf file has wrong format!input_CIOGjf!\n"));
+          Log::Error<<file<<" file has wrong format!input_CIOGjf!\n";
+          boost::throw_exception(std::runtime_error(file+"file has wrong format!input_CIOGjf!\n"));
       }
       in->close();
 }
@@ -225,6 +251,15 @@ Bitset CIOGjf::input(std::string file,CALCZJUT::CParameter::SIMULATION_MODE tmp)
         res.set(i);
      return res;
 }
+void CIOGjf::setCommandlines(const std::vector<std::string>& tmpCmdLine)
+{
+    this->m_Commandline=tmpCmdLine;
+}
+std::vector<std::string>  CIOGjf::Commandlines() const
+{
+    return this->m_Commandline;
+}
+
 CIOGjf::~CIOGjf()
 {
     //dtor

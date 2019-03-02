@@ -20,6 +20,7 @@
 ******************************************************************************/
 #include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include "unistd.h"
 #include <boost/algorithm/string.hpp>
@@ -31,13 +32,13 @@
 #include "CIOCar.h"
 #include "../CataZJUT/CAtom.h"
 #include "../CataZJUT/CElement.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 
 using util::Vector3;
 using util::Log;
 namespace CALCZJUT{
 
-CIOCar::CIOCar(CATAZJUT::CPeriodicFramework* mpa)
+CIOCar::CIOCar(CATAZJUT::CConfigurationBase* mpa)
 :CIOBase(mpa)
 {
     //ctor
@@ -49,9 +50,13 @@ CIOCar::~CIOCar()
 }
 void CIOCar::output(const std::string& file)
 {
-    std::ofstream out(file,std::ios::app);
-    out.setf(std::ios::fixed, std::ios::floatfield);
-    out.precision(10);
+    Point3 tp;
+
+    std::ofstream out(file,std::ios::out);
+
+    //out.setf(std::ios_base::right, std::ios_base::adjustfield);
+    out.setf(std::ios_base::fixed, std::ios_base::floatfield);
+    out.precision(9);
     if(out.is_open())
     {
         out<<"!BIOSYM archive 3"<<std::endl;
@@ -59,19 +64,30 @@ void CIOCar::output(const std::string& file)
             out<<"PBC=ON"<<std::endl;
         else
             out<<"PBC=OFF"<<std::endl;
-        out<<"GACatalyst Program generate structure of " << m_pPeriodicFramework->formula()<<std::endl; //name
+        out<<"IACS Program generate structure of " << m_pPeriodicFramework->formula()<<std::endl; //name
         std::time_t result = std::time(nullptr);
-        out<<"!DATE "<<std::asctime(std::localtime(&result))<<std::endl;
-        if(m_pPeriodicFramework->dimensionalType()==CATAZJUT::DEFINED::Periodic)
-            out<<"PBC  "<<m_pPeriodicFramework->unitcell()->a() <<"  "<<   \
-                          m_pPeriodicFramework->unitcell()->b() <<"  "<<   \
-                          m_pPeriodicFramework->unitcell()->c() <<"  "<<   \
-                       m_pPeriodicFramework->unitcell()->alfa() <<"  "<<   \
-                       m_pPeriodicFramework->unitcell()->beta() <<"  "<<   \
-                       m_pPeriodicFramework->unitcell()->gama() <<"(P1)"<<std::endl;
+        out<<"!DATE "<<std::asctime(std::localtime(&result));
+        if(m_pPeriodicFramework->dimensionalType()==CATAZJUT::DEFINED::Periodic){
+            out<<"PBC";
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->a(); /*<<"  "<<   */
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->b();  /*<<"  "<<   */
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->c();  /*<<"  "<<   */\
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->alfa(); /*<<"  "<<   */
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->beta(); /*<<"  "<<   */
+            out<<std::setw(10)<<m_pPeriodicFramework->unitcell()->gama()<<"(P1)"<<std::endl;
+        }
+         std::string tmp;
          foreach(CATAZJUT::CAtom* atom, m_pPeriodicFramework->atoms()){
-            out<<atom->element().symbol()<<atom->index()<<"  "<<atom->position().transpose()
-               <<"  XXXX 1    XX"<<atom->element().symbol()<<"    0.0"<<std::endl;
+            tmp=std::to_string(atom->index()+1);
+            out.setf(std::ios_base::left, std::ios_base::adjustfield);
+            tmp=atom->element().symbol()+tmp;
+            out<<std::setw(5)<<tmp<<"  ";
+            out.setf(std::ios_base::right, std::ios_base::adjustfield);
+            tp=atom->position();
+            out<<std::setw(13)<<tp(0)<<"  ";
+            out<<std::setw(13)<<tp(1)<<"  ";
+            out<<std::setw(13)<<tp(2)<<" ";
+            out<<"XXXX 1      xx      "<<atom->element().symbol()<<"  0.000"<<std::endl;
          }
          out<<"end"<<std::endl;
          out<<"end"<<std::endl;
@@ -129,11 +145,21 @@ void CIOCar::input(std::string  file)
               }
            }else
               m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
-           while(1)
+           bool endbol=false;
+           while(!in->eof())
            {
                std::getline(*in,str,'\n');   //ith line
                boost::algorithm::trim(str);
-               if(str=="end") break;
+               if(str=="end") {
+                  if(endbol==true)
+                      break;
+                  else{
+                      endbol=true;
+                      continue;
+                  }
+               }else
+                  endbol=false;
+
                boost::algorithm::split(vecStr,str,boost::algorithm::is_any_of(" "),boost::algorithm::token_compress_on);
                tmpvect<<std::stod(vecStr[1]),std::stod(vecStr[2]),std::stod(vecStr[3]);
                if(isPBC == true){

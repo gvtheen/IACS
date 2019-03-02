@@ -6,7 +6,7 @@
 
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
 }
 
 
@@ -34,7 +34,7 @@ class CExeFitnessInterface
          void setIO(CIOBase* m_IO);
          CIOBase* IO()const;
 
-         void getIO(std::string &file_name,CATAZJUT::CPeriodicFramework* currentPeriodicFramework,CIOBase* ios);
+         void getIO(std::string &file_name,CATAZJUT::CConfigurationBase* currentPeriodicFramework,CIOBase* ios);
 
 //		 virtual void   outputResult()=0;
 

@@ -11,14 +11,14 @@ namespace CATAZJUT{
 class CInternalCoordinates;
 class CCartesianCoordinates;
 class CUnitCell;
-class CPeriodicFramework;
+class CConfigurationBase;
 
 class CFractionCoordinates
 {
     public:
         CFractionCoordinates();
-        CFractionCoordinates(CPeriodicFramework*);
-        CFractionCoordinates(CPeriodicFramework* mconf,size_t size_m);
+        CFractionCoordinates(CConfigurationBase*);
+        CFractionCoordinates(CConfigurationBase* mconf,size_t size_m);
         CFractionCoordinates(const CFractionCoordinates& mth);
 
         virtual ~CFractionCoordinates();
@@ -27,8 +27,8 @@ class CFractionCoordinates
         size_t size() const;
         bool isEmpty() const;
 
-        void setPeriodicFramework(CPeriodicFramework*);
-        CPeriodicFramework* PeriodicFramework() const;
+        void setPeriodicFramework(CConfigurationBase*);
+        CConfigurationBase* PeriodicFramework() const;
 
 
         void setPosition(size_t index, const Point3 &position);
@@ -79,7 +79,7 @@ class CFractionCoordinates
         const Point3& operator[](size_t index) const;
 
     private:
-        CPeriodicFramework  *m_pPeriodicFramework;
+        CConfigurationBase  *m_pPeriodicFramework;
         std::vector<Point3>  m_coordinates;
 };
 

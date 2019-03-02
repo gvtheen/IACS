@@ -12,7 +12,7 @@ using util::Point3;
 using util::Vector3;
 
 namespace CATAZJUT{
-  class CPeriodicFramework;
+  class CConfigurationBase;
   class CPlane;
   class CAtom;
 }
@@ -32,7 +32,7 @@ class CModel2DSupport:public CModelBase
                           NONE_DIR=0x30AE}LATT_DIRECTION;
 
         CModel2DSupport(CParameter*,
-                        CATAZJUT::CPeriodicFramework**,
+                        CATAZJUT::CConfigurationBase**,
                         size_t index);
         virtual ~CModel2DSupport();
 
@@ -49,7 +49,7 @@ class CModel2DSupport:public CModelBase
         Bitset SupportBit();
         Bitset MoleAdsorbBit();
         //overload the father class's function
-        void setPeriodicFramekwork(CATAZJUT::CPeriodicFramework* mbf);
+        void setPeriodicFramekwork(CATAZJUT::CConfigurationBase* mbf);
         void outputStructureToFile();
 
         CATAZJUT::CPlane* supportSurfacePlane();

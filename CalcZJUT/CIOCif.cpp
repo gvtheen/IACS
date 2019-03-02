@@ -25,7 +25,7 @@
 #include <string>
 #include "../Util/Point-Vector.h"
 #include "CIOCif.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../CataZJUT/CFractionCoordinates.h"
 #include "../CataZJUT/CUnitCell.h"
@@ -36,7 +36,7 @@ using util::Log;
 using util::Point3;
 namespace CALCZJUT{
 
-CIOCif::CIOCif(CATAZJUT::CPeriodicFramework* mpa)
+CIOCif::CIOCif(CATAZJUT::CConfigurationBase* mpa)
 :CIOBase(mpa)
 {
     //ctor

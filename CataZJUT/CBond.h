@@ -42,6 +42,7 @@ class CBond
         // bond order
         void setBondOrder(BondOrderType order);
         BondOrderType bondOrder() const;
+        size_t bondOrderValue()const;
         bool is(BondOrderType order) const;
         //bond vector
 

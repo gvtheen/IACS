@@ -24,7 +24,7 @@
 #include <boost/algorithm/string.hpp>
 #include <string>
 #include "../CataZJUT/CAtom.h"
-#include "../CataZJUT/CPeriodicFramework.h"
+#include "../CataZJUT/CConfigurationBase.h"
 #include "../Util/Point-Vector.h"
 #include "../Util/log.hpp"
 #include "../IACS.h"
@@ -38,7 +38,7 @@ using util::Bitset;
 
 namespace CALCZJUT{
 
-CIOXyz::CIOXyz(CATAZJUT::CPeriodicFramework* mth)
+CIOXyz::CIOXyz(CATAZJUT::CConfigurationBase* mth)
 :CIOBase(mth)
 {
     //ctor
@@ -139,6 +139,8 @@ void  CIOXyz::input(std::string file)
           boost::throw_exception(std::runtime_error(e.what()));
       }
       in->close();
+
+      m_pPeriodicFramework->setDimensionalType(CATAZJUT::DEFINED::Molecule);
 }
 
 }

@@ -146,6 +146,7 @@ void CParameter::input()
       }
       in->close();
       Log::Info<<"END Reading input file"<<std::endl;
+      this->initWorkEnvironment();
 
 }
 void CParameter::output()
@@ -159,7 +160,7 @@ GAZJUT::CGaparameter* CParameter::GaParameter()
 }
 size_t CParameter::currentGenerationNum()
 {
-    return this->m_pGAParameter->GenerationNum();
+    return this->m_pGAParameter->Curr_Generation;
 }
 size_t CParameter::popNum()
 {
@@ -174,6 +175,11 @@ void CParameter::initWorkEnvironment()
     * \path2: work          create  pop_num  folder
     * \path3: parameter     initial files
     */
+
+    Log::Info<<"Initialize working environment..."<<std::endl;
+
+    this->m_root_WorkingPath=boost::filesystem::current_path().string();
+
     boost::filesystem::path working_path,scratch_path,parameter_path;
       working_path = m_root_WorkingPath/"work";
     if(!boost::filesystem::exists(working_path))
@@ -191,7 +197,7 @@ void CParameter::initWorkEnvironment()
 void CParameter::setCurrentWorkPathAt(size_t generation,size_t population)
 {
     std::stringstream str;
-    str<<"Gen_"<<generation<<"Pop_"<<population;
+    str<<"Gen_"<<generation<<"_Pop_"<<population;
     std::string pathstr;
     str>>pathstr;
     boost::filesystem::path working_path;
@@ -245,19 +251,22 @@ std::string CParameter::currentWorkPath()
 }
 void CParameter::checkExeNecessaryFiles(std::vector<std::string*>& files)
 {
+    Log::Info<<"Check the necessary files..."<<std::endl;
+
     boost::filesystem::path tempPath,tempPath_2;
     for(size_t i=0;i<files.size();i++){
        tempPath=m_root_WorkingPath/files[i]->c_str();
 
        tempPath_2 = m_root_WorkingPath/"parameter";
        tempPath_2 = tempPath_2/files[i]->c_str();
-       if(!boost::filesystem::is_regular_file(tempPath)||!boost::filesystem::is_regular_file(tempPath_2)
-         ||boost::filesystem::file_size(tempPath) ==0 || boost::filesystem::file_size(tempPath_2) ==0){
-           Log::Error<<*files[i]<<" parameter file is not exist or empty in current director and parameter folder!"<<std::endl;
-           boost::throw_exception(std::runtime_error(*files[i] +" parameter file is no exist or empty! CParameter::checkExeNecessaryFiles!\n"));
-       }else{
+       if((boost::filesystem::is_regular_file(tempPath)&& boost::filesystem::file_size(tempPath)>0)|| \
+          (boost::filesystem::is_regular_file(tempPath_2)&& boost::filesystem::file_size(tempPath_2)>0)){
            boost::filesystem::path parameter_path = m_root_WorkingPath/"parameter";
            this->copyFileToPath(tempPath.string(),parameter_path.string());
+       }else{
+           Log::Error<<*files[i]<<" parameter file is not exist or empty in current director and parameter folder!"<<std::endl;
+           boost::throw_exception(std::runtime_error(*files[i] +
+                                                     " parameter file is no exist or empty! CParameter::checkExeNecessaryFiles!\n"));
        }
     }
 }
@@ -287,7 +296,7 @@ void CParameter::copyFileToPath(const std::string& file, const std::string& dir)
 
     if(!boost::filesystem::is_regular_file(oldFilePath)){
         Log::Error<<file<<" parameter file is not exist or empty!"<<std::endl;
-        boost::throw_exception(std::runtime_error(file +" parameter file is no exist or empty! CParameter::moveFileToPath!\n"));
+        boost::throw_exception(std::runtime_error(file +" parameter file is no exist or empty! CParameter::copyFileToPath!\n"));
     }
     boost::filesystem::path newDirPath(dir);
 
@@ -296,7 +305,7 @@ void CParameter::copyFileToPath(const std::string& file, const std::string& dir)
 
     boost::filesystem::path newFilePath(dir + "/" + oldFilePath.leaf().string());
 
-    boost::filesystem::copy_file(oldFilePath,newFilePath);
+    boost::filesystem::copy_file(oldFilePath,newFilePath,boost::filesystem::copy_option::overwrite_if_exists);
 }
 
 //**********End Public function*********/
@@ -393,6 +402,10 @@ void CParameter::setEvaluator_Code(std::string mtr)
 # 3: DMOL
 # 4: CASTEP
 # 5: LAMMPS   */
+
+    #ifdef DEBUG
+      Log::Debug<<"*********** CParameter::setEvaluator_Code***********"<<mtr<< std::endl;
+    #endif
       if(strcasecmp(mtr,"VASP") || std::stoi(mtr)==1)
         m_pGAParameter->setKeyValue("[Evaluator_Code]","VASP");
       else if(strcasecmp(mtr,"GAUSSIAN") || std::stoi(mtr)==2)
@@ -419,6 +432,7 @@ void CParameter::setOutput_struct_format(std::string mtr)
 ## 4: car      //.car
 ## 5: gjf      //.gjf
 ## 6: cell     //.cell
+## 7: xyz
 */
      if(strcasecmp(mtr,"poscar") || std::stoi(mtr)==1)
         this->output_struct_format = "poscar";
@@ -551,13 +565,13 @@ void CParameter::setSelect_Mode(std::string mtr)
 ## 4:  mixed
 */
      if(strcasecmp(mtr,"ROULETTE_WHEEL") || std::stoi(mtr)==1 )
-        m_pGAParameter->setKeyValue("[Search_Mode]","ROULETTE_WHEEL");
+        m_pGAParameter->setKeyValue("[Select_Mode]","ROULETTE_WHEEL");
      else if(strcasecmp(mtr,"TOURNAMENT") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Search_Mode]", "TOURNAMENT");
+        m_pGAParameter->setKeyValue("[Select_Mode]", "TOURNAMENT");
      else if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Search_Mode]", "RANDOM");
+        m_pGAParameter->setKeyValue("[Select_Mode]", "RANDOM");
      else if(strcasecmp(mtr,"MIXED") || std::stoi(mtr)==4)
-        m_pGAParameter->setKeyValue("[Search_Mode]", "MIXED");
+        m_pGAParameter->setKeyValue("[Select_Mode]", "MIXED");
      else{
          Log::Error<< mtr << " command is wrong! CParameter::setSelect_Mode!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setSelect_Mode."));
@@ -673,7 +687,7 @@ bool CParameter::checkIsValidParameters()
             return false;
 
      if(( simulationMode != CLUSTER && simulationMode != PERIODIC )&&
-        ( adso_supp_Input_File.size()==0 || ( supportStructFile=="" && adsorbentStructFile=="" )))
+        ( adso_supp_Input_File.size()==0 || !( supportStructFile!="" && adsorbentStructFile!="" )))
             return false;
 
      return true;
