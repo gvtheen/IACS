@@ -22,6 +22,7 @@
 #include "../IACS.h"
 #include "CCrystalPlanes.h"
 #include "../Util/log.hpp"
+#include "../Util/Bitset.h"
 
 using util::Log;
 
@@ -113,10 +114,9 @@ size_t CCrystalPlanes::crystalPlaneNum()
 }
 void CCrystalPlanes::CreateCrystalPlane()
 {
-    int rowN;
-    rowN = m_PointsMat->rows();
+    size_t rowN = m_PointsMat->rows();
     std::vector<bool> matIndex;
-    for(int i=0;i<rowN;i++)
+    for(size_t i=0;i<rowN;i++)
         matIndex.push_back(false);
 
     Eigen::MatrixXd *pointsMat = new (Eigen::MatrixXd)(3,3);
@@ -124,23 +124,26 @@ void CCrystalPlanes::CreateCrystalPlane()
                      Log::Debug<<"CCrystalPlanes::CreateCrystalPlane() ROWN:"<<rowN << std::endl;
     #endif // DEBU
     std::vector<size_t> selectedPoints;
-    int Num=0;
 
     //this->m_Plane = new (std::vector<CPlane*>);
     //this->m_pPointsInIndividualPlanes = new (std::vector<Eigen::MatrixXd*>);
-    for(int i=0;i<rowN;i++)
-    {
-       if(matIndex.at(i)!=true)
-       {
-          selectedPoints.push_back(i);
-          (*pointsMat).row(Num)=m_PointsMat->row(i);
-          Num++;
-       }
-       if( Num == 3 ){
-           if(IsOnLine(*pointsMat)==true){
-              Num = Num -1;
+    for(size_t i=0;i<rowN;i++)
+      for(size_t j=0;j<rowN;j++)
+       for(size_t k=0;k<rowN;k++){
+              if(IsInclude3PointsInExitPlane(i,j,k))
+                 continue;
+
+              selectedPoints.clear();
+              selectedPoints.push_back(i);
+              selectedPoints.push_back(j);
+              selectedPoints.push_back(k);
+              (*pointsMat).row(0)=m_PointsMat->row(i);
+              (*pointsMat).row(1)=m_PointsMat->row(j);
+              (*pointsMat).row(2)=m_PointsMat->row(k);
+
+           if(IsOnLine(*pointsMat)==true)
               continue;
-           }
+
            CPlane *newPlane = new CPlane();
            newPlane->CreatePlane(pointsMat);
 
@@ -156,22 +159,67 @@ void CCrystalPlanes::CreateCrystalPlane()
                   matIndex.at(selectedPoints[j])= true;
                   tempMat->row(start+j) = m_PointsMat->row(selectedPoints[j]);
                }
-               m_PointsInIndividualPlanes.push_back(tempMat);
-               m_Plane.push_back(newPlane);
+
+               bool isNewPlane=true;
+               for(size_t i=0;i<m_Plane.size();i++)
+                   if( (*m_Plane[i]) == (*newPlane) ){
+                        isNewPlane=false;
+                        break;
+                   }
+               if(isNewPlane){
+                  m_Plane.push_back(newPlane);
+                  m_PointsInIndividualPlanes.push_back(tempMat);
+               }else{
+                  delete newPlane;
+                  delete tempMat;
+               }
                //clear the content of selectedPoints.
                selectedPoints.clear();
 
-               delete tempMat;
+
            }else
                delete newPlane;
-           Num=0;
-       }
+     }
+}
+bool CCrystalPlanes::IsInclude3PointsInExitPlane(size_t m,size_t n,size_t h)
+{
+    Eigen::MatrixXd* data=new (Eigen::MatrixXd)(3,3);
+    (*data).row(0)=(*m_PointsMat).row(m);
+    (*data).row(1)=(*m_PointsMat).row(n);
+    (*data).row(2)=(*m_PointsMat).row(h);
+//    #ifdef DEBUG
+//        Log::Debug<<"CCrystalPlanes::IsInclude3PointsInExitPlane" << std::endl;
+//    #endif // DEBU
+    util::Bitset bol(3);
+    bol.set();
+    size_t pos=0;
+
+    for(size_t i=0;i<this->m_PointsInIndividualPlanes.size();i++){
+        bol.set();
+        pos=0;
+        for(size_t j=0;j<this->m_PointsInIndividualPlanes[i]->rows();j++){
+            if((*data)(pos,0)==(*m_PointsInIndividualPlanes[i])(j,0)&&
+               (*data)(pos,1)==(*m_PointsInIndividualPlanes[i])(j,1)&&
+               (*data)(pos,2)==(*m_PointsInIndividualPlanes[i])(j,2)){
+                bol.set(pos,false);
+                pos = bol.find_next(pos);
+                if(pos==util::Bitset::npos){
+                    delete data;
+                    return true;
+                }
+            }
+        }
     }
+//    #ifdef DEBUG
+//        Log::Debug<<"2-CCrystalPlanes::IsInclude3PointsInExitPlane" << std::endl;
+//    #endif // DEBU
+    delete data;
+    return false;
 }
 bool CCrystalPlanes::IsOnLine(Eigen::MatrixXd& mMat)
 {
    Point3 a,b,c;
-   double eps = 0.01;
+   double eps = 1.0;
    a = mMat.col(0);
    b = mMat.col(1);
    c = mMat.col(2);
@@ -187,7 +235,7 @@ bool CCrystalPlanes::CheckIsPlane(CPlane& tempPlane,std::vector<size_t> &pIindex
      bool res=true;
      double temp_value;
      std::vector<size_t> AddPInthePlane;
-     double convergence=0.1,Last_Distance=0;
+     double convergence=0.5,Last_Distance=0;
 
      for(int i=0;i<rowN;i++)
      {
@@ -254,7 +302,7 @@ void CCrystalPlanes::outputCrystalPlane()
     assert(m_Plane.size()>0);
 
     Log::Info<<"*******Crystal Plane Equations output*******"<<std::endl;
-
+    Log::Info<<" Number of crystal plane: "<<m_Plane.size()<<std::endl;
     for(size_t i=0;i<this->m_Plane.size();i++)
         this->m_Plane[i]->outputPlane();
 

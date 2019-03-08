@@ -271,11 +271,12 @@ void CModelClusterLoaded2DSupport::createSupportSurface(const Bitset& mht)
 }
 void CModelClusterLoaded2DSupport::createClusterSphere()
 {
-    std::vector<Point3,Eigen::aligned_allocator<Point3>> clusterCoordinate;
+    Eigen::MatrixXd*  clusterCoordinate=new (Eigen::MatrixXd)(m_pPureSupportSurface->atomCount(),3);
+    size_t num=0;
     foreach(CATAZJUT::CAtom* atom,m_pPureSupportSurface->atoms())
-        clusterCoordinate.push_back(atom->position());
+        clusterCoordinate->row(num++)=atom->position();
     this->m_pSphereCluster = new CATAZJUT::CSphere(clusterCoordinate);
-    clusterCoordinate.clear();
+    delete clusterCoordinate;
 }
 void CModelClusterLoaded2DSupport::createSupportPlane()
 {

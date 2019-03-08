@@ -14,7 +14,7 @@ class CSphere
 {
     public:
         CSphere();
-        CSphere(const std::vector<Point3,Eigen::aligned_allocator<Point3>>&);
+        CSphere(Eigen::MatrixXd*);
         CSphere(CSphere&);
 
         CSphere* Clone();
@@ -37,9 +37,8 @@ class CSphere
         bool checkPointIs(const Point3&,const Point3&);
     private:
 
-        util::Vector4 m_Equation;
-
-        std::vector<Point3,Eigen::aligned_allocator<Point3>>  m_PointsMat;
+        Eigen::MatrixXd*  m_PointsMat;
+        util::Vector4*    m_Equation;
         //sphere (x-x0)**2 + (y-y0)**2 + (z-z0)**2 =R0**2;
         // x0=m_Equation[0]; y0=m_Equation[1];z0=m_Equation[2];R=m_Equation[3]
 

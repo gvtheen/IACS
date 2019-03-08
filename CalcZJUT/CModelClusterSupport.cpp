@@ -241,21 +241,24 @@ void CModelClusterSupport::perceiveClusterModel()
           this->m_pCrystalPlanes->CreateCrystalPlane();
           this->m_pCrystalPlanes->outputCrystalPlane();
     }else{  //CModelClusterSupport::SPHERE
-        std::vector<Point3,Eigen::aligned_allocator<Point3>> coordinatePoints;
+        Eigen::MatrixXd* coordinatePoints = new Eigen::MatrixXd(m_pSupport->atomCount(),3);
         #ifdef DEBUG
                      Log::Debug<<"2-CModelClusterSupport::perceiveClusterModel()" << std::endl;
         #endif // DEBU
+        size_t num=0;
         foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms())
-           coordinatePoints.push_back(atom_s->position());
+           coordinatePoints->row(num++)=atom_s->position();
+
         #ifdef DEBUG
                      Log::Debug<<"3-CModelClusterSupport::perceiveClusterModel()" << std::endl;
-                     Log::Debug<<coordinatePoints.size()<<std::endl;
+                     Log::Debug<<coordinatePoints->rows()<<std::endl;
         #endif // DEBU
         this->m_pSphere = new CATAZJUT::CSphere(coordinatePoints);
         #ifdef DEBUG
                      Log::Debug<<"4-CModelClusterSupport::perceiveClusterModel()" << std::endl;
         #endif // DEBU
         this->m_pSphere->CreateSphere();
+        delete coordinatePoints;
     }
     #ifdef DEBUG
                      Log::Debug<<"4-CModelClusterSupport::perceiveClusterModel()" << std::endl;

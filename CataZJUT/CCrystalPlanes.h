@@ -46,6 +46,7 @@ class CCrystalPlanes
         void RemoveRow(Eigen::MatrixXd&, size_t);
         void RemoveColumn(Eigen::MatrixXd&, size_t);
         bool IsOnLine(Eigen::MatrixXd&);
+        bool IsInclude3PointsInExitPlane(size_t i,size_t j,size_t k);
 
     private:
               Eigen::MatrixXd*  m_PointsMat;

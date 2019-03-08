@@ -79,16 +79,12 @@ void CPlane::CreatePlane(Eigen::MatrixXd* CurrentPointMat)
           Eigen::MatrixXd* zMat = new (Eigen::MatrixXd)(3,1);
         xy1Mat->setOnes();
         double xx=0,xy=0,yy=0,x=0,y=0,xz=0,yz=0,z=0;
-        //x=(*m_pPointsToPlane)(i,0)
-        //y=(*m_pPointsToPlane)(i,1)
-        //z=(*m_pPointsToPlane)(i,2)
         for(size_t i=0;i<rowNum;i++){
-           xx=xx + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,0);
-           yy=yy + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,1);
-
-           xy=xy + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,1);
-           xz=xz + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,2);
-           yz=yz + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,2);
+           xx=xx+(*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,0);
+           yy=yy+(*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,1);
+           xy=xy+(*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,1);
+           xz=xz+(*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,2);
+           yz=yz+(*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,2);
 
            x=x+(*m_pPointsToPlane)(i,0);
            y=y+(*m_pPointsToPlane)(i,1);
@@ -264,33 +260,17 @@ void CPlane::outputPlane()
 {
     assert(this->m_pEquation);
 
-     Log::Output<<"Plane equation: ";
-     if(std::fabs((*m_pEquation)(0))!=1)
-        Log::Output<<"  "<<(*m_pEquation)(1)<<"*x";
-     else if( (*m_pEquation)(0)== -1 )
-        Log::Output<<"-x";
-     else
-        Log::Output<<"x";
+     Log::Info<<"Plane equation: "<<(*m_pEquation)(0)<<"*x";
 
-     if(std::fabs((*m_pEquation)(1))!=1){
-        if((*m_pEquation)(1)<0)
-            Log::Output<<"  "<<(*m_pEquation)(1)<<"*y";
-        else
-            Log::Output<<" + "<<(*m_pEquation)(1)<<"*y";
-     }else if( (*m_pEquation)(1)== -1 )
-        Log::Output<<"- y";
-      else
-        Log::Output<<"+ y";
-
-     if(std::fabs((*m_pEquation)(2))!=1){
-        if((*m_pEquation)(2)<0)
-            Log::Output<<"  "<<(*m_pEquation)(2)<<"*z";
-        else
-            Log::Output<<" + "<<(*m_pEquation)(2)<<"*z";
-     }else if( (*m_pEquation)(1)== -1 )
-        Log::Output<<"- z";
+     if((*m_pEquation)(1)<0)
+        Log::Output<<"  "<<(*m_pEquation)(1)<<"*y";
      else
-        Log::Output<<"+ z";
+        Log::Output<<" + "<<(*m_pEquation)(1)<<"*y";
+
+     if((*m_pEquation)(2)<0)
+        Log::Output<<"  "<<(*m_pEquation)(2)<<"*z";
+     else
+        Log::Output<<" + "<<(*m_pEquation)(2)<<"*z";
 
      if((*m_pEquation)(3)<0)
         Log::Output<<"  "<<(*m_pEquation)(3)<<" = 0";
@@ -301,16 +281,13 @@ void CPlane::outputPlane()
 }
 bool CPlane::operator==(CPlane& other)
 {
-    double conver_diff_angle=30.0,conver_diff2=1.0;
+    double conver_diff_angle=30.0,conver_diff2=5.0;
 
     if( CATAZJUT::Geometry::angle(*m_pNormalLine,other.NormalLine())>conver_diff_angle )
         return false;
     else{
-        Eigen::Vector4d equation_1 = other.Equation();
-        Eigen::Vector4d equation_2 = *m_pEquation;
-        equation_1.normalize();
-        equation_2.normalize();
-        if((equation_1(0)*equation_2(3)-equation_1(3)*equation_2(0)) < 0.5 )
+        Eigen::Vector4d equation = other.Equation();
+        if(((*m_pEquation)(0)*equation(3)-(*m_pEquation)(3)*equation(0)) < conver_diff2 )
            return true;
         else
            return false;

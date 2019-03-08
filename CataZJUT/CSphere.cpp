@@ -31,22 +31,22 @@ CSphere::CSphere()
 {
     //ctor
 }
-CSphere::CSphere(const std::vector<Point3,Eigen::aligned_allocator<Point3>>& currentPoints)
+CSphere::CSphere(Eigen::MatrixXd* currentPoints)
 {
 
-    this->m_Equation<<0,0,0,0;
+    assert(currentPoints->rows()>0);
 
-    for(size_t i=0;i<currentPoints.size();i++)
-        this->m_PointsMat.push_back(currentPoints[i]);
+    this->m_PointsMat=new (Eigen::MatrixXd)(*currentPoints);
 
 }
 CSphere::CSphere(CSphere& mht)
 {
-    this->m_Equation = mht.Equation();
+    this->m_Equation = new util::Vector4(mht.Equation());
 }
 CSphere::~CSphere()
 {
-    //dtor
+    delete m_PointsMat;
+    delete this->m_Equation;
 }
 /*
     identify the sphere equation in the given discrete points ( cluster )
@@ -57,30 +57,30 @@ void CSphere::CreateSphere()
    double ans  =1e12,eps=1e-12,R,step;
    //CCartesianCoordinates* currentCart=this->m_pConfiguration->coordinates();
 
-
-   Point3 P_pos;
+   Point3 P_pos,tmpP;
    P_pos<<0,0,0;
    size_t pos;
    step=100;
    #ifdef DEBUG
-                     Log::Debug<<"CSphere::CreateSphere():" <<m_PointsMat.size()<< std::endl;
+            Log::Debug<<"CSphere::CreateSphere():" <<m_PointsMat->rows()<< std::endl;
    #endif
    while(step>eps)
    {
        pos = maxDist(P_pos);
-
-       R = CATAZJUT::Geometry::distance(P_pos,m_PointsMat[pos]);
+       tmpP<<(*m_PointsMat)(pos,0),(*m_PointsMat)(pos,1),(*m_PointsMat)(pos,2);
+       R = CATAZJUT::Geometry::distance(P_pos,tmpP);
        if(R<ans)
           ans=R;
        if(R==0)
           R=R+eps;
-       P_pos = P_pos + (step/R)*(m_PointsMat[pos]-P_pos);
+       P_pos = P_pos + (step/R)*(tmpP-P_pos);
        step=step*0.98;
    }
    #ifdef DEBUG
                      Log::Debug<<"2-CSphere::CreateSphere():" <<R<< std::endl;
    #endif
-   //m_Equation<<P_pos[0],P_pos[1],P_pos[2],R;
+   m_Equation = new (util::Vector4);
+   (*m_Equation)<<P_pos[0],P_pos[1],P_pos[2],R;
 }
 /*
     sub method in annealing method
@@ -89,9 +89,12 @@ size_t CSphere::maxDist(const Point3& p1)
 {
     double res=0,temp;
     size_t res_index=0;
-    for(size_t i=0;i<m_PointsMat.size();i++)
+    Point3 tmpPonter;
+
+    for(size_t i=0;i<m_PointsMat->rows();i++)
     {
-        temp=CATAZJUT::Geometry::distance(p1,m_PointsMat[i]);
+        tmpPonter<<(*m_PointsMat)(i,0),(*m_PointsMat)(i,1),(*m_PointsMat)(i,2);
+        temp=CATAZJUT::Geometry::distance(p1,tmpPonter);
         if(temp>res)
         {
             res_index=i;
@@ -102,7 +105,7 @@ size_t CSphere::maxDist(const Point3& p1)
 }
 util::Vector4 CSphere::Equation()const
 {
-    return this->m_Equation;
+    return *m_Equation;
 }
 //void CSphere::setConfiguration(CConfigurationBase* configure)
 //{
@@ -114,12 +117,12 @@ util::Vector4 CSphere::Equation()const
 //}
 double CSphere::Radius() const
 {
-    return m_Equation[3];
+    return (*m_Equation)[3];
 }
 Point3 CSphere::SphereCenter() const
 {
     Point3 temp;
-    temp<<m_Equation[0],m_Equation[1],m_Equation[2];
+    temp<<(*m_Equation)[0],(*m_Equation)[1],(*m_Equation)[2];
     return temp;
 }
 /*
@@ -171,12 +174,13 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
 {
     double maxDist=0;
     std::vector<size_t> res_Point;
-    Point3 CurrentpolarPoint;
+    Point3 CurrentpolarPoint,tmpPonter,tmpPonter_1;
     // get all pointer from cluster configuration
 
-    for(size_t i=0;i<m_PointsMat.size();i++)
+    for(size_t i=0;i<m_PointsMat->rows();i++)
     {
-        CurrentpolarPoint = toPolarCoordinate(m_PointsMat[i]);
+        tmpPonter<<(*m_PointsMat)(i,0),(*m_PointsMat)(i,1),(*m_PointsMat)(i,2);
+        CurrentpolarPoint = toPolarCoordinate( tmpPonter );
         if(checkPointIs(CurrentpolarPoint,posPolarPoint)==true)
         {
             res_Point.push_back(i);
@@ -188,7 +192,8 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
     double deta_dist = 0.5;
     for(it=res_Point.begin();it!=res_Point.end();)
     {
-        CurrentpolarPoint = toPolarCoordinate(m_PointsMat[*it]);
+        tmpPonter<<(*m_PointsMat)(*it,0),(*m_PointsMat)(*it,1),(*m_PointsMat)(*it,2);
+        CurrentpolarPoint = toPolarCoordinate(tmpPonter);
         if(CurrentpolarPoint[0]< maxDist -deta_dist )
           it =  res_Point.erase(it);
         else
@@ -197,7 +202,8 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
     if(res_Point.size()>=3){
        Eigen::MatrixXd matPoint(res_Point.size(),3);
        for(size_t i=0;i<res_Point.size();i++)
-           matPoint.row(i)=m_PointsMat[res_Point[i]];
+           matPoint.row(i)=m_PointsMat->row(res_Point[i]);
+
        CPlane *newPlane = new CPlane(matPoint);
        Point3 SphereCenterP=SphereCenter();
        Point3 projectPointOnPlane = newPlane->Projection(SphereCenterP);
@@ -206,12 +212,16 @@ Point3 CSphere::CartesianCoordAtGeneOf(const Point3& posPolarPoint)
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else if (res_Point.size()==2){
        Point3 SphereCenterP=SphereCenter();
-       Point3 temp = CATAZJUT::Geometry::midpoint(m_PointsMat[res_Point[0]],m_PointsMat[res_Point[1]]);
+       tmpPonter<<(*m_PointsMat)(res_Point[0],0),(*m_PointsMat)(res_Point[0],1),(*m_PointsMat)(res_Point[0],2);
+       tmpPonter_1<<(*m_PointsMat)(res_Point[1],0),(*m_PointsMat)(res_Point[1],1),(*m_PointsMat)(res_Point[1],2);
+       Point3 temp = CATAZJUT::Geometry::midpoint(tmpPonter,tmpPonter_1);
        temp=temp-SphereCenterP;
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }else{
        Point3 SphereCenterP=SphereCenter();
-       Point3 temp = SphereCenterP - m_PointsMat[res_Point[0]];
+
+       tmpPonter<<(*m_PointsMat)(res_Point[0],0),(*m_PointsMat)(res_Point[0],1),(*m_PointsMat)(res_Point[0],2);
+       Point3 temp = SphereCenterP - tmpPonter;
        temp = temp-SphereCenterP;
        return SphereCenterP + temp*( 1.0 + temp.norm()/posPolarPoint[0] );
     }
@@ -259,8 +269,8 @@ bool CSphere::checkPointIs(const Point3& PolartempP,const Point3& posPolarPoint)
 void CSphere::output()
 {
     Log::Output<<"****Sphere model equation of current cluster****\n";
-    Log::Output<<">>( x - "<<this->m_Equation[0]<<" )**2 + ( y - " <<this->m_Equation[1]<<" )**2 + ( z - " ;
-    Log::Output<<this->m_Equation[2]<< " )**2 = " << m_Equation[3]*m_Equation[3] << std::endl;
+    Log::Output<<">>( x - "<<(*m_Equation)[0]<<" )**2 + ( y - " <<(*m_Equation)[1]<<" )**2 + ( z - " ;
+    Log::Output<<(*m_Equation)[2]<< " )**2 = " << (*m_Equation)[3]*(*m_Equation)[3] << std::endl;
     Log::Output<<"****End model equation****\n";
 }
 
