@@ -37,9 +37,9 @@ class CGAEngine
 	protected:
 	    std::vector<CGaOperatorBase*>                 m_GeneticOperator;
         CGpopulation                                 *m_pCurrentPopulation;
+
         std::vector<CALCZJUT::CExeFitnessInterface*>  m_FitnessCalculator;
         CALCZJUT::CStructPoolBase                    *m_pStructurePool;
-	    CGaparameter                                 *m_pGaparameter;
 	    CALCZJUT::CParameter                         *m_pParameter;
 	    std::vector<GAZJUT::GeneVAR>                  m_GeneVAR;
 

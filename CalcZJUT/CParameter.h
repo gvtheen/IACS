@@ -74,8 +74,11 @@ class CParameter
         CParameter(std::string filename);
         virtual ~CParameter();
 
+
         void input();
         void output();
+
+        void GetEvaluateEXE(std::vector<std::string>& res);
         //
         GAZJUT::CGaparameter* GaParameter();
         size_t currentGenerationNum();
@@ -100,6 +103,7 @@ class CParameter
         void setEvaluator_Code(std::string);
         void setEvaluator_Criterion(std::string);
         void setSearch_Mode(std::string);
+        void setOptMethod(std::string);
         // structure command
         void setBond_Tolerance_Factor(std::string);   // Cu  O
         void setExclude_Bond(std::string);
@@ -134,6 +138,8 @@ class CParameter
         std::string *m_pfile;
         GAZJUT::CGaparameter* m_pGAParameter;
         std::map<std::string,cmdFun> m_mapCmdFunc;
+
+        std::vector<std::string> m_StrEvaluateEXE;
 
         boost::filesystem::path m_root_WorkingPath;
 };

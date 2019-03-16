@@ -88,19 +88,19 @@ void CGaparameter::defaultInit()
 {
     m_mapCmdString = new (std::multimap <std::string, std::string>);
 
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Generation_Number]",    "30"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Population_Size]",      "20"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Cross_Probability]",    "0.80"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Mutation_Probability]", "0.20"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Initial_Gene_File]",     "gene.txt"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Select_Mode]",   "ROULETTE_WHEEL"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Search_Mode]",   "MIN"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Cross_Mode]",    "SINGLE"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Cross_Number]",      "2"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Mutation_Mode]",   "UNIFORM_M"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Scaling_Mode]",  "LINEAR"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Gene_Code]",     "BINARY"));
-    m_mapCmdString->insert(std::pair<std::string,std::string>("[Gene_Formation_Mode]","FILE_INPUT"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Generation_Number]",    "30"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Population_Size]",      "20"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Cross_Probability]",    "0.80"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Mutation_Probability]", "0.20"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Initial_Gene_File]",     "gene.txt"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Select_Mode]",   "ROULETTE_WHEEL"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Search_Mode]",   "MIN"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Cross_Mode]",    "SINGLE"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Cross_Number]",      "2"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Mutation_Mode]",   "UNIFORM_M"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Scaling_Mode]",  "LINEAR"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Gene_Code]",     "BINARY"));
+    m_mapCmdString->insert(std::pair<std::string,std::string>("[GA_Gene_Formation_Mode]","FILE_INPUT"));
 
     this->Curr_Generation = 0;
 }
@@ -114,7 +114,7 @@ std::vector <GeneVAR>& CGaparameter::GeneVAR()
 }
 size_t CGaparameter::PopNum()
 {
-     std::string keyValue=this->getKeyValue("[Population_Size]");
+     std::string keyValue=this->getKeyValue("[GA_Population_Size]");
 //     #ifdef DEBUG
 //         Log::Debug<<"*********** CGaparameter::PopNum***********"<<keyValue<< std::endl;
 //     #endif
@@ -129,7 +129,7 @@ size_t CGaparameter::PopNum()
 }
 size_t CGaparameter::GenerationNum()
 {
-     std::string keyValue=this->getKeyValue("[Generation_Number]");
+     std::string keyValue=this->getKeyValue("[GA_Generation_Number]");
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -141,7 +141,7 @@ size_t CGaparameter::GenerationNum()
 }
 size_t CGaparameter::CrossNum()
 {
-     std::string keyValue=this->getKeyValue("[Cross_Number]");
+     std::string keyValue=this->getKeyValue("[GA_Cross_Number]");
      int d_value;
      try{
         d_value=stoi(keyValue);
@@ -183,7 +183,7 @@ void CGaparameter::checkGeneVAR()
 }
 double CGaparameter::CrossProb()
 {
-     std::string keyValue=this->getKeyValue("[Cross_Probability]");
+     std::string keyValue=this->getKeyValue("[GA_Cross_Probability]");
      double d_value;
      try{
         d_value=stof(keyValue);
@@ -195,7 +195,7 @@ double CGaparameter::CrossProb()
 }
 double CGaparameter::MutaProb()
 {
-     std::string keyValue=this->getKeyValue("[Mutation_Probability]");
+     std::string keyValue=this->getKeyValue("[GA_Mutation_Probability]");
      double d_value;
      try{
         d_value=stof(keyValue);
@@ -207,7 +207,7 @@ double CGaparameter::MutaProb()
 }
 std::string CGaparameter::GeneFile()
 {
-    return this->getKeyValue("[Initial_Gene_File]");
+    return this->getKeyValue("[GA_Initial_Gene_File]");
 }
 E_GA_TYPE CGaparameter::SearchType()
 {
@@ -215,7 +215,7 @@ E_GA_TYPE CGaparameter::SearchType()
     E_GA_TYPE res;
     mySearch->insert(std::pair<std::string,E_GA_TYPE>("MIN",    MIN));
     mySearch->insert(std::pair<std::string,E_GA_TYPE>("MAX",    MAX));
-    res = (*mySearch)[this->getKeyValue("[Search_Mode]")];
+    res = (*mySearch)[this->getKeyValue("[GA_Search_Mode]")];
     delete mySearch;
     return res;
 }
@@ -227,7 +227,7 @@ E_SELECT_OPERATOR  CGaparameter::SelectMode()
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("TOURNAMENT",    TOURNAMENT));
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("ROULETTE_WHEEL",ROULETTE_WHEEL));
       mySearch->insert(std::pair<std::string,E_SELECT_OPERATOR>("MIXED",         MIXED));
-      res = (*mySearch)[this->getKeyValue("[Select_Mode]")];
+      res = (*mySearch)[this->getKeyValue("[GA_Select_Mode]")];
       delete mySearch;
       return res;
 }
@@ -240,7 +240,7 @@ E_CROSSOVER_OPERATOR CGaparameter::CrossMode()
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("UNIFORM_C",     UNIFORM_C));
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("ARITHMETIC",    ARITHMETIC));
     mySearch->insert(std::pair<std::string,E_CROSSOVER_OPERATOR>("UNARITHMETIC",  UNARITHMETIC));
-    res = (*mySearch)[this->getKeyValue("[Cross_Mode]")];
+    res = (*mySearch)[this->getKeyValue("[GA_Cross_Mode]")];
     delete mySearch;
     return res;
 }
@@ -253,7 +253,7 @@ E_MUTATE_OPERATOR CGaparameter::MutateMode()
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("BOUNDARY",     BOUNDARY));
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("NOUNIFORM",    NOUNIFORM));
     mySearch->insert(std::pair<std::string,E_MUTATE_OPERATOR>("GAUSSIAN_M",   GAUSSIAN_M));
-    res = (*mySearch)[this->getKeyValue("[Mutation_Mode]")];
+    res = (*mySearch)[this->getKeyValue("[GA_Mutation_Mode]")];
     delete mySearch;
     return res;
 }
@@ -263,23 +263,11 @@ E_GENEFORMATION_TYPE CGaparameter::InitGenMode()
     E_GENEFORMATION_TYPE res;
     mySearch->insert(std::pair<std::string,E_GENEFORMATION_TYPE>("RANDOM_FORMATION",    RANDOM_FORMATION));
     mySearch->insert(std::pair<std::string,E_GENEFORMATION_TYPE>("FILE_INPUT",FILE_INPUT));
-    res=(*mySearch)[this->getKeyValue("[Gene_Formation_Mode]")];
+    res=(*mySearch)[this->getKeyValue("[GA_Gene_Formation_Mode]")];
     delete mySearch;
     return res;
 }
-E_EVALUATOR_EXE CGaparameter::EvaluateEXE()
-{
-    std::map <std::string, E_EVALUATOR_EXE> *mySearch=new (std::map <std::string,E_EVALUATOR_EXE>);
-    E_EVALUATOR_EXE res;
-    mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("VASP",    VASP));
-    mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("GAUSSIAN",GAUSSIAN));
-    mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("DMOL",    DMOL));
-    mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("CASTEP",  CASTEP));
-    mySearch->insert(std::pair<std::string,E_EVALUATOR_EXE>("LAMMPS",  LAMMPS));
-    res =(*mySearch)[this->getKeyValue("[Evaluator_Code]")];
-    delete mySearch;
-    return res;
-}
+
 E_SCALING_TYPE CGaparameter::ScalingMode()
 {
     std::map <std::string, E_SCALING_TYPE> *mySearch=new (std::map <std::string,E_SCALING_TYPE>);
@@ -287,7 +275,7 @@ E_SCALING_TYPE CGaparameter::ScalingMode()
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("LINEAR",  LINEAR));
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("SIGMA",   SIGMA));
     mySearch->insert(std::pair<std::string,E_SCALING_TYPE>("POWER",   POWER));
-    res = (*mySearch)[this->getKeyValue("[Scaling_Mode]")];
+    res = (*mySearch)[this->getKeyValue("[GA_Scaling_Mode]")];
     delete mySearch;
     return res;
 }
@@ -299,7 +287,7 @@ E_CODE_TYPE CGaparameter::CodeMode()
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("BINARY",  BINARY));
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("GRAY",    GRAY));
     mySearch->insert(std::pair<std::string,E_CODE_TYPE>("REAL",    REAL));
-    res = (*mySearch)[this->getKeyValue("[Gene_Code]")];
+    res = (*mySearch)[this->getKeyValue("[GA_Gene_Code]")];
     delete mySearch;
     return res;
 }
@@ -314,7 +302,7 @@ E_CODE_TYPE CGaparameter::CodeMode()
 //}
 void CGaparameter::setKeyValue(const std::string key,const std::string value)
 {
-    if( key != "[Evaluator_Code]" ){
+    if( key != "[GA_Evaluator_Code]" ){
         if ( m_mapCmdString->count(key) !=0 )
             m_mapCmdString->erase(m_mapCmdString->find(key));
         m_mapCmdString->insert(std::pair<std::string,std::string>(key,value));

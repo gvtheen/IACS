@@ -49,7 +49,6 @@ class CGaparameter
         //void   SetMutateMode(E_MUTATE_OPERATOR);
         E_GENEFORMATION_TYPE   InitGenMode();
         //void   SetIntilGenMode(E_GENEFORMATION_TYPE);
-        E_EVALUATOR_EXE        EvaluateEXE();
         //void   SetEvaluateEXE(E_EVALUATOR_EXE);
         E_SCALING_TYPE         ScalingMode();
         //void   SetScalingMode(E_SCALING_TYPE);

@@ -27,12 +27,6 @@ typedef enum EM04{ROULETTE_WHEEL=0x4001,
 typedef enum EM05{RANDOM_FORMATION=0x5001,
                   FILE_INPUT=0x5002 }   E_GENEFORMATION_TYPE;
 
-typedef enum EM06{VASP=0x6001,
-                  GAUSSIAN=0x6002,
-                  DMOL=0x6003,
-                  LAMMPS=0x6004,
-                  CASTEP=0x6005 }       E_EVALUATOR_EXE;
-
 typedef enum EM07{LINEAR=0x7001,
                   SIGMA=0x7002,
                   POWER=0x7003}         E_SCALING_TYPE;

@@ -38,37 +38,39 @@ namespace CALCZJUT{
 CParameter::CParameter(std::string file)
 {
     //building the connection between cmd and corresponding function
-    m_mapCmdFunc["[System_Name]"] = &CParameter::setSysName;
-    m_mapCmdFunc["[Evaluator_Code]"] = &CParameter::setEvaluator_Code;
-    m_mapCmdFunc["[Simulation_Mode]"] = &CParameter::setSimulationMode;
-    m_mapCmdFunc["[Running_Command]"]=&CParameter::setRunCmd;
-    m_mapCmdFunc["[Evaluator_Criterion]"]=&CParameter::setEvaluator_Criterion;
-    m_mapCmdFunc["[Search_Mode]"]=&CParameter::setSearch_Mode;
-    m_mapCmdFunc["[Output_Structure_Format]"]=&CParameter::setOutputStructureFormat;
+    m_mapCmdFunc["[Sys_System_Name]"] = &CParameter::setSysName;
+    m_mapCmdFunc["[Sys_Evaluator_Code]"] = &CParameter::setEvaluator_Code;
+    m_mapCmdFunc["[Sys_Simulation_Mode]"] = &CParameter::setSimulationMode;
+    m_mapCmdFunc["[Sys_Running_Command]"]=&CParameter::setRunCmd;
+    m_mapCmdFunc["[Sys_Evaluator_Criterion]"]=&CParameter::setEvaluator_Criterion;
+    m_mapCmdFunc["[Sys_Search_Mode]"]=&CParameter::setSearch_Mode;
+    m_mapCmdFunc["[Sys_Output_Structure_Format]"]=&CParameter::setOutputStructureFormat;
+    m_mapCmdFunc["[Sys_Opt_Method]"]=&CParameter::setOptMethod;
+
     // fur supported catalyst
-    m_mapCmdFunc["[Support_Structure]"]=&CParameter::setSupport_Structure;
-    m_mapCmdFunc["[Adsorbent_Structure]"]=&CParameter::setAdsorbent_Structure;
-    m_mapCmdFunc["[Adsorbent_Support_Structure]"]=&CParameter::setAdsorbent_Support_Structure;
-    m_mapCmdFunc["[Distance_Adsorbent_On_Support]"]=&CParameter::setDistanceRangeAdsorbentOnSupport;
+    m_mapCmdFunc["[Str_Support_Structure]"]=&CParameter::setSupport_Structure;
+    m_mapCmdFunc["[Str_Adsorbent_Structure]"]=&CParameter::setAdsorbent_Structure;
+    m_mapCmdFunc["[Str_Adsorbent_Support_Structure]"]=&CParameter::setAdsorbent_Support_Structure;
+    m_mapCmdFunc["[Str_Distance_Adsorbent_On_Support]"]=&CParameter::setDistanceRangeAdsorbentOnSupport;
     // for cluster
-    m_mapCmdFunc["[Cluster_Formula]"]=&CParameter::setCluster_Formula;
-    m_mapCmdFunc["[Cluster_Structure]"]=&CParameter::setCluster_Input_File;
+    m_mapCmdFunc["[Str_Cluster_Formula]"]=&CParameter::setCluster_Formula;
+    m_mapCmdFunc["[Str_Cluster_Structure]"]=&CParameter::setCluster_Input_File;
     // for bond Tolerance
-    m_mapCmdFunc["[Bond_Tolerance_Factor]"]=&CParameter::setBond_Tolerance_Factor;
-    m_mapCmdFunc["[Exclude_Bond]"]=&CParameter::setExclude_Bond;
-    m_mapCmdFunc["[Bond_Tolerance]"]=&CParameter::setBond_Tolerance;
+    m_mapCmdFunc["[Str_Bond_Tolerance_Factor]"]=&CParameter::setBond_Tolerance_Factor;
+    m_mapCmdFunc["[Str_Exclude_Bond]"]=&CParameter::setExclude_Bond;
+    m_mapCmdFunc["[Str_Bond_Tolerance]"]=&CParameter::setBond_Tolerance;
     // for GA
-    m_mapCmdFunc["[Generation_Number]"]=&CParameter::setGenNum;
-    m_mapCmdFunc["[Population_Size]"]=&CParameter::setPopSize;
-    m_mapCmdFunc["[Cross_Probability]"]=&CParameter::setPc;
-    m_mapCmdFunc["[Mutation_Probability]"]=&CParameter::setPm;
-    m_mapCmdFunc["[Scaling_Mode]"]=&CParameter::setScaling_Mode;
-    m_mapCmdFunc["[Mutation_Mode]"]=&CParameter::setMutation_Mode;
-    m_mapCmdFunc["[Gene_Code]"]=&CParameter::setGene_Code;
-    m_mapCmdFunc["[Cross_Mode]"]=&CParameter::setCross_Mode;
-    m_mapCmdFunc["[Cross_Number]"]=&CParameter::setCross_Num;
-    m_mapCmdFunc["[Select_Mode]"]=&CParameter::setSelect_Mode;
-    m_mapCmdFunc["[Gene_Formation_Mode]"]=&CParameter::setGene_Formation_Mode;
+    m_mapCmdFunc["[GA_Generation_Number]"]=&CParameter::setGenNum;
+    m_mapCmdFunc["[GA_Population_Size]"]=&CParameter::setPopSize;
+    m_mapCmdFunc["[GA_Cross_Probability]"]=&CParameter::setPc;
+    m_mapCmdFunc["[GA_Mutation_Probability]"]=&CParameter::setPm;
+    m_mapCmdFunc["[GA_Scaling_Mode]"]=&CParameter::setScaling_Mode;
+    m_mapCmdFunc["[GA_Mutation_Mode]"]=&CParameter::setMutation_Mode;
+    m_mapCmdFunc["[GA_Gene_Code]"]=&CParameter::setGene_Code;
+    m_mapCmdFunc["[GA_Cross_Mode]"]=&CParameter::setCross_Mode;
+    m_mapCmdFunc["[GA_Cross_Number]"]=&CParameter::setCross_Num;
+    m_mapCmdFunc["[GA_Select_Mode]"]=&CParameter::setSelect_Mode;
+    m_mapCmdFunc["[GA_Gene_Formation_Mode]"]=&CParameter::setGene_Formation_Mode;
 
     m_pGAParameter=new GAZJUT::CGaparameter();
     this->m_pfile=new std::string(file);
@@ -153,6 +155,10 @@ void CParameter::output()
 {
     Log::Output<<"***********Parameters of GA***********"<<std::endl;
 
+}
+void CParameter::GetEvaluateEXE(std::vector<std::string>& res)
+{
+    res.assign(this->m_StrEvaluateEXE.begin(),this->m_StrEvaluateEXE.end());
 }
 GAZJUT::CGaparameter* CParameter::GaParameter()
 {
@@ -351,6 +357,10 @@ void CParameter::setSimulationMode(std::string mtr)
            break;
      }
 }
+void CParameter::setOptMethod(std::string mtr)
+{
+
+}
 void CParameter::setBond_Tolerance_Factor(std::string mtr)
 {
     std::vector<std::string> vectStr;
@@ -407,17 +417,17 @@ void CParameter::setEvaluator_Code(std::string mtr)
       Log::Debug<<"*********** CParameter::setEvaluator_Code***********"<<mtr<< std::endl;
     #endif
       if(strcasecmp(mtr,"VASP") || std::stoi(mtr)==1)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","VASP");
+        this->m_StrEvaluateEXE.push_back("VASP");
       else if(strcasecmp(mtr,"GAUSSIAN") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","GAUSSIAN");
+        this->m_StrEvaluateEXE.push_back("GAUSSIAN");
       else if(strcasecmp(mtr,"DMOL") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","DMOL");
+        this->m_StrEvaluateEXE.push_back("DMOL");
       else if(strcasecmp(mtr,"CASTEP") || std::stoi(mtr)==4)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","CASTEP");
+        this->m_StrEvaluateEXE.push_back("CASTEP");
       else if(strcasecmp(mtr,"LAMMPS") || std::stoi(mtr)==5)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","LAMMPS");
+        this->m_StrEvaluateEXE.push_back("LAMMPS");
       else if(strcasecmp(mtr,"DFTB") || std::stoi(mtr)==6)
-        m_pGAParameter->setKeyValue("[Evaluator_Code]","DFTB");
+        this->m_StrEvaluateEXE.push_back("DFTB");
       else{
          Log::Error << mtr <<" command is wrong! setEvaluator_Code_CParameter\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setEvaluator_Code_CParameter!"));
@@ -481,34 +491,34 @@ void CParameter::setSearch_Mode(std::string mtr)
 // Commands for GA Part
 void CParameter::setPopSize(std::string mtr)
 {
-    m_pGAParameter->setKeyValue("[Population_Size]",mtr);
+    m_pGAParameter->setKeyValue("[GA_Population_Size]",mtr);
 }
 void CParameter::setPm(std::string mtr)
 {
-    m_pGAParameter->setKeyValue("[Mutation_Probability]",mtr);
+    m_pGAParameter->setKeyValue("[GA_Mutation_Probability]",mtr);
 }
 void CParameter::setPc(std::string mtr)
 {
-    m_pGAParameter->setKeyValue("[Mutation_Probability]",mtr);
+    m_pGAParameter->setKeyValue("[GA_Cross_Probability]",mtr);
 }
 void CParameter::setGenNum(std::string mtr)
 {
-    m_pGAParameter->setKeyValue("[Cross_Probability]",mtr);
+    m_pGAParameter->setKeyValue("[GA_Generation_Number]",mtr);
 }
 void CParameter::setScaling_Mode(std::string mtr)
 {
-    m_pGAParameter->setKeyValue("[Scaling_Mode]",mtr);
+    m_pGAParameter->setKeyValue("[GA_Scaling_Mode]",mtr);
 }
 void CParameter::setMutation_Mode(std::string mtr)
 {
      if(strcasecmp(mtr,"UNIFORM_M") || std::stoi(mtr)==1 )
-        m_pGAParameter->setKeyValue("[Mutation_Mode]","UNIFORM_M");
+        m_pGAParameter->setKeyValue("[GA_Mutation_Mode]","UNIFORM_M");
      else if(strcasecmp(mtr,"BOUNDARY") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Mutation_Mode]","BOUNDARY");
+        m_pGAParameter->setKeyValue("[GA_Mutation_Mode]","BOUNDARY");
      else if( strcasecmp(mtr,"NOUNIFORM") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Mutation_Mode]","NOUNIFORM");
+        m_pGAParameter->setKeyValue("[GA_Mutation_Mode]","NOUNIFORM");
      else if(strcasecmp(mtr,"GAUSSIAN_M") || std::stoi(mtr)==4)
-        m_pGAParameter->setKeyValue("[Mutation_Mode]","GAUSSIAN_M");
+        m_pGAParameter->setKeyValue("[GA_Mutation_Mode]","GAUSSIAN_M");
      else{
          Log::Error<<mtr << " command is wrong! setMutation_Mode_CParameter\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: setMutation_Mode_CParameter."));
@@ -520,11 +530,11 @@ void CParameter::setGene_Code(std::string mtr)
 1: BINARY ; 2:GRAY;  3: REAL
 */
      if(strcasecmp(mtr,"BINARY") || std::stoi(mtr)==1)
-        m_pGAParameter->setKeyValue("[Gene_Code]","BINARY");
+        m_pGAParameter->setKeyValue("[GA_Gene_Code]","BINARY");
      else if(strcasecmp(mtr,"GRAY") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Gene_Code]","GRAY");
+        m_pGAParameter->setKeyValue("[GA_Gene_Code]","GRAY");
      else if(strcasecmp(mtr,"REAL") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Gene_Code]","REAL");
+        m_pGAParameter->setKeyValue("[GA_Gene_Code]","REAL");
      else{
          Log::Error<<mtr << " command is wrong! setGene_Code_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Code."));
@@ -540,13 +550,13 @@ void CParameter::setCross_Mode(std::string mtr)
 #5: UNARITHMETIC
 */
      if(strcasecmp(mtr,"SINGLE") || std::stoi(mtr)==1 )
-        m_pGAParameter->setKeyValue("[Cross_Mode]","SINGLE");
+        m_pGAParameter->setKeyValue("[GA_Cross_Mode]","SINGLE");
      else if(strcasecmp(mtr,"MULTIPLE") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Cross_Mode]","MULTIPLE");
+        m_pGAParameter->setKeyValue("[GA_Cross_Mode]","MULTIPLE");
      else if(strcasecmp(mtr,"UNIFORM_C") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Cross_Mode]","UNIFORM_C");
+        m_pGAParameter->setKeyValue("[GA_Cross_Mode]","UNIFORM_C");
      else if(strcasecmp(mtr,"UNARITHMETIC") || std::stoi(mtr)==4)
-        m_pGAParameter->setKeyValue("[Cross_Mode]","UNARITHMETIC");
+        m_pGAParameter->setKeyValue("[GA_Cross_Mode]","UNARITHMETIC");
      else{
          Log::Error<<mtr << " command is wrong! setCross_Mode_CParameter!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setCross_Mode!"));
@@ -554,7 +564,7 @@ void CParameter::setCross_Mode(std::string mtr)
 }
 void CParameter::setCross_Num(std::string mtr)
 {
-   m_pGAParameter->setKeyValue("[Cross_Number]",mtr);
+   m_pGAParameter->setKeyValue("[GA_Cross_Number]",mtr);
 }
 void CParameter::setSelect_Mode(std::string mtr)
 {
@@ -565,13 +575,13 @@ void CParameter::setSelect_Mode(std::string mtr)
 ## 4:  mixed
 */
      if(strcasecmp(mtr,"ROULETTE_WHEEL") || std::stoi(mtr)==1 )
-        m_pGAParameter->setKeyValue("[Select_Mode]","ROULETTE_WHEEL");
+        m_pGAParameter->setKeyValue("[GA_Select_Mode]","ROULETTE_WHEEL");
      else if(strcasecmp(mtr,"TOURNAMENT") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Select_Mode]", "TOURNAMENT");
+        m_pGAParameter->setKeyValue("[GA_Select_Mode]", "TOURNAMENT");
      else if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==3)
-        m_pGAParameter->setKeyValue("[Select_Mode]", "RANDOM");
+        m_pGAParameter->setKeyValue("[GA_Select_Mode]", "RANDOM");
      else if(strcasecmp(mtr,"MIXED") || std::stoi(mtr)==4)
-        m_pGAParameter->setKeyValue("[Select_Mode]", "MIXED");
+        m_pGAParameter->setKeyValue("[GA_Select_Mode]", "MIXED");
      else{
          Log::Error<< mtr << " command is wrong! CParameter::setSelect_Mode!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setSelect_Mode."));
@@ -584,9 +594,9 @@ void CParameter::setGene_Formation_Mode(std::string mtr)
 #2: FILE
 */
      if(strcasecmp(mtr,"RANDOM") || std::stoi(mtr)==1)
-        m_pGAParameter->setKeyValue("[Gene_Formation_Mode]","RANDOM");
+        m_pGAParameter->setKeyValue("[GA_Gene_Formation_Mode]","RANDOM");
      else if(strcasecmp(mtr,"FILE") || std::stoi(mtr)==2)
-        m_pGAParameter->setKeyValue("[Gene_Formation_Mode]","FILE");
+        m_pGAParameter->setKeyValue("[GA_Gene_Formation_Mode]","FILE");
      else{
          Log::Error<< mtr << " command is wrong! CParameter::setGene_Formation_Mode!\n";
          boost::throw_exception(std::runtime_error(mtr+ " value format is wrong! Check the file: CParameter::setGene_Formation_Mode."));
@@ -682,9 +692,9 @@ void CParameter::setOutputStructureFormat(std::string mtr)
 }
 bool CParameter::checkIsValidParameters()
 {
-     if( m_pGAParameter->EvaluateEXE()==GAZJUT::GAUSSIAN &&
-        this->simulationMode == CParameter::MOL_2DMATERIAL )
-            return false;
+//     if( m_pGAParameter->EvaluateEXE()==CALCZJUT::GAUSSIAN &&
+//        this->simulationMode == CParameter::MOL_2DMATERIAL )
+//            return false;
 
      if(( simulationMode != CLUSTER && simulationMode != PERIODIC )&&
         ( adso_supp_Input_File.size()==0 || !( supportStructFile!="" && adsorbentStructFile!="" )))

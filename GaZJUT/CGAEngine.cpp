@@ -50,7 +50,6 @@ namespace GAZJUT{
 CGAEngine::CGAEngine(CALCZJUT::CParameter* para)
 :m_pParameter(para)
 {
-    m_pGaparameter = m_pParameter->GaParameter();
 }
 
 CGAEngine::~CGAEngine()
@@ -75,7 +74,8 @@ void CGAEngine::init()
 
    std::vector<std::string> res;
 
-   m_pGaparameter->getKeyValue(res,"[Evaluator_Code]");
+   m_pParameter->GetEvaluateEXE(res);
+
    for(size_t i=0;i<res.size();i++){
        if(res[i]=="VASP")
            m_FitnessCalculator.push_back(new CALCZJUT::CExeVASP(this->m_pParameter));
