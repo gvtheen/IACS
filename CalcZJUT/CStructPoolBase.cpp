@@ -49,7 +49,7 @@ CModelBase* CStructPoolBase::operator[](size_t index)
     }
     return this->m_CalcStructPool[index];
 }
-void CStructPoolBase::GeneVARRange(std::vector<GeneVAR>& mth)
+void CStructPoolBase::VarRangeStructRange(std::vector<VarRangeStruct>& mth)
 {
 
 }

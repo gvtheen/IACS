@@ -3,11 +3,11 @@
 
 #include <vector>
 #include "../Util/Bitset.h"
-#include "../GaZJUT/GaDeclaration.h"
 #include "CModelBase.h"
 #include "../Util/Point-Vector.h"
+#include "../IACS.h"
 
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 using util::Point3;
 using util::Vector3;
 
@@ -41,7 +41,7 @@ class CModel2DSupport:public CModelBase
         //virtual function from CModelBase
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
 
         void createSupport(const Bitset &);
         void createMoleAdsorb(const Bitset &);

@@ -27,6 +27,7 @@
 #include "../Util/log.hpp"
 
 using util::Log;
+using IACSZJUT::VarRangeStruct;
 
 namespace GAZJUT{
 
@@ -37,7 +38,7 @@ CGenome::CGenome()
 	this->m_totalbitNum=0;
 	//pointer
 }
-CGenome::CGenome(std::vector <GeneVAR>&vec_genVal,E_CODE_TYPE codeType,size_t index)
+CGenome::CGenome(std::vector <VarRangeStruct>&vec_genVal,E_CODE_TYPE codeType,size_t index)
 {
 	this->m_codeType = codeType;
 	this->init(vec_genVal);
@@ -45,7 +46,7 @@ CGenome::CGenome(std::vector <GeneVAR>&vec_genVal,E_CODE_TYPE codeType,size_t in
 }
 CGenome::CGenome(CGenome& myGenome)
 {
-	this->init(myGenome.m_GeneVARofGenome);
+	this->init(myGenome.m_VarRangeStructofGenome);
 	std::vector <double> realValue;
 	myGenome.getDecValue(realValue);
     this->updateDecValueGene(realValue);
@@ -191,9 +192,9 @@ size_t CGenome::totalbitNum()
 {
 	return this->m_totalbitNum;
 }
-std::vector <GeneVAR>& CGenome::GeneVARiable()
+std::vector <VarRangeStruct>& CGenome::VarRangeStructiable()
 {
-    return this->m_GeneVARofGenome;
+    return this->m_VarRangeStructofGenome;
 }
 CGenebase* CGenome::extractGene(int i)
 {
@@ -209,7 +210,7 @@ void  CGenome::insertGeneToGenome(CGenebase* mygene)
 	this->m_geneNum=this->m_geneNum+1;
 	this->m_totalbitNum=this->m_geneNum + mygene->bitNum();
 	this->m_Genome.push_back(mygene);
-	this->m_GeneVARofGenome.push_back(*(mygene->m_GeneVAR));
+	this->m_VarRangeStructofGenome.push_back(*(mygene->m_VarRangeStruct));
 
 	if(mygene->codeType!= REAL)
 	  this->concatenateBitsets(this->m_totalgeneofGenome,mygene->bitGene());
@@ -238,14 +239,14 @@ void CGenome::setIndex(size_t m)
 /*
 according to the gene-variable array, all of gene objects were initialized
 */
-void CGenome::init(std::vector <GeneVAR>& vec_genVal)
+void CGenome::init(std::vector <VarRangeStruct>& vec_genVal)
 {
 	this->m_varNumofGenome=vec_genVal.size();
 	this->m_geneNum=m_varNumofGenome;
 	this->m_totalbitNum=0;
 
     // set gene-variable array to vector of gene-var
-    this->m_GeneVARofGenome.assign(vec_genVal.begin(),vec_genVal.end());
+    this->m_VarRangeStructofGenome.assign(vec_genVal.begin(),vec_genVal.end());
 
     for(size_t i=0;i<this->m_varNumofGenome;i++)
 	{
@@ -333,7 +334,7 @@ CGenome::~CGenome()
 	for(size_t i=0;i<m_Genome.size();i++)
         delete m_Genome[i];
 	m_Genome.clear();
-	m_GeneVARofGenome.clear();
+	m_VarRangeStructofGenome.clear();
 	m_totalRealofGenome.clear();
 	m_totalgeneofGenome.clear();
 }

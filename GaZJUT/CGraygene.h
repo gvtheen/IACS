@@ -3,10 +3,11 @@
 #include "CGenebase.h"
 #include "GaDeclaration.h"
 #include "../Util/CRandomgenerator.h"
-
+#include "../IACS.h"
 #include "../Util/Bitset.h"
 
 using util::Bitset;
+using IACSZJUT::VarRangeStruct;
 
 namespace GAZJUT{
 
@@ -14,10 +15,10 @@ class CGraygene:public CGenebase
 {
     public:
         CGraygene();
-        CGraygene(GeneVAR*);
+        CGraygene(VarRangeStruct*);
         virtual ~CGraygene();
         virtual double decode();
-        virtual void init(GeneVAR*);
+        virtual void init(VarRangeStruct*);
         virtual void updatecode(double);
         virtual Bitset& bitGene();
         virtual size_t bitNum();

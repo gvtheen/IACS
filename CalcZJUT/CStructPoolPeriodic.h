@@ -17,7 +17,7 @@ class CStructPoolPeriodic:public CStructPoolBase
         virtual ~CStructPoolPeriodic();
         //virtual function
         void init();
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
        //normal function
         void Initialization(const std::string& chemicalformulaStr);          // initialize from chemical formula
         void Initialization(const char* chemicalformulaStr);                 // initialize from chemical formula

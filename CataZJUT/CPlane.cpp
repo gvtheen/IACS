@@ -78,32 +78,33 @@ void CPlane::CreatePlane(Eigen::MatrixXd* CurrentPointMat)
         Eigen::MatrixXd* xy1Mat = new (Eigen::MatrixXd)(3,3);
           Eigen::MatrixXd* zMat = new (Eigen::MatrixXd)(3,1);
         xy1Mat->setOnes();
-        double xx=0,xy=0,yy=0,x=0,y=0,xz=0,yz=0,z=0;
+        double sum_xx=0,sum_yy=0,sum_xy=0,sum_xz=0,sum_yz=0,sum_x=0,sum_y=0,sum_z=0;
         //x=(*m_pPointsToPlane)(i,0)
         //y=(*m_pPointsToPlane)(i,1)
         //z=(*m_pPointsToPlane)(i,2)
         for(size_t i=0;i<rowNum;i++){
-           xx=xx + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,0);
-           yy=yy + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,1);
+           sum_xx=sum_xx + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,0);
+           sum_yy=sum_yy + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,1);
 
-           xy=xy + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,1);
-           xz=xz + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,2);
-           yz=yz + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,2);
+           sum_xy=sum_xy + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,1);
+           sum_xz=sum_xz + (*m_pPointsToPlane)(i,0)*(*m_pPointsToPlane)(i,2);
+           sum_yz=sum_yz + (*m_pPointsToPlane)(i,1)*(*m_pPointsToPlane)(i,2);
 
-           x=x+(*m_pPointsToPlane)(i,0);
-           y=y+(*m_pPointsToPlane)(i,1);
-           z=z+(*m_pPointsToPlane)(i,2);
+           sum_x=sum_x+(*m_pPointsToPlane)(i,0);
+           sum_y=sum_y+(*m_pPointsToPlane)(i,1);
+           sum_z=sum_z+(*m_pPointsToPlane)(i,2);
         }
 
-        (*xy1Mat)<<xx,xy,x,
-                   xy,yy,y,
-                   x,y,rowNum;
-          (*zMat)<<xz,yz,z;          //ax+by+c=z    res = [a,b,c]^T
+        (*xy1Mat)<<sum_xx,sum_xy,sum_x,
+                   sum_xy,sum_yy,sum_y,
+                   sum_x,sum_y,rowNum;
+          (*zMat)<<sum_xz,sum_yz,sum_z;          //ax+by+c=z    res = [a,b,c]^T
+
         Eigen::Vector3d res = xy1Mat->colPivHouseholderQr().solve(*zMat);
 
           (*m_pEquation)<< res(0),res(1),-1.0,res(2);     //c
         (*m_pNormalLine)<< res(0),res(1),-1.0;
-        this->m_pNormalLine->normalize();
+        //this->m_pNormalLine->normalize();
     delete xy1Mat;
     delete zMat;
 }
@@ -268,7 +269,7 @@ void CPlane::outputPlane()
      if(std::fabs((*m_pEquation)(0))!=1)
         Log::Output<<"  "<<(*m_pEquation)(1)<<"*x";
      else if( (*m_pEquation)(0)== -1 )
-        Log::Output<<"-x";
+        Log::Output<<"- x";
      else
         Log::Output<<"x";
 
@@ -278,19 +279,19 @@ void CPlane::outputPlane()
         else
             Log::Output<<" + "<<(*m_pEquation)(1)<<"*y";
      }else if( (*m_pEquation)(1)== -1 )
-        Log::Output<<"- y";
+        Log::Output<<" - y";
       else
-        Log::Output<<"+ y";
+        Log::Output<<" + y";
 
      if(std::fabs((*m_pEquation)(2))!=1){
         if((*m_pEquation)(2)<0)
             Log::Output<<"  "<<(*m_pEquation)(2)<<"*z";
         else
             Log::Output<<" + "<<(*m_pEquation)(2)<<"*z";
-     }else if( (*m_pEquation)(1)== -1 )
-        Log::Output<<"- z";
+     }else if( (*m_pEquation)(2)== -1 )
+        Log::Output<<" - z";
      else
-        Log::Output<<"+ z";
+        Log::Output<<" + z";
 
      if((*m_pEquation)(3)<0)
         Log::Output<<"  "<<(*m_pEquation)(3)<<" = 0";
@@ -301,20 +302,34 @@ void CPlane::outputPlane()
 }
 bool CPlane::operator==(CPlane& other)
 {
-    double conver_diff_angle=30.0,conver_diff2=1.0;
+    double conver_diff_angle=10.0,diff_value=1.0;
+    Eigen::Vector4d equation_1 = other.Equation();
+    Eigen::Vector4d equation_2 = *m_pEquation;
 
-    if( CATAZJUT::Geometry::angle(*m_pNormalLine,other.NormalLine())>conver_diff_angle )
-        return false;
-    else{
-        Eigen::Vector4d equation_1 = other.Equation();
-        Eigen::Vector4d equation_2 = *m_pEquation;
-        equation_1.normalize();
-        equation_2.normalize();
-        if((equation_1(0)*equation_2(3)-equation_1(3)*equation_2(0)) < 0.5 )
-           return true;
-        else
+    if(equation_1(2)!=equation_2(2)){
+        if(equation_2(2)==0)
            return false;
+        else{
+            double ratio=equation_1(2)/equation_2(2);
+            equation_1=equation_1/ratio;
+        }
     }
+    if( CATAZJUT::Geometry::angle(*m_pNormalLine,other.NormalLine())<conver_diff_angle
+       && (equation_1(3)-equation_2(3))<diff_value)
+        return true;
+    else
+        return false;
+
+    double res1,res2,res3;
+
+    res1=equation_1(0)-equation_2(0);
+    res2=equation_1(1)-equation_2(1);
+    res3=equation_1(3)-equation_2(3);
+    if( res1<diff_value && res2<diff_value && res3<diff_value)
+        return true;
+    else
+        return false;
+
 }
 CPlane::~CPlane()
 {

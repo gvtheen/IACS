@@ -28,7 +28,7 @@ CRealgene::CRealgene()
 {
     this->codeType=REAL;
 }
-CRealgene::CRealgene(GeneVAR*myVal)
+CRealgene::CRealgene(VarRangeStruct*myVal)
 :CGenebase(myVal)
 {
     this->init(myVal);
@@ -43,16 +43,16 @@ double CRealgene::decode()
 {
     return this->m_value;
 }
-void CRealgene::init(GeneVAR *myVal)
+void CRealgene::init(VarRangeStruct *myVal)
 {
     double low,high;
     assert(myVal);
 
-    this->m_GeneVAR=myVal;
+    this->m_VarRangeStruct=myVal;
 
     util::CRandomgenerator *rndgenerator=new util::CRandomgenerator();
-    low =this->m_GeneVAR->min;
-    high=this->m_GeneVAR->max;
+    low =this->m_VarRangeStruct->min;
+    high=this->m_VarRangeStruct->max;
     this->m_value=low + (high-low)*rndgenerator->uniformRandom01(100);
 }
 void CRealgene::updatecode(double value)

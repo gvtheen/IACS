@@ -80,7 +80,7 @@ CModelCluster::~CModelCluster()
 CModelBase* CModelCluster::clone()
 {
      CModelCluster* res = new CModelCluster(this->m_pParameter,0);
-     res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
+     res->m_VarRangeStruct.assign(this->m_VarRangeStruct.begin(),this->m_VarRangeStruct.end());
      res->m_IsNeedRandomInit = this->RandomInitState();
      res->setChemicalFormula(this->chemicalFormula());
 
@@ -126,7 +126,7 @@ void CModelCluster::getGeneValuefromStruct(std::vector<double>& currentGeneRealV
        currentGeneRealValue.push_back(tempPoint(2,0));
     }
 }
-void CModelCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
+void CModelCluster::VarRangeStructRange(std::vector<VarRangeStruct>& currentVarRangeStructible)
 {
 //   double max_radius=0;
 //   Vector4 tempVect;
@@ -134,7 +134,7 @@ void CModelCluster::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
 //   tempVect=util::SphereEquationFromPoints(this->m_pPeriodicFramework->coordinates()->coordinates());
 //   max_radius=tempVect(3,0);
 //   max_radius = max_radius + 0.50;
-//   currentGeneVARible.push_back({-1*max_radius, max_radius, 0.001});
+//   currentVarRangeStructible.push_back({-1*max_radius, max_radius, 0.001});
 }
 void CModelCluster::eliminateCloseContacts(CATAZJUT::CConfigurationBase* curr_struct,double distanceCutOff)
 {

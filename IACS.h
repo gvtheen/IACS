@@ -14,4 +14,14 @@
 #define PLANE_DIFF_CONVERGENCE 2
 
 
+namespace IACSZJUT{
+
+typedef struct str_001{
+	double min;
+	double max;
+	double accuracy;
+}VarRangeStruct;
+
+}
+
 #endif

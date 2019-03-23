@@ -6,7 +6,10 @@
 #include "CGenebase.h"
 #include "GaDeclaration.h"
 #include "../Util/Bitset.h"
+#include "../IACS.h"
 
+
+using IACSZJUT::VarRangeStruct;
 using util::Bitset;
 
 namespace GAZJUT{
@@ -16,14 +19,14 @@ class CGenome
 	public:
 		//constructor
 		CGenome();
-		CGenome(std::vector<GeneVAR>&, E_CODE_TYPE,size_t);
+		CGenome(std::vector<VarRangeStruct>&, E_CODE_TYPE,size_t);
 		CGenome(CGenome&);
 		~CGenome();
 		//operations function
 		CGenome* clone();
 		CGenebase* extractGene(int);
 		void   insertGeneToGenome(CGenebase*);
-		void   init(std::vector <GeneVAR>&);
+		void   init(std::vector <VarRangeStruct>&);
 		void   init();
 		//input output of varible
 		double fitness();
@@ -41,7 +44,7 @@ class CGenome
 		double relativefitness();
 		void   setRelativefitness(const double);
 
-		std::vector <GeneVAR>&     GeneVARiable();       //return varible
+		std::vector <VarRangeStruct>&     VarRangeStructiable();       //return varible
         void getDecValue(std::vector <double>&);
 
 		void updateDecValueGene(std::vector <double>&);              // after Genetor operatoration, it will be updated.
@@ -73,7 +76,7 @@ class CGenome
 		std::vector <CGenebase*>    m_Genome;
 		Bitset                      m_totalgeneofGenome;   // for bit  gray gene;
 		std::vector <double>        m_totalRealofGenome;   // for real
-		std::vector <GeneVAR>       m_GeneVARofGenome;
+		std::vector <VarRangeStruct>       m_VarRangeStructofGenome;
 		          E_CODE_TYPE       m_codeType;
                        size_t       m_totalbitNum;
                        size_t       m_geneNum;

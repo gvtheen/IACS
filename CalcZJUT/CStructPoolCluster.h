@@ -2,9 +2,9 @@
 #define CModelClusterSTRUCTPOOL_H
 #include <vector>
 #include "CStructPoolBase.h"
-#include "../GaZJUT/GaDeclaration.h"
+#include "../IACS.h"
 
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 
 namespace CATAZJUT{
   class CConfigurationBase;
@@ -21,7 +21,7 @@ class CStructPoolCluster:public CStructPoolBase
 
         //virtual function
         void init();
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
 
         void Initialization(const std::string& chemicalformulaStr);          // initialize from chemical formula
         void Initialization(const char* chemicalformulaStr);                 // initialize from chemical formula

@@ -24,9 +24,9 @@
 namespace GAZJUT{
 CGenebase::CGenebase()
 {
-    this->m_GeneVAR=nullptr;
+    this->m_VarRangeStruct=nullptr;
 }
-CGenebase::CGenebase(GeneVAR* var)
+CGenebase::CGenebase(VarRangeStruct* var)
 {
     this->init(var);
 }
@@ -34,9 +34,9 @@ double CGenebase::decode()
 {
     return this->m_value;
 }
-void CGenebase::init(GeneVAR* var)
+void CGenebase::init(VarRangeStruct* var)
 {
-    m_GeneVAR=var;
+    m_VarRangeStruct=var;
 }
 void CGenebase::updatecode(double m)
 {
@@ -61,7 +61,7 @@ size_t CGenebase::bitNum()
 }
 CGenebase::~CGenebase()
 {
-    //delete this->m_GeneVAR;
+    //delete this->m_VarRangeStruct;
 }
 
 

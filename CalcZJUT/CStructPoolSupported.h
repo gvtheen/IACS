@@ -17,7 +17,7 @@ class CStructPoolSupported:public CStructPoolBase
         virtual ~CStructPoolSupported();
 
         void init();
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
 
 
     protected:

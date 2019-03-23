@@ -76,7 +76,7 @@ void CMutator::run( CGpopulation* P_CurrentPopulation )
        }else{                      //real gene
            size_t geneNum = (*P_CurrentPopulation)[i]->geneNum();
            std::vector <double>& currentGeneofGenome = (*P_CurrentPopulation)[i]->totalrealGene();
-           std::vector <GeneVAR>& varofGenome= (*P_CurrentPopulation)[i]->GeneVARiable();
+           std::vector <VarRangeStruct>& varofGenome= (*P_CurrentPopulation)[i]->VarRangeStructiable();
 
            for(size_t j=0;j<geneNum;j++)
              if ( Rndgenerator->uniformRandom01(i*j) > Pm )

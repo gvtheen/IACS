@@ -33,25 +33,26 @@ CDefScaleBoltzStart           = 40.0
 */
 
 using util::Log;
+using IACSZJUT::VarRangeStruct;
 //using namespace GAZJUT;
 
 namespace GAZJUT{
 
 CGaparameter::CGaparameter()
 {
-    this->m_GeneVARofPopulation.clear();
+    this->m_VarRangeofPopulation.clear();
     this->defaultInit();
 }
 
-CGaparameter::CGaparameter(std::vector <GAZJUT::GeneVAR>& myVar)
+CGaparameter::CGaparameter(std::vector <VarRangeStruct>& myVar)
 {
-    this->m_GeneVARofPopulation.assign(myVar.begin(),myVar.end());
+    this->m_VarRangeofPopulation.assign(myVar.begin(),myVar.end());
     this->defaultInit();
 }
 CGaparameter::~CGaparameter()
 {
     delete m_mapCmdString;
-    m_GeneVARofPopulation.clear();
+    m_VarRangeofPopulation.clear();
 }
 
 CGaparameter::CGaparameter( CGaparameter& other)
@@ -59,7 +60,7 @@ CGaparameter::CGaparameter( CGaparameter& other)
     assert(&other);
     assert(other.m_mapCmdString);
 
-    this->m_GeneVARofPopulation.assign(other.GeneVAR().begin(), other.GeneVAR().end());
+    this->m_VarRangeofPopulation.assign(other.VarRange().begin(), other.VarRange().end());
 
     this->defaultInit();
 
@@ -79,7 +80,7 @@ CGaparameter& CGaparameter::operator=( CGaparameter& other)
     this->m_mapCmdString = new (std::multimap <std::string, std::string>);
     this->m_mapCmdString->insert(other.m_mapCmdString->begin(),other.m_mapCmdString->end());
 
-    this->m_GeneVARofPopulation.assign(other.GeneVAR().begin(), other.GeneVAR().end());
+    this->m_VarRangeofPopulation.assign(other.VarRange().begin(), other.VarRange().end());
 
     return *this;
 }
@@ -108,10 +109,7 @@ void CGaparameter::add_Curr_Generation()
 {
     this->Curr_Generation = this->Curr_Generation + 1;
 }
-std::vector <GeneVAR>& CGaparameter::GeneVAR()
-{
-    return this->m_GeneVARofPopulation;
-}
+
 size_t CGaparameter::PopNum()
 {
      std::string keyValue=this->getKeyValue("[GA_Population_Size]");
@@ -151,30 +149,34 @@ size_t CGaparameter::CrossNum()
      }
      return d_value;
 }
-void CGaparameter::setGeneVAR(std::vector <GAZJUT::GeneVAR>& myVar)
+void CGaparameter::setVarRange(std::vector <VarRangeStruct>& myVar)
 {
     assert(&myVar);
 
-    if( m_GeneVARofPopulation.size()>0 )
-       m_GeneVARofPopulation.clear();
+    if( m_VarRangeofPopulation.size()>0 )
+       m_VarRangeofPopulation.clear();
 
     for(size_t i=0;i<myVar.size();i++)
-        m_GeneVARofPopulation.push_back(myVar[i]);
+        m_VarRangeofPopulation.push_back(myVar[i]);
 
-    checkGeneVAR();
+    checkVarRange();
 }
-void CGaparameter::checkGeneVAR()
+std::vector <VarRangeStruct>& CGaparameter::VarRange()
 {
-    std::vector<GAZJUT::GeneVAR>::iterator it;
-    for(it=m_GeneVARofPopulation.begin();it<m_GeneVARofPopulation.end();it++)
+    return this->m_VarRangeofPopulation;
+}
+void CGaparameter::checkVarRange()
+{
+    std::vector<VarRangeStruct>::iterator it;
+    for(it=m_VarRangeofPopulation.begin();it<m_VarRangeofPopulation.end();it++)
     {
         if((it->min) > (it->max))
            std::swap(it->min,it->max);     //call std::swap(x,y) function
 
         if((it->accuracy)==0.0)
         {
-	       Log::Error<< "checkGeneVAR! CGaparameter_checkGeneVAR!\n";
-           boost::throw_exception(std::runtime_error("Variable value is error! CGaparameter_checkGeneVAR!\n"));
+	       Log::Error<< "checkVarRangeStruct! CGaparameter_checkVarRangeStruct!\n";
+           boost::throw_exception(std::runtime_error("Variable value is error! CGaparameter_checkVarRangeStruct!\n"));
         }else if(it->accuracy<0.001){
            Log::Warn<<std::endl;
            Log::Warn<<"High accuracy of gene variable would result in huge searching space!!!!"<<std::endl;

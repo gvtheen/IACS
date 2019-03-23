@@ -49,47 +49,29 @@ CModelClusterSupport::CModelClusterSupport(CParameter* mPara,
     m_pAdsorbMolecule = nullptr;
     m_pCrystalPlanes = nullptr;
     m_ClusterModelPerceived = false;
-    m_ClusterModelType=CModelClusterSupport::POLYHEDRON;
+    //m_ClusterModelType=CModelClusterSupport::POLYHEDRON;
 }
 CModelClusterSupport::CModelClusterSupport(CModelClusterSupport& obj)
 :CModelBase(obj)
 {
-   #ifdef DEBUG
-        Log::Debug<<"CModelClusterSupport::CModelClusterSupport()" << std::endl;
-   #endif // DEBU
+//   #ifdef DEBUG
+//        Log::Debug<<"CModelClusterSupport::CModelClusterSupport()" << std::endl;
+//   #endif // DEBU
    this->createSupport(obj.SupportBit());
    this->createMoleAdsorb(obj.MoleAdsorbBit());
-    #ifdef DEBUG
-        Log::Debug<<"1-CModelClusterSupport::CModelClusterSupport()" << std::endl;
-   #endif // DEBU
+//   #ifdef DEBUG
+//        Log::Debug<<"1-CModelClusterSupport::CModelClusterSupport()" << std::endl;
+//   #endif // DEBU
    if(obj.crystalPlanes()!=nullptr)
      this->setCrystalPlanes(obj.crystalPlanes());
    this->setRandomInitState(obj.RandomInitState());
 
-   #ifdef DEBUG
-        Log::Debug<<"2-CModelClusterSupport::CModelClusterSupport()" << std::endl;
-   #endif // DEBU
+//   #ifdef DEBUG
+//        Log::Debug<<"2-CModelClusterSupport::CModelClusterSupport()" << std::endl;
+//   #endif // DEBU
 }
 CModelBase* CModelClusterSupport::clone()
 {
-//   #ifdef DEBUG
-//        Log::Debug<<"CModelClusterSupport::clone()" << std::endl;
-//   #endif // DEBU
-//   CModelClusterSupport* res = new CModelClusterSupport(this->m_pParameter,
-//                                                        this->m_ppBackupPeriodicFramework,0);
-//   if(!this->m_GeneVAR.empty())
-//     res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
-//   #ifdef DEBUG
-//        Log::Debug<<"2-CModelClusterSupport::clone()" << std::endl;
-//   #endif // DEBU
-//   res->createMoleAdsorb(this->MoleAdsorbBit());
-//   res->createSupport(this->SupportBit());
-//   #ifdef DEBUG
-//        Log::Debug<<"3-CModelClusterSupport::clone()" << std::endl;
-//   #endif // DEBU
-//   res->setRandomInitState(this->RandomInitState());
-//   res->setCrystalPlanes(this->crystalPlanes());
-//   return res;
       return new CModelClusterSupport(*this);
 }
 CModelClusterSupport::~CModelClusterSupport()
@@ -166,10 +148,10 @@ void CModelClusterSupport::getGeneValuefromStruct(std::vector<double>& currentGe
 {
 
 }
-void CModelClusterSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
+void CModelClusterSupport::VarRangeStructRange(std::vector<VarRangeStruct>& currentVarRangeStructible)
 {
-   if(currentGeneVARible.size()!=0)
-       currentGeneVARible.clear();  // clear all data of in currentGeneVARible
+   if(currentVarRangeStructible.size()!=0)
+       currentVarRangeStructible.clear();  // clear all data of in currentVarRangeStructible
 
    if( !this->m_ClusterModelPerceived )
         perceiveClusterModel();
@@ -177,69 +159,71 @@ void CModelClusterSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible
    if(m_ClusterModelType==CModelClusterSupport::POLYHEDRON){
     // index of crystal planes in the cluster.                    1st gene descriptor.
     // max is m_pCrystalPlanes->crystalPlaneNum() - 1; substracting 1 is necessary!
-        currentGeneVARible.push_back({0,m_pCrystalPlanes->crystalPlaneNum()-1.0,0.5});
+        currentVarRangeStructible.push_back({0,m_pCrystalPlanes->crystalPlaneNum()-1.0,0.5});
 
         // Height the adsorbing molecule on the index crystal plane.  2nd gene descriptor.
-        currentGeneVARible.push_back({1.5,3.0,0.01});
+        currentVarRangeStructible.push_back({1.5,3.0,0.01});
         // ratio
-        currentGeneVARible.push_back({0.0,1.0,0.01});
+        currentVarRangeStructible.push_back({0.0,1.0,0.01});
         // angle
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
 
         //rotation axis
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
         //rotation angle
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
    }else{  //CModelClusterSupport::SPHERE
         // 1st gene:  height: the adsorbing molecule on the index crystal plane.
-        currentGeneVARible.push_back({1.5,3.0,0.01});
+        currentVarRangeStructible.push_back({1.5,3.0,0.01});
         // 2nd gene:    phi: [0,2*PI]
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
         // 3rd gene thea: [0,PI]
-        currentGeneVARible.push_back({0.0,Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,Pi,0.01});
 
         // following four genes:  rotation axis and angle of adsorbing molecule over the sphere.
-
         //rotation axis
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
         //rotation angle
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
    }
 
 }
 void CModelClusterSupport::perceiveClusterModel()
 {
-    #ifdef DEBUG
-                     Log::Debug<<"CModelClusterSupport::perceiveClusterModel()" << std::endl;
-    #endif // DEBU
-
+//    #ifdef DEBUG
+//                     Log::Debug<<"CModelClusterSupport::perceiveClusterModel()" << std::endl;
+//    #endif // DEBU
     if(m_ClusterModelType==CModelClusterSupport::POLYHEDRON){
         std::map<std::string,size_t> maxCoordNum;
         this->m_pPeriodicFramework->maxCoordinationNum(maxCoordNum);
 
         //Eigen::MatrixXd *atom_Coordinate =  new (Eigen::MatrixXd)(m_pSupport->atomCount(),3);
-        std::vector<Point3> *atom_Coordinate=new std::vector<Point3>();
-        size_t index=0;
+        std::vector<size_t> atom_Coordinate;
+
         Point3 tempP;
         #ifdef DEBUG
-                     Log::Debug<<"21-CModelClusterSupport::perceiveClusterModel()" << std::endl;
+            Log::Debug<<"21-CModelClusterSupport::perceiveClusterModel()" << std::endl;
         #endif // DEBU
-        foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms()){
-          if(atom_s->bondCount()<maxCoordNum[atom_s->Symbol()]){
-             atom_Coordinate->push_back(atom_s->position());
-             index++;
-            }
-         }
-         #ifdef DEBUG
-                     Log::Debug<<"22-CModelClusterSupport::perceiveClusterModel()" << std::endl;
-         #endif // DEBU
-          this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(*atom_Coordinate);
-          this->m_pCrystalPlanes->CreateCrystalPlane();
-          this->m_pCrystalPlanes->outputCrystalPlane();
+        foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms())
+           if(atom_s->bondCount()<maxCoordNum[atom_s->Symbol()])
+              atom_Coordinate.push_back(atom_s->index());
+
+        if(atom_Coordinate.size()<4){
+           foreach(CATAZJUT::CAtom* atom_s,this->m_pSupport->atoms())
+                if(atom_s->bondCount()==maxCoordNum[atom_s->Symbol()])
+                   atom_Coordinate.push_back(atom_s->index());
+        }
+        #ifdef DEBUG
+            Log::Debug<<"22-CModelClusterSupport::perceiveClusterModel():" <<atom_Coordinate.size()<< std::endl;
+        #endif // DEBU
+        this->m_pCrystalPlanes =  new CATAZJUT::CCrystalPlanes(atom_Coordinate,this->m_pPeriodicFramework);
+        this->m_pCrystalPlanes->CreateCrystalPlane();
+        this->m_pCrystalPlanes->outputCrystalPlane();
+
     }else{  //CModelClusterSupport::SPHERE
         Eigen::MatrixXd* coordinatePoints = new Eigen::MatrixXd(m_pSupport->atomCount(),3);
         #ifdef DEBUG
@@ -258,6 +242,7 @@ void CModelClusterSupport::perceiveClusterModel()
                      Log::Debug<<"4-CModelClusterSupport::perceiveClusterModel()" << std::endl;
         #endif // DEBU
         this->m_pSphere->CreateSphere();
+        this->m_pSphere->output();
         delete coordinatePoints;
     }
     #ifdef DEBUG
@@ -285,8 +270,10 @@ void CModelClusterSupport::eliminateCloseContacts(double distanceCutOff)
                 modify_num++;
             }
         }
-       if(modify_num>256)
+       if(modify_num>256){
+         Log::Warn<<"Cycle of function is more than 65536 in CModelClusterSupport::eliminateCloseContacts!"<<std::endl;
          break;
+       }
     }
 }
 Bitset CModelClusterSupport::SupportBit()

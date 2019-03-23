@@ -3,7 +3,10 @@
 #include<vector>
 #include "GaDeclaration.h"
 #include "../Util/Bitset.h"
+#include "../IACS.h"
 
+
+using IACSZJUT::VarRangeStruct;
 using util::Bitset;
 
 namespace GAZJUT{
@@ -12,10 +15,10 @@ class CGenebase
 {
     public:
         CGenebase();
-        CGenebase(GeneVAR*);
+        CGenebase(VarRangeStruct*);
         virtual ~CGenebase();
         virtual double decode();
-        virtual void init(GeneVAR*);
+        virtual void init(VarRangeStruct*);
         virtual void updatecode(double);
         virtual size_t bitNum();
         virtual Bitset& bitGene();
@@ -23,7 +26,7 @@ class CGenebase
         double  value();
     public:
         double      m_value;
-        GeneVAR    *m_GeneVAR;
+        VarRangeStruct    *m_VarRangeStruct;
         E_CODE_TYPE codeType;
 
 };

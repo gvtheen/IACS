@@ -20,10 +20,14 @@
 ******************************************************************************/
 #include<cmath>
 #include "../IACS.h"
+#include "CAtom.h"
 #include "CCrystalPlanes.h"
+#include "CConfigurationBase.h"
 #include "../Util/log.hpp"
 #include "../Util/Bitset.h"
+#include "../Util/Point-Vector.h"
 
+using util::Point3;
 using util::Log;
 
 namespace CATAZJUT{
@@ -32,18 +36,26 @@ CCrystalPlanes::CCrystalPlanes()
 {
     //ctor
 }
-CCrystalPlanes::CCrystalPlanes(std::vector<Point3>& tmpVec,double m_Value)
+CCrystalPlanes::CCrystalPlanes(std::vector<size_t>& index_Vect,CConfigurationBase* tmpConfigurationBase)
 {
-    assert(tmpVec.size()>0);
+    assert(index_Vect.size()>=3);
+    assert(tmpConfigurationBase);
 
-    m_PointsMat= new Eigen::MatrixXd(tmpVec.size(),3);
-    for(size_t i=0;i<tmpVec.size();i++){
-         (*m_PointsMat)(i,0)=tmpVec[i](0);
-         (*m_PointsMat)(i,1)=tmpVec[i](1);
-         (*m_PointsMat)(i,2)=tmpVec[i](2);
+    this->m_pCConfigurationBase=tmpConfigurationBase;
+
+    this->m_indexInConfig.assign(index_Vect.begin(),index_Vect.end());
+
+    m_PointsMat= new Eigen::MatrixXd(index_Vect.size(),3);
+    Point3 tmpPoint;
+    for(size_t i=0;i<m_indexInConfig.size();i++){
+         tmpPoint=this->m_pCConfigurationBase->atom(m_indexInConfig[i])->position();
+
+         (*m_PointsMat)(i,0)=tmpPoint(0);
+         (*m_PointsMat)(i,1)=tmpPoint(1);
+         (*m_PointsMat)(i,2)=tmpPoint(2);
     }
 
-    mDistance_Cutoff = m_Value;
+
 }
 CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)
 {
@@ -53,6 +65,7 @@ CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)
    this->SetDistanceCutoff(tmpCryPlane.DistanceCutoff());
    this->SetPointsMat(tmpCryPlane.PointsOfMat());
    this->SetLatticPlane(tmpCryPlane.LatticePlane());
+   this->setConfigurationBase(tmpCryPlane.ConfigurationBase());
    #ifdef DEBUG
         Log::Debug<<"2-CCrystalPlanes::CCrystalPlanes(CCrystalPlanes& tmpCryPlane)" << std::endl;
    #endif
@@ -96,6 +109,15 @@ double CCrystalPlanes::DistanceCutoff()
 {
     return this->mDistance_Cutoff;
 }
+CConfigurationBase* CCrystalPlanes::ConfigurationBase()
+{
+    return this->m_pCConfigurationBase;
+}
+void CCrystalPlanes::setConfigurationBase( CConfigurationBase* mbf)
+{
+   this->m_pCConfigurationBase=mbf;
+}
+
 std::vector<CPlane*>& CCrystalPlanes::LatticePlane()
 {
     return this->m_Plane;
@@ -115,28 +137,35 @@ size_t CCrystalPlanes::crystalPlaneNum()
 void CCrystalPlanes::CreateCrystalPlane()
 {
     size_t rowN = m_PointsMat->rows();
-    std::vector<bool> matIndex;
-    for(size_t i=0;i<rowN;i++)
-        matIndex.push_back(false);
+    util::Bitset matIndex(rowN);
+    matIndex.set(false);
 
     Eigen::MatrixXd *pointsMat = new (Eigen::MatrixXd)(3,3);
     #ifdef DEBUG
-                     Log::Debug<<"CCrystalPlanes::CreateCrystalPlane() ROWN:"<<rowN << std::endl;
+        Log::Debug<<"CCrystalPlanes::CreateCrystalPlane() ROWN:"<<rowN << std::endl;
     #endif // DEBU
     std::vector<size_t> selectedPoints;
-
     //this->m_Plane = new (std::vector<CPlane*>);
     //this->m_pPointsInIndividualPlanes = new (std::vector<Eigen::MatrixXd*>);
     for(size_t i=0;i<rowN;i++)
-      for(size_t j=0;j<rowN;j++)
-       for(size_t k=0;k<rowN;k++){
+      for(size_t j=i+1;j<rowN;j++)
+       for(size_t k=j+1;k<rowN;k++){
+
               if(IsInclude3PointsInExitPlane(i,j,k))
                  continue;
+
+              if(IsAdjecentPointer(i,j,k)==false)
+                 continue;
+
+              matIndex.set(false);
 
               selectedPoints.clear();
               selectedPoints.push_back(i);
               selectedPoints.push_back(j);
               selectedPoints.push_back(k);
+              matIndex.set(i,true);
+              matIndex.set(j,true);
+              matIndex.set(k,true);
               (*pointsMat).row(0)=m_PointsMat->row(i);
               (*pointsMat).row(1)=m_PointsMat->row(j);
               (*pointsMat).row(2)=m_PointsMat->row(k);
@@ -147,17 +176,17 @@ void CCrystalPlanes::CreateCrystalPlane()
            CPlane *newPlane = new CPlane();
            newPlane->CreatePlane(pointsMat);
 
-           if(CheckIsPlane(*newPlane,selectedPoints,matIndex)==true){
+           if(CheckIsCrystalPlane(*newPlane,selectedPoints,matIndex)==true){
                //collecting the points for newPlane.
-               int rowsNum=pointsMat->rows()+selectedPoints.size();
+               int rowsNum=selectedPoints.size();
                Eigen::MatrixXd* tempMat = new (Eigen::MatrixXd)(rowsNum,3);
-               for(int j=0;j<pointsMat->rows();j++)
-                  tempMat->row(j) = pointsMat->row(j);
+               //for(int j=0;j<pointsMat->rows();j++)
+                //  tempMat->row(j) = pointsMat->row(j);
 
-               int start = pointsMat->rows();
+              // int start = pointsMat->rows();
                for(size_t j=0;j<selectedPoints.size();j++){
-                  matIndex.at(selectedPoints[j])= true;
-                  tempMat->row(start+j) = m_PointsMat->row(selectedPoints[j]);
+                  //matIndex.at(selectedPoints[j])= true;
+                  tempMat->row(j) = m_PointsMat->row(selectedPoints[j]);
                }
 
                bool isNewPlane=true;
@@ -175,8 +204,6 @@ void CCrystalPlanes::CreateCrystalPlane()
                }
                //clear the content of selectedPoints.
                selectedPoints.clear();
-
-
            }else
                delete newPlane;
      }
@@ -219,7 +246,7 @@ bool CCrystalPlanes::IsInclude3PointsInExitPlane(size_t m,size_t n,size_t h)
 bool CCrystalPlanes::IsOnLine(Eigen::MatrixXd& mMat)
 {
    Point3 a,b,c;
-   double eps = 1.0;
+   double eps = 0.5;
    a = mMat.col(0);
    b = mMat.col(1);
    c = mMat.col(2);
@@ -228,18 +255,35 @@ bool CCrystalPlanes::IsOnLine(Eigen::MatrixXd& mMat)
    else
       return false;
 }
-bool CCrystalPlanes::CheckIsPlane(CPlane& tempPlane,std::vector<size_t> &pIindex,std::vector<bool>& matIndex)
+bool CCrystalPlanes::IsAdjecentPointer(size_t i,size_t j,size_t k)
+{
+   CAtom  *atom_i,*atom_j,*atom_k;
+   atom_i=m_pCConfigurationBase->atom(m_indexInConfig[i]);
+   atom_j=m_pCConfigurationBase->atom(m_indexInConfig[j]);
+   atom_k=m_pCConfigurationBase->atom(m_indexInConfig[k]);
+
+   if(atom_i->isBondedTo(atom_j)){
+      if(atom_j->isBondedTo(atom_k)||atom_i->isBondedTo(atom_k))
+         return true;
+      else
+         return false;
+   }else if(atom_j->isBondedTo(atom_k)&& atom_i->isBondedTo(atom_k))
+      return true;
+   else
+      return false;
+}
+bool CCrystalPlanes::CheckIsCrystalPlane(CPlane& tempPlane,std::vector<size_t> &pIindex,util::Bitset& matIndex)
 {
      int rowN = m_PointsMat->rows();
      Point3 temP;
-     bool res=true;
+     bool IsCrystalPlane=true;
      double temp_value;
      std::vector<size_t> AddPInthePlane;
-     double convergence=0.5,Last_Distance=0;
+     double convergence=0.1,Last_Distance=0;
 
-     for(int i=0;i<rowN;i++)
+     for(size_t i=0;i<rowN;i++)
      {
-         if(matIndex.at(i)==true)
+         if(matIndex[i]==1)
              continue;
 
                temP = m_PointsMat->row(i);
@@ -250,7 +294,7 @@ bool CCrystalPlanes::CheckIsPlane(CPlane& tempPlane,std::vector<size_t> &pIindex
             if(Last_Distance==0)
                Last_Distance=temp_value;
             else if(Last_Distance*temp_value<0){
-               res=false;
+               IsCrystalPlane=false;
                break;
             }
          }else
@@ -258,12 +302,12 @@ bool CCrystalPlanes::CheckIsPlane(CPlane& tempPlane,std::vector<size_t> &pIindex
 
      }
 
-     if( res == true )
+     if( IsCrystalPlane == true )
         pIindex.insert(pIindex.end(),AddPInthePlane.begin(),AddPInthePlane.end());
      else
         AddPInthePlane.clear();
 
-     return res;
+     return IsCrystalPlane;
 }
 Point3 CCrystalPlanes::CartesianCoordinateAtGene(size_t crystal_Plane_index,double height,
                                                  double R_radio,double thea_Radian)

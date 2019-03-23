@@ -34,14 +34,6 @@ typedef enum EM08{BINARY=0x8001,
                   GRAY=0x8002,
                   REAL=0x8003}          E_CODE_TYPE;
 
-/*
-Varible of gene
-*/
-typedef struct str_001{
-	double min;
-	double max;
-	double accuracy;
-}GeneVAR;
 
 }
 

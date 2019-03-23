@@ -3,7 +3,9 @@
 #include "CGenebase.h"
 #include "GaDeclaration.h"
 #include "../Util/Bitset.h"
+#include "../IACS.h"
 
+using IACSZJUT::VarRangeStruct;
 using util::Bitset;
 
 namespace GAZJUT{
@@ -12,10 +14,11 @@ class CBinarygene:public CGenebase
 {
     public:
         CBinarygene();
-        CBinarygene(GeneVAR*);
+        CBinarygene(VarRangeStruct*);
         virtual ~CBinarygene();
+
         double decode();
-        void init(GeneVAR*);
+        void init(VarRangeStruct*);
         void updatecode(double);
         Bitset& bitGene();
         size_t bitNum();

@@ -29,7 +29,7 @@ CBinarygene::CBinarygene():CGenebase()
 {
     this->codeType=BINARY;
 }
-CBinarygene::CBinarygene(GeneVAR *myVal):CGenebase(myVal)
+CBinarygene::CBinarygene(VarRangeStruct *myVal):CGenebase(myVal)
 {//ctor
 //    CGenebase::CGenebase(myVal);
     this->init(myVal);
@@ -46,8 +46,8 @@ void CBinarygene::updatecode(double value)
 	int i, m;
 
 	long int TenValue;
-	low=this->m_GeneVAR->min;
-    high=this->m_GeneVAR->max;
+	low=this->m_VarRangeStruct->min;
+    high=this->m_VarRangeStruct->max;
     if (value<low || value>high)
     {
     	util::Log::Error<<"The value exceeds the variable range!"<<"ref: CGene_encode"<<std::endl;
@@ -73,9 +73,9 @@ double CBinarygene::decode()
      int i,m;
      double low,high,sum;
    //  std::cout<<"value of CBinarygene:"<<endl;
-   //  std::cout<<(CGenebase::m_GeneVAR)->max<<endl;
-     low= this->m_GeneVAR->min;
-     high=this->m_GeneVAR->max;
+   //  std::cout<<(CGenebase::m_VarRangeStruct)->max<<endl;
+     low= this->m_VarRangeStruct->min;
+     high=this->m_VarRangeStruct->max;
      sum=0.0;
      m=this->m_bitdata.size();
    //  std::cout<<m<<endl;
@@ -86,12 +86,12 @@ double CBinarygene::decode()
     //std::cout<<"value of CBinarygene:"<<this->m_value<<endl;
      return  this->m_value;
 }
-void CBinarygene::init(GeneVAR*myVal)
+void CBinarygene::init(VarRangeStruct*myVal)
 {
     double rndNum;
     assert(myVal);
 
-    this->m_GeneVAR=myVal;
+    this->m_VarRangeStruct=myVal;
    // using CGeneBase::init(myVal);
     this->m_bitNum = util::calcBitNum(*myVal);
 

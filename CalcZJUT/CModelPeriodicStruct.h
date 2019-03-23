@@ -19,7 +19,7 @@ class CModelPeriodicStruct:public CModelBase
         //virtual function derived from CModelBase
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
 
         std::vector<std::pair<std::string,size_t>>& chemicalFormula();
         void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);

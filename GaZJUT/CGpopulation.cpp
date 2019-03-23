@@ -42,12 +42,12 @@ CGpopulation::CGpopulation(CGaparameter* my_Gaparameter)
 	assert(my_Gaparameter);
     assert(my_Gaparameter->PopNum());
 
-	//firstly built empty vector<GeneVAR>
+	//firstly built empty vector<VarRangeStruct>
 	this->m_pObjGaparameter=my_Gaparameter;
 
 	for(size_t i=0;i<my_Gaparameter->PopNum();i++)
     {
-        CGenome *it = new CGenome(m_pObjGaparameter->GeneVAR(),m_pObjGaparameter->CodeMode(),i);
+        CGenome *it = new CGenome(m_pObjGaparameter->VarRange(),m_pObjGaparameter->CodeMode(),i);
         m_Gpopulation.push_back(it);
     }
 
@@ -242,18 +242,18 @@ void CGpopulation::setPopNum(size_t popnum)
     m_pObjGaparameter->setKeyValue("Population",std::to_string(popnum));
 
 }
-std::vector <GeneVAR>& CGpopulation::GeneVARArray()
+std::vector <VarRangeStruct>& CGpopulation::VarRangeStructArray()
 {
-    return m_pObjGaparameter->GeneVAR();
+    return m_pObjGaparameter->VarRange();
 }
-void CGpopulation::setGeneVARArray(std::vector <GeneVAR>& my_GeneVAR)
+void CGpopulation::setVarRangeStructArray(std::vector <VarRangeStruct>& my_VarRangeStruct)
 {
-    if(&my_GeneVAR==nullptr)
+    if(&my_VarRangeStruct==nullptr)
     {
-        util::Log::Error<<"Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n";
-        boost::throw_exception(std::runtime_error("Pointer of my_GeneVAR is null! CGpopulation_setGeneVARArray!\n"));
+        util::Log::Error<<"Pointer of my_VarRangeStruct is null! CGpopulation_setVarRangeStructArray!\n";
+        boost::throw_exception(std::runtime_error("Pointer of my_VarRangeStruct is null! CGpopulation_setVarRangeStructArray!\n"));
     }
-    m_pObjGaparameter->setGeneVAR(my_GeneVAR);
+    m_pObjGaparameter->setVarRange(my_VarRangeStruct);
 }
 void CGpopulation::modifyPopulation(std::vector <CGenome*> newGenome,size_t pos)
 {

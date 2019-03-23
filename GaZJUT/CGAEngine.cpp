@@ -48,8 +48,9 @@ using CALCZJUT::CParameter;
 namespace GAZJUT{
 
 CGAEngine::CGAEngine(CALCZJUT::CParameter* para)
-:m_pParameter(para)
+:CAIEngineBase(para)
 {
+    m_pGaparameter=this->m_pParameter->GaParameter();
 }
 
 CGAEngine::~CGAEngine()
@@ -121,12 +122,12 @@ void CGAEngine::init()
    */
    this->m_pStructurePool->init();
    //set gene variable range
-   std::vector <GAZJUT::GeneVAR> geneRange;
-   m_pStructurePool->GeneVARRange(geneRange);
+   std::vector <IACSZJUT::VarRangeStruct> geneRange;
+   m_pStructurePool->VarRangeStructRange(geneRange);
    #ifdef DEBUG
       Log::Debug<<"*********** CGAEngine::init()-5***********"<< std::endl;
    #endif
-   this->m_pGaparameter->setGeneVAR(geneRange);
+   this->m_pGaparameter->setVarRange(geneRange);
 
    #ifdef DEBUG
       Log::Debug<<"m_FitnessCalculator:"<<m_FitnessCalculator.size()<<std::endl;

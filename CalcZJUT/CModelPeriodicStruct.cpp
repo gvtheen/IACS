@@ -51,7 +51,7 @@ CModelBase* CModelPeriodicStruct::clone()
 {
     CModelPeriodicStruct* res =  new CModelPeriodicStruct (this->m_pParameter,0);
 
-    res->m_GeneVAR.assign(this->m_GeneVAR.begin(),this->m_GeneVAR.end());
+    res->m_VarRangeStruct.assign(this->m_VarRangeStruct.begin(),this->m_VarRangeStruct.end());
     res->m_IsNeedRandomInit = this->RandomInitState();
     res->setChemicalFormula(this->chemicalFormula());
 
@@ -99,7 +99,7 @@ void CModelPeriodicStruct::getGeneValuefromStruct(std::vector<double>& currentGe
        currentGeneRealValue.push_back(tempPoint(2,0));
     }
 }
-void CModelPeriodicStruct::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
+void CModelPeriodicStruct::VarRangeStructRange(std::vector<VarRangeStruct>& currentVarRangeStructible)
 {
    //
 }

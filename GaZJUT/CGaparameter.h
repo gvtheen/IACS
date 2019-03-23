@@ -4,6 +4,9 @@
 #include <map>
 #include <vector>
 #include "GaDeclaration.h"
+#include "../IACS.h"
+using IACSZJUT::VarRangeStruct;
+
 namespace CALCZJUT{
    class CParameter;
 }
@@ -15,7 +18,7 @@ class CGaparameter
 
         CGaparameter();
         virtual ~CGaparameter();
-        CGaparameter(std::vector <GAZJUT::GeneVAR>&  myVar);
+        CGaparameter(std::vector <VarRangeStruct>&  myVar);
         CGaparameter( CGaparameter& other);
         //operator
         CGaparameter& operator=( CGaparameter& other);
@@ -32,10 +35,10 @@ class CGaparameter
         double MutaProb();
         //void   SetMutaProb(double);
 
-        std::vector <GeneVAR>& GeneVAR();
-        void                   setGeneVAR(std::vector<GAZJUT::GeneVAR>&);
+        std::vector <VarRangeStruct>& VarRange();
+        void                   setVarRange(std::vector<VarRangeStruct>&);
 
-        void                   checkGeneVAR();
+        void                   checkVarRange();
         std::string            GeneFile();
         std::string            InputFile();
         //void   SetGeneFile(string);
@@ -80,7 +83,7 @@ class CGaparameter
     private:
         friend class CALCZJUT::CParameter;
 
-        std::vector<GAZJUT::GeneVAR>     m_GeneVARofPopulation;
+        std::vector<VarRangeStruct>     m_VarRangeofPopulation;
 //        size_t                   m_PopNum;
 //        size_t                   m_GenerationNum;
 //        size_t                   m_CrossNum;

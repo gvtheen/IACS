@@ -111,17 +111,17 @@ CConfigurationBase::CConfigurationBase(CConfigurationBase& other)
 
         Three variables were set during the following process addatom, addbond;
      */
-     #ifdef DEBUG
-      Log::Debug<<"***********CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
-     #endif
+//     #ifdef DEBUG
+//      Log::Debug<<"***********CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//     #endif
      this->m_pCartesian=nullptr;
      m_pBondEvaluator = new CBondTolerance(this);
      this->m_pParameter=other.sysParameter();
      m_pBondEvaluator->setTolerancefactor(m_pParameter->bondToleranceFactor);
      m_pBondEvaluator->setExcludeBond(m_pParameter->excludeBond);
-     #ifdef DEBUG
-      Log::Debug<<"***********2-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
-     #endif
+//     #ifdef DEBUG
+//      Log::Debug<<"***********2-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//     #endif
      if(other.atomCount()!=0){
          this->m_CoordinateType = other.coordinateType();
          this->m_DimensionalType= other.dimensionalType();
@@ -130,24 +130,24 @@ CConfigurationBase::CConfigurationBase(CConfigurationBase& other)
          std::map<const CAtom*,CAtom*> oldToNew;
          foreach(CAtom* atom, other.atoms())
               oldToNew[atom]=this->addAtomCopy(atom);
-         #ifdef DEBUG
-           Log::Debug<<"***********21-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
-         #endif
+//         #ifdef DEBUG
+//           Log::Debug<<"***********21-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//         #endif
          foreach(CBond* bond,other.bonds())
          {
              //CBone* newBond = addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
              this->addBond(oldToNew[bond->atom1()],oldToNew[bond->atom2()]);
          }
-         #ifdef DEBUG
-            Log::Debug<<"***********22-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
-         #endif
+//         #ifdef DEBUG
+//            Log::Debug<<"***********22-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//         #endif
          this->constraintBits = other.constraintBit();
          oldToNew.clear();
      }
 
-     #ifdef DEBUG
-      Log::Debug<<"***********3-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
-     #endif
+//     #ifdef DEBUG
+//      Log::Debug<<"***********3-CConfigurationBase::CConfigurationBase(CConfigurationBase& other)***********"<< std::endl;
+//     #endif
 }
 CConfigurationBase* CConfigurationBase::clone()
 {

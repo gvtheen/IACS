@@ -4,6 +4,11 @@
 #include<vector>
 #include "GaDeclaration.h"
 #include "GaUtilityFunction.h"
+#include "../CAIEngineBase.h"
+#include "../IACS.h"
+
+using IACSZJUT::VarRangeStruct;
+class CAIEngineBase;
 
 namespace CALCZJUT{
     class CExeFitnessInterface;
@@ -17,31 +22,22 @@ class CGpopulation;
 class CGaOperatorBase;
 class CGaparameter;
 
-class CGAEngine
+class CGAEngine:public CAIEngineBase
 {
 	public:
 		CGAEngine(CALCZJUT::CParameter*);
 		~CGAEngine();
 
-//		void SetFitCalculator(CALCZJUT::CExeFitnessInterface*);
-//        CALCZJUT::CExeFitnessInterface* FitnessCalculator()const;
-
-
-
-        void SetGeneVAR(const std::vector<GeneVAR>&);
-        std::vector<GeneVAR>& GeneVAR()const;
-
+//        void SetVarRange(const std::vector<IACSZJUT::VarRangeStruct>&);
+//        std::vector<IACSZJUT::VarRangeStruct>& VarRange()const;
 		void init();
 		void evolve();
 
 	protected:
 	    std::vector<CGaOperatorBase*>                 m_GeneticOperator;
         CGpopulation                                 *m_pCurrentPopulation;
+        CGaparameter                                 *m_pGaparameter;
 
-        std::vector<CALCZJUT::CExeFitnessInterface*>  m_FitnessCalculator;
-        CALCZJUT::CStructPoolBase                    *m_pStructurePool;
-	    CALCZJUT::CParameter                         *m_pParameter;
-	    std::vector<GAZJUT::GeneVAR>                  m_GeneVAR;
 
 };
 

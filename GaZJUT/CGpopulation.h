@@ -6,6 +6,10 @@
 #include "CGaparameter.h"
 #include "CGenome.h"
 #include "GaDeclaration.h"
+#include "../IACS.h"
+
+
+using IACSZJUT::VarRangeStruct;
 
 namespace GAZJUT{
 
@@ -35,8 +39,8 @@ class CGpopulation
 		size_t  popNum();
         void setPopNum(size_t);
 
-        std::vector <GeneVAR>& GeneVARArray();
-        void setGeneVARArray(std::vector <GeneVAR>&);
+        std::vector <VarRangeStruct>& VarRangeStructArray();
+        void setVarRangeStructArray(std::vector <VarRangeStruct>&);
 
         void modifyPopulation(std::vector <CGenome*>,size_t pos);
 		//operator function

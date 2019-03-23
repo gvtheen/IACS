@@ -107,26 +107,26 @@ void CModelClusterLoaded2DSupport::getGeneValuefromStruct(std::vector<double>& c
 {
 
 }
-void CModelClusterLoaded2DSupport::GeneVARRange(std::vector<GeneVAR>& currentGeneVARible)
+void CModelClusterLoaded2DSupport::VarRangeStructRange(std::vector<VarRangeStruct>& currentVarRangeStructible)
 {
         double distance = m_support_surface->Distance(m_pSphereCluster->SphereCenter());
 
         double R = m_pSphereCluster->Radius();
 
-        currentGeneVARible.push_back({1.5,3.0,0.01});
+        currentVarRangeStructible.push_back({1.5,3.0,0.01});
         // 2nd gene:    phi: [0,2*PI]
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
         // 3rd gene thea: [0,PI]
-        currentGeneVARible.push_back({0.0,Pi-std::acos(distance/R),0.01});
+        currentVarRangeStructible.push_back({0.0,Pi-std::acos(distance/R),0.01});
 
         // following four genes:  rotation axis and angle of adsorbing molecule over the sphere.
 
         //rotation axis
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
-        currentGeneVARible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
+        currentVarRangeStructible.push_back({-1.0,1.0,0.01});
         //rotation angle
-        currentGeneVARible.push_back({0.0,2*Pi,0.01});
+        currentVarRangeStructible.push_back({0.0,2*Pi,0.01});
 }
 void CModelClusterLoaded2DSupport::IdentifyvacuumLayerDirection()
 {

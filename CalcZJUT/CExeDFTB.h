@@ -11,8 +11,8 @@ namespace CALCZJUT{
 class CExeDFTB:public CExeFitnessInterface
 {
     public:
-        CExeDFTB(CParameter*);
-        virtual ~CExeDFTB();
+         CExeDFTB(CParameter*);
+         virtual ~CExeDFTB();
 
          CExeFitnessInterface* clone();
 

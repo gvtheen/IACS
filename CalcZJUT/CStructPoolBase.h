@@ -3,7 +3,9 @@
 #include <iostream>
 #include <vector>
 #include "../GaZJUT/GaDeclaration.h"
-using GAZJUT::GeneVAR;
+#include "../IACS.h"
+
+using IACSZJUT::VarRangeStruct;
 
 namespace CALCZJUT{
 
@@ -18,7 +20,7 @@ class CStructPoolBase
         virtual ~CStructPoolBase();
 
         virtual void init();
-        virtual void GeneVARRange(std::vector<GeneVAR>&);
+        virtual void VarRangeStructRange(std::vector<VarRangeStruct>&);
         CModelBase* operator[](size_t index);
 
 
@@ -26,7 +28,7 @@ class CStructPoolBase
         std::vector<CModelBase*>      m_CalcStructPool;
                      CParameter      *m_pParameter;
                          CIOBase     *m_IO;
-            std::vector<GeneVAR>     *m_pGeneVAR;
+            std::vector<VarRangeStruct>     *m_pVarRangeStruct;
 
 
 };

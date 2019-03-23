@@ -40,7 +40,11 @@ class CParameter
                              MAINPATH  = 0x304}PATH_TYPE;
         //minmum or maxmum
         typedef enum EM_P_04{MIN = 0x401,
-                             MAX = 0x401}SEARCH_MODE;
+                             MAX = 0x402}SEARCH_MODE;
+
+        typedef enum EM_P_05{GA = 0x501,
+                             PSO = 0x502,
+                             ABC = 0x503}OPT_ENGINE;
 
         //Parameter of general setting
         std::string sysName;
@@ -79,6 +83,7 @@ class CParameter
         void output();
 
         void GetEvaluateEXE(std::vector<std::string>& res);
+
         //
         GAZJUT::CGaparameter* GaParameter();
         size_t currentGenerationNum();
@@ -103,7 +108,7 @@ class CParameter
         void setEvaluator_Code(std::string);
         void setEvaluator_Criterion(std::string);
         void setSearch_Mode(std::string);
-        void setOptMethod(std::string);
+        void setOptEngineMethod(std::string);
         // structure command
         void setBond_Tolerance_Factor(std::string);   // Cu  O
         void setExclude_Bond(std::string);

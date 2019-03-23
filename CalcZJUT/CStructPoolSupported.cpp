@@ -60,6 +60,8 @@ namespace CALCZJUT{
 CStructPoolSupported::CStructPoolSupported(CParameter* oth)
 :CStructPoolBase(oth)
 {
+    assert(oth);
+
     for(size_t i=0;i<this->m_pParameter->GaParameter()->PopNum();i++){
         switch ( (int)(m_pParameter->simulationMode) ){
             case CParameter::MOL_2DMATERIAL:
@@ -97,16 +99,19 @@ void CStructPoolSupported::init()
 
                 m_CalcStructPool[i]->periodicFramework()->perceiveBonds();
                 m_CalcStructPool[i]->periodicFramework()->perceiveFragments();
-                this->m_IO->output("moltest-iacs");
+
                 #ifdef DEBUG
+                     this->m_IO->output(*m_pParameter->adso_supp_Input_File[i]+"_tmp");
                      Log::Debug<<"*fragment num:" <<m_CalcStructPool[i]->periodicFramework()->fragmentNum()<< std::endl;
                 #endif // DEBU
                 m1 = m_CalcStructPool[i]->periodicFramework()->fragment(0);
                 m2 = m_CalcStructPool[i]->periodicFramework()->fragment(1);
+
                if(m1== nullptr || m2 ==nullptr){
                   Log::Error<<"Support and adsorbent setting of input file are error! CStructPoolSupported::init().\n";
                   boost::throw_exception(std::runtime_error("Support and adsorbent setting are error! Check the file: CStructPoolSupported::init()."));
                }
+
                if(m1->atomCount() > m2->atomCount())
                {
                   m_CalcStructPool[i]->createSupport(m1->bitSet());
@@ -145,9 +150,14 @@ void CStructPoolSupported::init()
            this->getIO(m_pParameter->supportStructFile,m_CalcStructPool[0]->periodicFramework());
            this->m_IO->input(m_pParameter->supportStructFile);
 
-
+           #ifdef DEBUG
+              this->m_IO->output(m_pParameter->supportStructFile+"_2tmp");
+           #endif // DEBU
            this->getIO(m_pParameter->adsorbentStructFile,m_CalcStructPool[0]->periodicFramework());
            Bitset Bit_adsorbent = this->m_IO->input(m_pParameter->adsorbentStructFile,CParameter::MOL_CLUSTER);
+           #ifdef DEBUG
+              this->m_IO->output(m_pParameter->adsorbentStructFile+"_2tmp");
+           #endif // DEBU
            // get opposite bit for support
            m_CalcStructPool[0]->createSupport(~Bit_adsorbent);
            //set molecular adsorbent bits
@@ -191,9 +201,9 @@ void CStructPoolSupported::getIO(std::string &file_name,CATAZJUT::CConfiguration
     vectstr.clear();
 
 }
-void CStructPoolSupported::GeneVARRange(std::vector<GeneVAR>& mht)
+void CStructPoolSupported::VarRangeStructRange(std::vector<VarRangeStruct>& mht)
 {
-     this->m_CalcStructPool[0]->GeneVARRange(mht);
+     this->m_CalcStructPool[0]->VarRangeStructRange(mht);
 }
 
 

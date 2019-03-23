@@ -9,7 +9,7 @@
 #include "../IACS.h"
 #include "../Util/log.hpp"
 
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 using util::Bitset;
 using util::Log;
 
@@ -54,7 +54,7 @@ Vector4 SphereEquationFromPoints(const std::vector<Point3>& coordinate)
    equation<<P_pos[0],P_pos[1],P_pos[2],R;
    return equation;
 }
-double binaryDecode(const Bitset & myCode,GeneVAR myGenVar)
+double binaryDecode(const Bitset & myCode,VarRangeStruct myGenVar)
 {
      int i,m;
      double low,high,sum;
@@ -67,10 +67,10 @@ double binaryDecode(const Bitset & myCode,GeneVAR myGenVar)
           sum=sum+(double)(myCode[i])*std::pow(2.0,m-i-1);
      return  low+(high-low)*sum/(std::pow(2.0,m)-1);
 }
-int calcBitNum(GeneVAR myGeneVAR)
+int calcBitNum(VarRangeStruct myVarRangeStruct)
 {
     double c,m;
-    m=(myGeneVAR.max - myGeneVAR.min)/myGeneVAR.accuracy;
+    m=(myVarRangeStruct.max - myVarRangeStruct.min)/myVarRangeStruct.accuracy;
     c=std::log10(m)/std::log10(2.0);
     return (int)c+1;
 }

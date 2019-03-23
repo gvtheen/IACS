@@ -45,7 +45,7 @@ CParameter::CParameter(std::string file)
     m_mapCmdFunc["[Sys_Evaluator_Criterion]"]=&CParameter::setEvaluator_Criterion;
     m_mapCmdFunc["[Sys_Search_Mode]"]=&CParameter::setSearch_Mode;
     m_mapCmdFunc["[Sys_Output_Structure_Format]"]=&CParameter::setOutputStructureFormat;
-    m_mapCmdFunc["[Sys_Opt_Method]"]=&CParameter::setOptMethod;
+    m_mapCmdFunc["[Sys_Opt_Method]"]=&CParameter::setOptEngineMethod;
 
     // fur supported catalyst
     m_mapCmdFunc["[Str_Support_Structure]"]=&CParameter::setSupport_Structure;
@@ -357,7 +357,7 @@ void CParameter::setSimulationMode(std::string mtr)
            break;
      }
 }
-void CParameter::setOptMethod(std::string mtr)
+void CParameter::setOptEngineMethod(std::string mtr)
 {
 
 }

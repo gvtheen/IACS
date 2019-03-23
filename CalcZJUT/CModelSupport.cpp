@@ -20,7 +20,6 @@
 ******************************************************************************/
 #include "CModelSupport.h"
 #include "../CataZJUT/CConfigurationBase.h"
-#include "../CataZJUT/CConfigurationBase.h"
 #include "../CataZJUT/CCartesianCoordinates.h"
 #include "../Util/foreach.h"
 #include "../CataZJUT/CAtom.h"
@@ -36,9 +35,10 @@ CModelSupport::CModelSupport(CATAZJUT::CConfigurationBase* mpconf, Bitset& suppo
 :m_pPeriodicFramework(mpconf),m_AtomicBits(supportBit)
 {
      assert(mpconf);
-     #ifdef DEBUG
-        Log::Debug<<"CModelSupport::CModelSupport" << std::endl;
-     #endif
+     assert(supportBit.size()>0);
+//     #ifdef DEBUG
+//        Log::Debug<<"CModelSupport::CModelSupport" << std::endl;
+//     #endif
       for(size_t i=0;i<m_AtomicBits.size();i++)
          if(m_AtomicBits.test(i)==1){
             this->m_Atoms.push_back(m_pPeriodicFramework->atom(i));

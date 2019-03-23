@@ -29,7 +29,7 @@ CGraygene::CGraygene():CGenebase()
     //nothing is done.
     this->codeType=GRAY;
 }
-CGraygene::CGraygene(GeneVAR*myVal):CGenebase(myVal)
+CGraygene::CGraygene(VarRangeStruct*myVal):CGenebase(myVal)
 {
     this->init(myVal);
     this->codeType=GRAY;
@@ -45,8 +45,8 @@ double CGraygene::decode()
 {
      double low,high,sum;
 
-     low= this->m_GeneVAR->min;
-     high=this->m_GeneVAR->max;
+     low= this->m_VarRangeStruct->min;
+     high=this->m_VarRangeStruct->max;
      sum=0.0;
      size_t m=this->m_bitdata.size();
 
@@ -60,12 +60,12 @@ double CGraygene::decode()
      tempData.clear();
      return  this->m_value;
 }
-void CGraygene::init(GeneVAR* myVal)
+void CGraygene::init(VarRangeStruct* myVal)
 {
     double rndNum;
     assert(myVal);
 
-    this->m_GeneVAR=myVal;
+    this->m_VarRangeStruct=myVal;
 
     this->m_bitNum = util::calcBitNum(*myVal);
 
@@ -88,8 +88,8 @@ void CGraygene::updatecode(double value)
 	int i, m;
 
 	long int TenValue;
-	low=this->m_GeneVAR->min;
-    high=this->m_GeneVAR->max;
+	low=this->m_VarRangeStruct->min;
+    high=this->m_VarRangeStruct->max;
     if (value<low || value>high)
     {
     	util::Log::Error<<"The value exceeds the valable range! CGraygene::updatecode!\n";

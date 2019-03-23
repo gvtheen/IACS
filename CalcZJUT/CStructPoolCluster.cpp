@@ -91,12 +91,12 @@ void CStructPoolCluster::init()
        boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. init_CModelCluster!!\n"));//ERROR TREATMENT;
     }
 }
-void CStructPoolCluster::GeneVARRange(std::vector<GeneVAR>&  mht)
+void CStructPoolCluster::VarRangeStructRange(std::vector<VarRangeStruct>&  mht)
 {
    double maxRadius=0.0;
-   std::vector<GeneVAR> resTemp;
+   std::vector<VarRangeStruct> resTemp;
    for(size_t i=0;i<this->m_CalcStructPool.size();i++){
-        this->m_CalcStructPool[i]->GeneVARRange(resTemp);
+        this->m_CalcStructPool[i]->VarRangeStructRange(resTemp);
         if(maxRadius > resTemp[0].max)
             maxRadius = resTemp[0].max;
    }

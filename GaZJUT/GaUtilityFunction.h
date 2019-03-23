@@ -4,20 +4,18 @@
 #include<vector>
 #include "GaDeclaration.h"
 #include "../Util/Bitset.h"
+#include "../IACS.h"
 
 using util::Bitset;
-
+using IACSZJUT::VarRangeStruct;
 namespace GAZJUT{
 
-double binaryDecode(Bitset&,GeneVAR);
-int    calcBitNum(GeneVAR);
+
+double binaryDecode(Bitset&,VarRangeStruct);
+int    calcBitNum(VarRangeStruct);
 void   grayTobit(Bitset&);
 void   bitTogray(Bitset&);
 
-//void   ERROR_OUTPUT(std::string );
-//void   ERROR_OUTPUT(std::string,std::string );
-//void   ERROR_OUTPUT(std::string,std::string,std::string );
-//void   ERROR_OUTPUT(std::string,std::string,std::string,std::string);
 
 }
 

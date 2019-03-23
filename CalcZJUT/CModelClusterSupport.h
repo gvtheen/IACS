@@ -3,10 +3,10 @@
 
 #include <Eigen/Dense>
 #include "CModelBase.h"
-#include "../GaZJUT/GaDeclaration.h"
+#include "../IACS.h"
 #include "../Util/Bitset.h"
 
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 using util::Bitset;
 
 // import crystal plane object from namespace CATAZJUT.
@@ -37,7 +37,7 @@ class CModelClusterSupport:public CModelBase
         //virtual function from CModelBase
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
 
         void createSupport(const Bitset &);
         void createMoleAdsorb(const Bitset &);

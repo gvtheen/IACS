@@ -40,12 +40,12 @@ void CStructPoolPeriodic::init()
        boost::throw_exception(std::runtime_error("Chemical formula and structural files is required. CStructPoolPeriodic::init()!!\n"));//ERROR TREATMENT;
     }
 }
-void CStructPoolPeriodic::GeneVARRange(std::vector<GeneVAR>&  mht)
+void CStructPoolPeriodic::VarRangeStructRange(std::vector<VarRangeStruct>&  mht)
 {
    double maxRadius=0.0;
-   std::vector<GeneVAR> resTemp;
+   std::vector<VarRangeStruct> resTemp;
    for(size_t i=0;i<this->m_CalcStructPool.size();i++){
-        this->m_CalcStructPool[i]->GeneVARRange(resTemp);
+        this->m_CalcStructPool[i]->VarRangeStructRange(resTemp);
         if(maxRadius > resTemp[0].max)
             maxRadius = resTemp[0].max;
    }

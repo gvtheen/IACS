@@ -8,10 +8,10 @@ This class is used to GA evolution of pure cluster rather than molecular adsorbe
 #include "CModelBase.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "../Util/Point-Vector.h"
-#include "CClusterGeneVAR.h"
+//#include "CClusterVarRangeStruct.h"
 
 using util::Point3i;
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 
 namespace CATAZJUT{
   class CConfigurationBase;
@@ -38,7 +38,7 @@ class CModelCluster:public CModelBase
         //virtual function from CModelBase
         void setGeneValueToStruct(const std::vector<double>& realValueOfgene);
         void getGeneValuefromStruct(std::vector<double>&);
-        void GeneVARRange(std::vector<GeneVAR>&);
+        void VarRangeStructRange(std::vector<VarRangeStruct>&);
         std::vector<std::pair<std::string,size_t>>& chemicalFormula();
         void setChemicalFormula(const std::vector<std::pair<std::string,size_t>>&);
         void outputStructureToFile();

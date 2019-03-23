@@ -213,40 +213,40 @@ void CModel2DSupport::getGeneValuefromStruct(std::vector<double>& geneRealValue)
    geneRealValue.clear();
 
 }
-void CModel2DSupport::GeneVARRange(std::vector<GeneVAR>& GeneVARibleVect)
+void CModel2DSupport::VarRangeStructRange(std::vector<VarRangeStruct>& VarRangeStructibleVect)
 {
     //clear vector!
-    GeneVARibleVect.clear();
+    VarRangeStructibleVect.clear();
     //distance of adsorbent on 2d support
-    GeneVARibleVect.push_back({1.5,3.0,0.01});
+    VarRangeStructibleVect.push_back({1.5,3.0,0.01});
     // a axes displacing
     if(m_latticeDirection==CModel2DSupport::NONE_DIR)
         IdentifyvacuumLayerDirection();
 
     if(m_latticeDirection == CModel2DSupport::C_AXIS){
         //c a,b
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
     }else if (m_latticeDirection == CModel2DSupport::B_AXIS){
         //b c  a
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->a(),0.01});
         m_latticeDirection = CModel2DSupport::B_AXIS;
     }else if(m_latticeDirection == CModel2DSupport::A_AXIS){
         //a b  c
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
-        GeneVARibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->b(),0.01});
+        VarRangeStructibleVect.push_back({0,m_pPeriodicFramework->unitcell()->c(),0.01});
     }else{
-         Log::Error<<"It has no vacuum layer! GeneVARRange_CModel2DSupport!\n";
-         boost::throw_exception(std::runtime_error("It has no vacuum layer!! GeneVARRange_CModel2DSupport.\n"));
+         Log::Error<<"It has no vacuum layer! VarRangeStructRange_CModel2DSupport!\n";
+         boost::throw_exception(std::runtime_error("It has no vacuum layer!! VarRangeStructRange_CModel2DSupport.\n"));
     }
     //rotation axis
-    GeneVARibleVect.push_back({-1,1,0.01});
-    GeneVARibleVect.push_back({-1,1,0.01});
-    GeneVARibleVect.push_back({-1,1,0.01});
+    VarRangeStructibleVect.push_back({-1,1,0.01});
+    VarRangeStructibleVect.push_back({-1,1,0.01});
+    VarRangeStructibleVect.push_back({-1,1,0.01});
 
     //rotation angle
-    GeneVARibleVect.push_back({0.0,360.0,2.0});
+    VarRangeStructibleVect.push_back({0.0,360.0,2.0});
 
 
 }

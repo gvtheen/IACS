@@ -7,14 +7,15 @@
 #include "../CataZJUT/Geometry.h"
 #include "../GaZJUT/GaDeclaration.h"
 #include "Bitset.h"
+#include "../IACS.h"
 
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 
 namespace util{
 //
 Vector4 SphereEquationFromPoints(const std::vector<Point3>& coordinate);
-double binaryDecode(const Bitset & myCode,GeneVAR myGenVar);
-int calcBitNum(GeneVAR myGeneVAR);
+double binaryDecode(const Bitset & myCode,VarRangeStruct myGenVar);
+int calcBitNum(VarRangeStruct myVarRangeStruct);
 void grayTobit(Bitset& data);
 void bitTogray(Bitset& data);
 bool strcasecmp(const std::string& s1, const std::string& s2);

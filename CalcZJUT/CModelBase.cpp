@@ -44,9 +44,9 @@ CModelBase::CModelBase(CModelBase& obj)
 {
    this->m_pParameter=obj.m_pParameter;
 
-    #ifdef DEBUG
-        Log::Debug<<"CModelBase::CModelBase(CModelBase& obj)" << std::endl;
-    #endif // DEBU
+//    #ifdef DEBUG
+//        Log::Debug<<"CModelBase::CModelBase(CModelBase& obj)" << std::endl;
+//    #endif // DEBU
    this->m_pPeriodicFramework=new CATAZJUT::CConfigurationBase(*(obj.m_pPeriodicFramework));
    this->m_ppBackupPeriodicFramework=obj.m_ppBackupPeriodicFramework;
 }

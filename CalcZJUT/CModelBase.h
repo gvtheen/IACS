@@ -3,10 +3,10 @@
 #include <vector>
 #include <iostream>
 #include "../Util/Bitset.h"
-#include "../GaZJUT/GaDeclaration.h"
+#include "../IACS.h"
 //
 using util::Bitset;
-using GAZJUT::GeneVAR;
+using IACSZJUT::VarRangeStruct;
 
 namespace CATAZJUT
 {
@@ -28,7 +28,7 @@ public:
 
     virtual void setGeneValueToStruct(const std::vector<double>& realValueOfgene)=0;
     virtual void getGeneValuefromStruct(std::vector<double>&) =0;
-    virtual void GeneVARRange(std::vector<GeneVAR>&)=0;
+    virtual void VarRangeStructRange(std::vector<VarRangeStruct>&)=0;
     // only effective for supported catalyst
     virtual void createSupport( const Bitset &);
     virtual void createMoleAdsorb( const Bitset &);
@@ -49,7 +49,7 @@ public:
 
 public:
     CParameter             *m_pParameter;
-    std::vector<GeneVAR>    m_GeneVAR;
+    std::vector<VarRangeStruct>    m_VarRangeStruct;
 
     CATAZJUT::CConfigurationBase*          m_pPeriodicFramework;
     CATAZJUT::CConfigurationBase**         m_ppBackupPeriodicFramework;
