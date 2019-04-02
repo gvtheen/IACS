@@ -15,8 +15,15 @@ CMolecularSymmetry::CMolecularSymmetry(CConfigurationBase* mbf)
 :m_pConfiguration(mbf)
 {
     point_group = new char[6];
-}
 
+    m_AtomicBits.resize(mbf.size());
+    m_AtomicBits.set();  //set all elements to 1;
+}
+CMolecularSymmetry(CConfigurationBase*  mbf,Bitset dat)
+::m_pConfiguration(mbf),m_AtomicBits(dat)
+{
+    point_group = new char[6];
+}
 CMolecularSymmetry::~CMolecularSymmetry()
 {
     if(point_group==NULL)
@@ -50,16 +57,26 @@ char* CMolecularSymmetry::GetPointGroup()
      * then sets the coordinates and name of the elements */
     int length;// = read_xyz(in_file, &elements);
     //if(length <= 0) return -1;
-    length = this->m_pConfiguration->atomCount();
+    length = this->m_AtomicBits.count();
     melements = new msym_element_t[length];
 
-    size_t index=0;
-    foreach(CAtom* atom, this->m_pConfiguration->atoms()){
+    CAtom* atom=nullptr;
+   // foreach(CAtom* atom, this->m_pConfiguration->atoms()){
+    size_t pos=m_AtomicBits.find_first();
+
+    if(pos==Bitset::npos){
+        Log::Error<<" Error in the computation of molecular symmetry! CMolecularSymmetry::GetPointGroup()!\n";
+        boost::throw_exception(std::runtime_error(" Error in the computation of molecular symmetry! CMolecularSymmetry::GetPointGroup()"));
+    }
+     size_t index=0;
+     while(pos!=Bitset::npos){
+        atom=this->m_pConfiguration->atom(pos);
         strcpy( melements[index].name, atom->Symbol().c_str() );
         melements[index].v[0]=atom->position()[0];
         melements[index].v[1]=atom->position()[1];
         melements[index].v[2]=atom->position()[2];
         index++;
+        pos = m_AtomicBits.find_next(pos);
     }
 
     /* Create a context */

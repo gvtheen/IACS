@@ -247,18 +247,24 @@ void CModelClusterLoaded2DSupport::eliminateCloseContacts(double distanceCutOff)
 void CModelClusterLoaded2DSupport::createSupport(const Bitset& mht )
 {
     assert(m_pPeriodicFramework);
+    assert(mht.size()>0);
+
     m_BitbackupSupport = mht;
     m_pSupport= new CModelSupport(this->m_pPeriodicFramework,m_BitbackupSupport);
 }
 void CModelClusterLoaded2DSupport::createMoleAdsorb(const Bitset& mht)
 {
     assert(m_pPeriodicFramework);
+    assert(mht.size()>0);
+
     m_BitbackupAdsorbMolecule = mht;
     m_pAdsorbMolecule = new CModelMoleculeAdsorbent(this->m_pPeriodicFramework,m_BitbackupAdsorbMolecule);
 }
 void CModelClusterLoaded2DSupport::createSupportedCluster(const Bitset& mht)
 {
     assert(this->m_pPeriodicFramework);
+    assert(mht.size()>0);
+
     m_BitbackupCluster = mht;
     m_pClusterOnSupport = new CModelMoleculeAdsorbent(m_pPeriodicFramework,m_BitbackupCluster);
 

@@ -69,9 +69,8 @@ CGAEngine::~CGAEngine()
 */
 void CGAEngine::init()
 {
-   #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::init()***********"<< std::endl;
-   #endif
+
+   Log::Info<<"Initialize GA Engine....."<< std::endl;
 
    std::vector<std::string> res;
 
@@ -95,9 +94,9 @@ void CGAEngine::init()
       Log::Error<< "No fitness calculator!! CGAEngine::init()!\n";
       boost::throw_exception(std::runtime_error("No fitness calculator!!! CGAEngine::init()!\n"));
    }
-   #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::init()-2***********"<< std::endl;
-   #endif
+
+   Log::Info<<"  Initialize structural pool....."<< std::endl;
+
    switch ((int)m_pParameter->simulationMode)
    {
        case CParameter::CLUSTER:
@@ -113,9 +112,9 @@ void CGAEngine::init()
        default:
            break;
    }
-   #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::init()-3***********"<< std::endl;
-   #endif
+//   #ifdef DEBUG
+//      Log::Debug<<"*********** CGAEngine::init()-3***********"<< std::endl;
+//   #endif
    /*
      Initialize structural pool( read structural file or random identify it)
      Obtain the gene-variable range for the construction of Population object
@@ -124,14 +123,17 @@ void CGAEngine::init()
    //set gene variable range
    std::vector <IACSZJUT::VarRangeStruct> geneRange;
    m_pStructurePool->VarRangeStructRange(geneRange);
-   #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::init()-5***********"<< std::endl;
-   #endif
+
+//   #ifdef DEBUG
+//      Log::Debug<<"*********** CGAEngine::init()-5***********"<< std::endl;
+//   #endif
    this->m_pGaparameter->setVarRange(geneRange);
 
-   #ifdef DEBUG
-      Log::Debug<<"m_FitnessCalculator:"<<m_FitnessCalculator.size()<<std::endl;
-   #endif
+//   #ifdef DEBUG
+//      Log::Debug<<"m_FitnessCalculator:"<<m_FitnessCalculator.size()<<std::endl;
+//   #endif
+   Log::Info<<"  Initialize fitness calculator....."<< std::endl;
+
    for(size_t i=0;i<m_FitnessCalculator.size();i++)
         m_FitnessCalculator[i]->init();
    // until now, all parameters in object of Gaparameter were set.
@@ -141,6 +143,8 @@ void CGAEngine::init()
    #endif
    m_pCurrentPopulation = new CGpopulation(m_pGaparameter);
 
+   Log::Info<<"  Initialize genetic operators....."<< std::endl;
+
    // sequence of operators!
    m_GeneticOperator.push_back(new CEvaluator(m_FitnessCalculator,m_pStructurePool));
    m_GeneticOperator.push_back(new CFitnessScaling());
@@ -149,16 +153,14 @@ void CGAEngine::init()
    m_GeneticOperator.push_back(new CCross());
    m_GeneticOperator.push_back(new CMutator());
 
-   #ifdef DEBUG
-      Log::Debug<<"*********** End CGAEngine::init()***********"<< std::endl;
-   #endif
+    Log::Info<<"End initialization of GA Engine"<< std::endl;
+
 }
 void CGAEngine::evolve()
 {
    // read the setting generation number
-   #ifdef DEBUG
-      Log::Debug<<"*********** CGAEngine::evolve()***********"<< std::endl;
-   #endif
+   Log::Info<<"Enter evolving process of GA Engine....."<< std::endl;
+
    size_t total_pop_num=m_pGaparameter->GenerationNum();
 
    while(true){
@@ -171,6 +173,8 @@ void CGAEngine::evolve()
        if(m_pGaparameter->Curr_Generation >= total_pop_num)
           break;
    }
+
+   Log::Info<<"End evolving process of GA Engine"<< std::endl;
 }
 
 }

@@ -34,6 +34,7 @@ CModelMoleculeAdsorbent::CModelMoleculeAdsorbent(CATAZJUT::CConfigurationBase* m
 :m_pConfiguration(mpConf),m_AtomicBits(molIndexBit)
 {
     assert(m_pConfiguration);
+    assert(m_AtomicBits.size()>1);
 //    #ifdef DEBUG
 //        Log::Debug<<"CModelMoleculeAdsorbent::CModelMoleculeAdsorbent" << std::endl;
 //    #endif

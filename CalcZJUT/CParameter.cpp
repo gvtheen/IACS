@@ -102,9 +102,9 @@ void CParameter::input()
       try{
           in= new std::ifstream(m_pfile->c_str(),std::ifstream::in);
           in->exceptions (std::ifstream::badbit );
-          #ifdef DEBUG
-            Log::Debug<<"*********** Read input file of "<<*m_pfile<<"***********"<< std::endl;
-          #endif
+
+          Log::Info<<"*********** Read input file of "<<*m_pfile<<" ***********"<< std::endl;
+
           if(in==nullptr || !in->is_open()){
             Log::Error<<*m_pfile <<" file open with an error! input_CParameter\n";
             boost::throw_exception(std::runtime_error(*m_pfile +" file open with an error! Check the file: CParameter::input()."));
@@ -120,9 +120,8 @@ void CParameter::input()
             for(size_t i=0;i<cmd_Str.size();i++){
                 boost::algorithm::trim(cmd_Str[i]);
                 if(cmd_Str[i]!="" && i%2==0){
-                     #ifdef DEBUG
-                        Log::Debug<<cmd_Str[i]<< std::endl;
-                     #endif // DEBUG
+                     Log::Info<<cmd_Str[i]<< std::endl;
+
                      boost::algorithm::split(keyValue,cmd_Str[i],boost::algorithm::is_any_of("="),boost::algorithm::token_compress_on);
 
                      if(keyValue.size()!=2){
@@ -147,7 +146,7 @@ void CParameter::input()
           boost::throw_exception(std::runtime_error(std::string(e.what()) + "Check the file: CParameter::input()."));
       }
       in->close();
-      Log::Info<<"END Reading input file"<<std::endl;
+      Log::Info<<"*********** END Reading input file ***********"<<std::endl;
       this->initWorkEnvironment();
 
 }
@@ -198,6 +197,8 @@ void CParameter::initWorkEnvironment()
     parameter_path = m_root_WorkingPath/"parameter";
     if(!boost::filesystem::exists(parameter_path))
         boost::filesystem::create_directory(parameter_path);
+
+    Log::Info<<"End initialization of working environment..."<<std::endl;
 
 }
 void CParameter::setCurrentWorkPathAt(size_t generation,size_t population)
