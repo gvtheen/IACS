@@ -14,10 +14,11 @@ class CFitnessScaling:public CGaOperatorBase
 		void init();
 		void run(CGpopulation*);
 
-		// scaling rawscore to fitness
+    private:
 		void linearScaling(CGpopulation*);
 		void sigmaTruncScaling(CGpopulation*);
 		void powerLawScaling(CGpopulation*);
+		void noScaling(CGpopulation*);
 	protected:
 };
 

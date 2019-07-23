@@ -56,6 +56,7 @@ CEvaluator::CEvaluator(std::vector<CALCZJUT::CExeFitnessInterface*>  myEvaluator
 }
 CEvaluator::~CEvaluator()
 {
+    //nothing is done!
 }
 void CEvaluator::run(CGpopulation* CurrentPopulation)
 {
@@ -78,10 +79,11 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
 
    //put the 1st evaluator into current evaluator.
    assert(m_pEvaluatorPool[0]);
+
    m_currentEvaluator= m_pEvaluatorPool[0];
    #ifdef DEBUG
          Log::Debug<<"2-*********** CEvaluator::run***********"<< std::endl;
-    #endif
+   #endif
    for(size_t i=0;i<pop_num;i++)
    {
       //clear all content of DecValueOfGenome
@@ -121,18 +123,30 @@ void CEvaluator::run(CGpopulation* CurrentPopulation)
    // convert original value to raw score by using specific method.
    // call the function of currentEvaluator for converting the original value to Raw score.
    // Then set the set value to the whole population.
-   OrigScoreVect.resize(pop_num);
-   for(size_t i=0;i<pop_num;i++)
-      OrigScoreVect[i] = OrigScoreMap[i];
-   m_currentEvaluator->ConvOrigToRawScore(OrigScoreVect);
-   for(size_t i=0;i<pop_num;i++)
-      ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
+//   OrigScoreVect.resize(pop_num);
+//   for(size_t i=0;i<pop_num;i++)
+//      OrigScoreVect[i] = OrigScoreMap[i];
+//
+//   m_currentEvaluator->ConvOrigToRawScore(OrigScoreVect);
+//
+//   for(size_t i=0;i<pop_num;i++)
+//      ((*CurrentPopulation)[i])->setRawScore(OrigScoreVect[i]);
+
+   this->ConvOrigToRawScore(CurrentPopulation);
    // After one cycle calculation, output some structure and computational value.
    // output the result
    this->standardOutput(CurrentPopulation);
    // output the relaxed structure
    this->standardOutput(OrigScoreMap);
 
+}
+void CEvaluator::ConvOrigToRawScore(CGpopulation* currentPopulation)
+{
+   currentPopulation->ori_statistic();
+   double maxOrigValue=(*currentPopulation)["maxori"];
+
+   for(size_t i=0;i<CurrentPopulation->popNum();i++)
+      (*currentPopulation)[i]->setRawScore( maxOrigValue - (*currentPopulation)[i]->origValue());
 }
 void CEvaluator::standardOutput(std::map <size_t, double>& mapIndexScore)
 {

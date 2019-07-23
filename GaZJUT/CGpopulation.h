@@ -33,6 +33,8 @@ class CGpopulation
 
 		void raw_statistic();
 		void fitness_statistic();
+		void ori_statistic();
+
 		void ascendSort();
 		void descendSort();
 		//input output

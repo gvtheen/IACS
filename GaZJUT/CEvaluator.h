@@ -39,6 +39,8 @@ class CEvaluator:public CGaOperatorBase
 		void init();
 		void run( CGpopulation* );
 
+		void ConvOrigToRawScore();
+
 
 //        void setCalcFitnessInterface(CALCZJUT::CExeFitnessInterface* CalcModeStruct);
 //        CALCZJUT::CExeFitnessInterface* CalcFitnessInterface();

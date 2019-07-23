@@ -49,9 +49,18 @@ void CFitnessScaling::run(CGpopulation* currentPopulation)
             this->sigmaTruncScaling(currentPopulation);
             break;
         default:
-            this->linearScaling(currentPopulation);
+            this->noScaling(currentPopulation);
             break;
      }
+     currentPopulation->fitness_statistic();
+}
+void CFitnessScaling::noScaling(CGpopulation* currentPopulation)
+{
+     currentPopulation->raw_statistic();
+
+     size_t popnum = currentPopulation->popNum();
+     for(size_t i=0;i<popnum;i++)
+       ((*currentPopulation)[i])->setFitness(((*currentPopulation)[i])->rawscore());
 }
 void CFitnessScaling::linearScaling(CGpopulation* currentPopulation)
 {
@@ -87,7 +96,6 @@ void CFitnessScaling::linearScaling(CGpopulation* currentPopulation)
           temp_raw=0;
        ((*currentPopulation)[i])->setFitness(temp_raw);
     }
-
 }
 void CFitnessScaling::sigmaTruncScaling(CGpopulation* currentPopulation)
 {

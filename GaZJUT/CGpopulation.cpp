@@ -215,13 +215,19 @@ void CGpopulation::raw_statistic()
     this->m_MinRawScore = this->m_pMinRawGenome->rawscore();
     this->m_MaxRawScore = this->m_pMaxRawGenome->rawscore();
 	//obtained best fitness
+}
+void CGpopulation::ori_statistic()
+{
+    assert(m_Gpopulation.size()>0);
 
-    it = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
+	std::vector <CGenome*>::iterator it;
+
+	it = std::min_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
                           [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
     this->m_pMinOriGenome = *it;
 
     it = std::max_element(m_Gpopulation.begin(),m_Gpopulation.end(),\
-                         [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
+                          [](CGenome* A,CGenome* B){ return (*A)["origvalue"] < (*B)["origvalue"];});
     this->m_pMaxOriGenome = *it;
 
     this->m_MinOriValue = this->m_pMinOriGenome->origValue();
