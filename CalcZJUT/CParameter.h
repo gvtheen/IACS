@@ -40,7 +40,8 @@ class CParameter
                              MAINPATH  = 0x304}PATH_TYPE;
         //minmum or maxmum
         typedef enum EM_P_04{MIN = 0x401,
-                             MAX = 0x402}SEARCH_MODE;
+                             MAX = 0x402,
+                             SPE = 0x403}SEARCH_MODE;
 
         typedef enum EM_P_05{GA = 0x501,
                              PSO = 0x502,
@@ -72,7 +73,7 @@ class CParameter
         std::vector<std::vector<char*>> evaluatorParameterFile;
         std::string output_struct_format;
         const char* Backup_Parameter_Folder;
-        double optimal_gap_value;
+        double optimal_specific_value;
 
     public:
         CParameter(std::string filename);

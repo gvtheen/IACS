@@ -99,7 +99,6 @@ double CExeVASP::CalcuRawFit(std::vector<double>&RealValueOfGenome,size_t& pop_i
 
      size_t currGeneration = m_Parameter->GaParameter()->Curr_Generation;
 
-     Log::Info<<" Run VASP calculation of the "<< pop_index+1<< "th Genome in "<< currGeneration+1 <<"th generation!\n";
      //construct new object of CConfigurationBase class
      //transfer gene value to POSCAR file
      // if( currGeneration != 0 )

@@ -95,7 +95,6 @@ void  CIOXyz::input(std::string file)
         file=file + ".xyz";
      }
 
-
      if(access(file.c_str(),F_OK) != 0 ){
            Log::Error<<file <<" file is no exist! input_CIOXyz!\n";
            boost::throw_exception(std::runtime_error("XYZ file is no exist! Check the file: input_CIOXyz."));
